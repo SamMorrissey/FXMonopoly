@@ -21,7 +21,7 @@ public class FXMonopoly extends Application {
     
     @Override
     public void start(Stage stage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("MainMenu/MainMenuDocument.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("MainMenu/MainMenuLayout.fxml"));
         Parent root = (Parent) loader.load();
         MainMenuController controller = (MainMenuController) loader.getController();
         
