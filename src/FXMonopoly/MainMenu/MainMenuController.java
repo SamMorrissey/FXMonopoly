@@ -85,10 +85,10 @@ public class MainMenuController implements Initializable {
         this.stage = stage;
         enablePositionChange();
     }
+    
     /*
      * Sets mouse events on the stage to allow the user to drag the window
      * since decoration is non-existent
-     * @param primaryStage The parent stage of the scene 
      */
     private void enablePositionChange() {
         Scene scene = stage.getScene();

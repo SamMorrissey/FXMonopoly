@@ -12,6 +12,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import FXMonopoly.MainMenu.MainMenuController;
+import FXMonopoly.Utils.StageManager;
 
 /**
  *
@@ -24,7 +25,6 @@ public class FXMonopoly extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("MainMenu/MainMenuLayout.fxml"));
         Parent root = (Parent) loader.load();
         MainMenuController controller = (MainMenuController) loader.getController();
-        
         
         Scene scene = new Scene(root);
         scene.getStylesheets().add(getClass().getResource("MainMenu/MainMenuStyle.css").toExternalForm());
