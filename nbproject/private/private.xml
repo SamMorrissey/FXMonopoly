@@ -3,12 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Slipshod/Documents/NetBeansProjects/FXMonopoly/src/FXMonopoly/MainMenu/MainMenuController.java</file>
-            <file>file:/C:/Users/Slipshod/Documents/NetBeansProjects/FXMonopoly/src/FXMonopoly/Utils/StageManager.java</file>
-            <file>file:/C:/Users/Slipshod/Documents/NetBeansProjects/FXMonopoly/src/FXMonopoly/Utils/View.java</file>
-            <file>file:/C:/Users/Slipshod/Documents/NetBeansProjects/FXMonopoly/src/FXMonopoly/MainMenu/MainMenuStyle.css</file>
-            <file>file:/C:/Users/Slipshod/Documents/NetBeansProjects/FXMonopoly/src/FXMonopoly/FXMonopoly.java</file>
-            <file>file:/C:/Users/Slipshod/Documents/NetBeansProjects/FXMonopoly/src/FXMonopoly/MainMenu/MainMenuLayout.fxml</file>
+            <file>file:/C:/Users/Slipshod/Documents/NetBeansProjects/FXMonopoly/src/fxmonopoly/FXMonopoly.java</file>
+            <file>file:/C:/Users/Slipshod/Documents/NetBeansProjects/FXMonopoly/src/fxmonopoly/mainmenu/MainMenuController.java</file>
+            <file>file:/C:/Users/Slipshod/Documents/NetBeansProjects/FXMonopoly/src/fxmonopoly/mainmenu/MainMenuLayout.fxml</file>
+            <file>file:/C:/Users/Slipshod/Documents/NetBeansProjects/FXMonopoly/src/fxmonopoly/utils/StageManager.java</file>
         </group>
     </open-files>
 </project-private>
