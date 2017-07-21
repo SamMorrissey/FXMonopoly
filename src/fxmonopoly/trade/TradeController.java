@@ -5,6 +5,7 @@
  */
 package fxmonopoly.trade;
 
+import fxmonopoly.utils.StageManager;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.Initializable;
@@ -14,7 +15,8 @@ import javafx.fxml.Initializable;
  *
  * @author Slipshod
  */
-public class TradeLayoutController implements Initializable {
+public class TradeController implements Initializable {
+    private StageManager manager;
 
     /**
      * Initializes the controller class.
@@ -24,4 +26,7 @@ public class TradeLayoutController implements Initializable {
         // TODO
     }    
     
+    public void setStageManager(StageManager manager) {
+        this.manager = manager;
+    }
 }

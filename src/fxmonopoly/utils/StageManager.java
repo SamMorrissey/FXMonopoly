@@ -5,7 +5,10 @@
  */
 package fxmonopoly.utils;
 
-import javafx.stage.Stage;
+import fxmonopoly.game.GameController;
+import fxmonopoly.gameinitsettings.GameInitSettingsController;
+import fxmonopoly.mainmenu.MainMenuController;
+import fxmonopoly.trade.TradeController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -23,7 +26,10 @@ import javafx.stage.Modality;
 public class StageManager {
     // The constant elements to be utilised by the manager
     private final Stage stage;
-    private final FXMLLoader loader;
+    private FXMLLoader loader;
+    
+    private double xOffset;
+    private double yOffset;
     
     // For resuming a game in progress, only set upon the start of a game, returned
     // to null upon a game being completed.
@@ -32,6 +38,11 @@ public class StageManager {
     public StageManager(Stage stage, FXMLLoader loader) {
         this.stage = stage;
         this.loader = loader;
+        enablePositionChange();
+    }
+    
+    public Stage getStage() {
+        return stage;
     }
     
     /*
@@ -40,8 +51,14 @@ public class StageManager {
      * @param view The window to be switched to
      */
     public void changeScene(final View view) {
-        Parent viewHierarchy = loadHierarchy(view.getFXMLPath());
-        display(viewHierarchy);
+        try {
+            Parent viewHierarchy = loadHierarchy(view.getFXMLPath());
+            display(viewHierarchy);
+            passStageManager();
+        }
+        catch (Exception e) {
+            errorDialog("There was a problem", e);
+        }
     }
     
     /*
@@ -52,6 +69,7 @@ public class StageManager {
      */
     public void display(final Parent root) {
         Scene scene = setupScene(root);
+        root.requestFocus();
         
         stage.setScene(scene);
         stage.sizeToScene();
@@ -81,14 +99,38 @@ public class StageManager {
      */
     private Parent loadHierarchy(String fxmlFilePath) {
         Parent root = null;
+        loader = null;
         try {
-            root = FXMLLoader.load(getClass().getResource(fxmlFilePath));
+            loader = new FXMLLoader(getClass().getClassLoader().getResource(fxmlFilePath));
+            root = FXMLLoader.load(getClass().getClassLoader().getResource(fxmlFilePath));
             Objects.requireNonNull(root, "Root FXML cannot be null");
         }
         catch (IOException e) {
             errorDialog("There was an I/O problem.", e);
         }
+        
         return root;
+    }
+    
+    private void passStageManager() {
+        if(loader.getController() instanceof MainMenuController) {
+            MainMenuController control = loader.getController();
+            System.out.println(control);
+            System.out.println(this);
+            control.setStageManager(this);
+        }
+        else if(loader.getController() instanceof GameInitSettingsController) {
+            GameInitSettingsController control = loader.getController();
+            control.setStageManager(this);
+        }
+        else if(loader.getController() instanceof GameController) {
+            GameController control = loader.getController();
+            control.setStageManager(this);
+        }
+        else if(loader.getController() instanceof TradeController) {
+            TradeController control = loader.getController();
+            control.setStageManager(this);
+        }
     }
     
     /*
@@ -96,7 +138,7 @@ public class StageManager {
      * @param message The message to be displayed
      * @param exception The exception causing the dialog
     */
-    public void errorDialog(String message, Exception exception) {
+    private void errorDialog(String message, Exception exception) {
         Alert aboutAlert = new Alert(Alert.AlertType.NONE);
         aboutAlert.initStyle(StageStyle.TRANSPARENT);
         
@@ -115,5 +157,19 @@ public class StageManager {
         aboutAlert.getButtonTypes().add(ButtonType.OK);
         aboutAlert.showAndWait();
         stage.close();
+    }
+    
+    private void enablePositionChange() {
+        Scene scene = stage.getScene();
+        
+        scene.setOnMousePressed(e -> {
+            xOffset = stage.getX() - e.getScreenX();
+            yOffset = stage.getY() - e.getScreenY();
+        });
+        
+        scene.setOnMouseDragged(e -> {
+            stage.setX(e.getScreenX() + xOffset);
+            stage.setY(e.getScreenY() + yOffset);
+        });
     }
 }

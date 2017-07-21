@@ -1,14 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.net.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" styleClass="mainFxmlClass" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fxmonopoly.gameinitsettings.GameInitSettingsController">
+<AnchorPane id="anchor-pane" prefHeight="400.0" prefWidth="220.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.111" fx:controller="fxmonopoly.gameinitsettings.GameInitSettingsController">
     <stylesheets>
-        <URL value="@GameInitSettingsStyle.css"/>
+        <URL value="@GameInitSettingsStyle.css" />
     </stylesheets>
+   <children>
+      <VBox alignment="CENTER" layoutX="38.0" layoutY="71.0" prefHeight="129.0" prefWidth="150.0" spacing="10.0">
+         <children>
+            <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="17.0" prefWidth="104.0" text="Select your colour:" />
+            <ScrollPane hbarPolicy="NEVER" prefHeight="71.0" prefWidth="228.0" vbarPolicy="ALWAYS">
+               <content>
+                  <ListView fx:id="colourSelection" prefHeight="268.0" prefWidth="150.0" />
+               </content>
+            </ScrollPane>
+         </children>
+      </VBox>
+      <VBox alignment="CENTER" layoutX="38.0" prefHeight="71.0" prefWidth="150.0" spacing="10.0">
+         <children>
+            <Label alignment="CENTER" text="Player name:" />
+            <TextField fx:id="nameField" />
+         </children>
+      </VBox>
+      <VBox alignment="CENTER" layoutX="38.0" layoutY="200.0" prefHeight="129.0" prefWidth="150.0" spacing="10.0">
+         <children>
+            <Label alignment="CENTER" text="Select your piece:" />
+            <ScrollPane hbarPolicy="NEVER" maxWidth="70.0" prefHeight="70.0" prefWidth="70.0" vbarPolicy="ALWAYS">
+               <content>
+                  <ListView fx:id="pieceSelection" prefHeight="375.0" prefWidth="60.0" />
+               </content>
+            </ScrollPane>
+         </children>
+      </VBox>
+      <Button fx:id="okButton" layoutX="155.0" layoutY="354.0" mnemonicParsing="false" text="OK" />
+   </children>
 </AnchorPane>

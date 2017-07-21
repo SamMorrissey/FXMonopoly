@@ -13,26 +13,26 @@ public enum View {
     
     MAIN_MENU {
         @Override
-        String getFXMLPath() {
-            return "/mainmenu/MainMenuLayout.fxml";
+        String getFXMLPath() { 
+            return "fxmonopoly/mainmenu/MainMenuLayout.fxml";
         }
     },
     GAME_INIT {
         @Override
         String getFXMLPath() {
-            return "/gameinitsettings/GameInitSettingsLayout.fxml";
+            return "fxmonopoly/gameinitsettings/GameInitSettingsLayout.fxml";
         }
     },
     GAME {
         @Override
         String getFXMLPath() {
-            return "/game/GameLayout.fxml";
+            return "fxmonopoly/game/GameLayout.fxml";
         }
     },
     TRADE {
         @Override
         String getFXMLPath() {
-            return "/trade/TradeLayout.fxml";
+            return "fxmonopoly/trade/TradeLayout.fxml";
         }
     };
     

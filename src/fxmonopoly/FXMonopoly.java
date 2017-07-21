@@ -42,7 +42,7 @@ public class FXMonopoly extends Application {
         // the Stage Manager. JavaFX stage not available to transfer until this point.
         manager = new StageManager(stage, loader);
         MainMenuController controller = (MainMenuController) loader.getController();
-        controller.setStageFull(stage, manager);
+        controller.setStageManager(manager);
     }
 
     /**

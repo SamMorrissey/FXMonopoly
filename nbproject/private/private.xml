@@ -5,8 +5,12 @@
         <group>
             <file>file:/C:/Users/Slipshod/Documents/NetBeansProjects/FXMonopoly/src/fxmonopoly/FXMonopoly.java</file>
             <file>file:/C:/Users/Slipshod/Documents/NetBeansProjects/FXMonopoly/src/fxmonopoly/mainmenu/MainMenuController.java</file>
+            <file>file:/C:/Users/Slipshod/Documents/NetBeansProjects/FXMonopoly/src/fxmonopoly/utils/View.java</file>
+            <file>file:/C:/Users/Slipshod/Documents/NetBeansProjects/FXMonopoly/src/fxmonopoly/gameinitsettings/GameInitSettingsLayout.fxml</file>
+            <file>file:/C:/Users/Slipshod/Documents/NetBeansProjects/FXMonopoly/src/fxmonopoly/gameinitsettings/GameInitSettingsStyle.css</file>
             <file>file:/C:/Users/Slipshod/Documents/NetBeansProjects/FXMonopoly/src/fxmonopoly/mainmenu/MainMenuLayout.fxml</file>
             <file>file:/C:/Users/Slipshod/Documents/NetBeansProjects/FXMonopoly/src/fxmonopoly/utils/StageManager.java</file>
+            <file>file:/C:/Users/Slipshod/Documents/NetBeansProjects/FXMonopoly/src/fxmonopoly/mainmenu/MainMenuStyle.css</file>
         </group>
     </open-files>
 </project-private>

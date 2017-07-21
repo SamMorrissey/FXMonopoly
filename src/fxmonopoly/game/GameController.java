@@ -5,6 +5,7 @@
  */
 package fxmonopoly.game;
 
+import fxmonopoly.utils.StageManager;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.Initializable;
@@ -15,6 +16,7 @@ import javafx.fxml.Initializable;
  * @author Slipshod
  */
 public class GameController implements Initializable {
+    private StageManager manager;
 
     /**
      * Initializes the controller class.
@@ -23,5 +25,9 @@ public class GameController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
     }    
+    
+    public void setStageManager(StageManager manager) {
+        this.manager = manager;
+    }
     
 }
