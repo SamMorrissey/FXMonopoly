@@ -6,6 +6,7 @@
 package fxmonopoly.gameinitsettings;
 
 import fxmonopoly.utils.Dialogs;
+import fxmonopoly.utils.Manageable;
 import fxmonopoly.utils.StageManager;
 import fxmonopoly.utils.View;
 import java.net.URL;
@@ -14,10 +15,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar.ButtonData;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
@@ -25,18 +23,13 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.stage.Modality;
-import javafx.stage.StageStyle;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
-import javafx.scene.media.MediaView;
 
 /**
  * FXML Controller class for the GameInitSettings window
  *
  * @author Sam Morrissey
  */
-public class GameInitSettingsController implements Initializable {
+public class GameInitSettingsController implements Initializable, Manageable {
     private StageManager manager;
     
     @FXML
@@ -197,10 +190,10 @@ public class GameInitSettingsController implements Initializable {
         });
     }
     
-    /**
-     * Passes the StageManager for switching to necessary windows.
-     * @param manager The StageManager to be utilised
+    /**Sets the StageManager utilised within this controller.
+     * @param manager The StageManager to be utilised by this controller.
      */
+    @Override
     public void setStageManager(StageManager manager) {
         this.manager = manager;
     }

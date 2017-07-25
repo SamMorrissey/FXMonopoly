@@ -10,20 +10,17 @@ import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.image.ImageView;
 import fxmonopoly.utils.StageManager;
 import fxmonopoly.utils.View;
 import fxmonopoly.utils.Dialogs;
+import fxmonopoly.utils.Manageable;
 
 /**
- *
- * @author Slipshod
+ * The controller class for the MainMenu window. Extends the Manageable 
+ * @author Sam P. Morrissey
  */
-public class MainMenuController implements Initializable {
+public class MainMenuController implements Initializable, Manageable {
     private StageManager manager;
-    
-    private double xOffset;
-    private double yOffset;
     
     @FXML
     private Button exitButton;
@@ -34,24 +31,20 @@ public class MainMenuController implements Initializable {
     @FXML
     private Button singlePlayerButton;
     
-    @FXML
-    private ImageView banner;
-    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         singlePlayerButton.setOnAction(e -> manager.changeScene(View.GAME_INIT));
         
         aboutButton.setOnAction(e -> manager.getDialog(Dialogs.ABOUT));
         
-        exitButton.setOnAction(e -> manager.getStage().close());
+        exitButton.setOnAction(e -> manager.exitProgram());
     }    
     
-    /*
-     * Passes the StageManager for switching between windows
-     * @param manager The StageManager to be utilised
-    */
+    /**Sets the StageManager utilised within this controller
+     * @param manager The StageManager for this controller
+     */
+    @Override
     public void setStageManager(StageManager manager) {
         this.manager = manager;
     }
-    
 }

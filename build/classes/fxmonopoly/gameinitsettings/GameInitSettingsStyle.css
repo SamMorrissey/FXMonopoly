@@ -51,6 +51,10 @@
     -fx-background-color: rgba(0, 200, 0, 1);
 }
 
+.list-cell {
+    -fx-alignment:CENTER;
+}
+
 .list-cell:hover {
     -fx-border-color: rgba(0, 200, 0, 1);
     -fx-border-width: 2;   

@@ -14,9 +14,17 @@ import javafx.scene.media.MediaView;
 import javafx.stage.StageStyle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
 /**
- *
- * @author Slipshod
+ * This enum contains all of the Non-dynamic Dialogs utilised in this application, non-dynamic
+ * in this case referring to a single definitive context of use, where interchangeability
+ * of content is unnecessary.
+ * <p>
+ * The purpose of separating the Dialogs to this enum is to reduce the complexity and
+ * instantiation times of the Controller classes, by removing components that are not
+ * directly displayed in the main Scene, whilst also ensuring that the StageManager
+ * is the only class to be able to pass a Stage instance.
+ * @author Sam P. Morrissey
  */
 public enum Dialogs {
     

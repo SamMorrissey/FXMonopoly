@@ -6,14 +6,8 @@
 package fxmonopoly;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import fxmonopoly.mainmenu.MainMenuController;
 import fxmonopoly.utils.StageManager;
-import javafx.scene.image.Image;
 
 /**
  *
@@ -24,29 +18,7 @@ public class FXMonopoly extends Application {
     
     @Override
     public void start(Stage stage) throws Exception {
-        // Creates the FXMLLoader to be utilised throughout the application as well
-        // as the root hierarchy for the MainMenu
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("mainmenu/MainMenuLayout.fxml"));
-        Parent root = (Parent) loader.load();
-        
-        // Sets the root hierarchy and styling for the initial MainMenu scene
-        Scene scene = new Scene(root);
-        //scene.getStylesheets().add(getClass().getResource("mainmenu/MainMenuStyle.css").toExternalForm());
-        
-        // Other necessary setup items to get the window displaying correctly independently
-        // as well as within the OS.
-        stage.initStyle(StageStyle.TRANSPARENT);
-        stage.getIcons().add(new Image("fxmonopoly/resources/images/Icon.png"));
-        stage.setTitle("FXMonopoly");
-        stage.setScene(scene);
-        stage.show();
-            
-        // Creates the StageManager by passing the Stage and FXML loader of the 
-        // application. Also does the initial linking of the MainMenu instance to
-        // the Stage Manager. JavaFX stage not available to transfer until this point.
-        manager = new StageManager(stage, loader);
-        MainMenuController controller = (MainMenuController) loader.getController();
-        controller.setStageManager(manager);
+        manager = new StageManager(stage);
     }
 
     /**
