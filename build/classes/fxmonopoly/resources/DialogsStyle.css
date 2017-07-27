@@ -1,0 +1,31 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 26-Jul-2017, 17:09:03
+    Author     : Sam P. Morrissey
+*/
+
+.root {
+    -fx-background-color: rgba(255, 255, 255, 1);
+    -fx-border-color: rgba(0, 0, 0, 0.8);
+    -fx-border-width: 2;
+}
+
+.root:no-header .graphic-container {
+    -fx-padding: 0;
+}
+
+.button {
+    -fx-background-color: rgba(255, 255, 255, 1);
+    -fx-border-color: rgba(0, 0, 0, 0.8);
+    -fx-border-width: 2;
+}
+
+.button:hover {
+    -fx-background-color: rgba(0, 200, 0, 1);
+    -fx-border-color: rgba(0, 200, 0, 1);
+    -fx-text-fill: rgba(255, 255, 255, 1);
+}

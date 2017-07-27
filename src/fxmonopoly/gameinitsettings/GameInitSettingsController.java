@@ -6,7 +6,7 @@
 package fxmonopoly.gameinitsettings;
 
 import fxmonopoly.utils.Dialogs;
-import fxmonopoly.utils.Manageable;
+import fxmonopoly.utils.interfacing.Manageable;
 import fxmonopoly.utils.StageManager;
 import fxmonopoly.utils.View;
 import java.net.URL;
@@ -79,12 +79,12 @@ public class GameInitSettingsController implements Initializable, Manageable {
      * filled on the basis of an Observable collection of Strings.
      */
     private void populateColours() {
-        colourData = FXCollections.observableArrayList("BLUE", "CYAN","AQUAMARINE", "LAWNGREEN", "GREEN", "PURPLE", 
-                                                       "SALMON", "RED", "MAROON", "BURLYWOOD", "ORANGE", "YELLOW");
+        colourData = FXCollections.observableArrayList("blue", "cyan","aquamarine", "lawngreen", "green", "purple", 
+                                                       "salmon", "red", "maroon", "burlywood", "orange", "yellow");
         colourSelection.setItems(colourData);
         
         colourSelection.setCellFactory(e -> new ListCell<String>() {
-            private Rectangle rect = new Rectangle(115.0, 15.0);
+            private Rectangle rect = new Rectangle(115.0, 14.0);
             @Override
             public void updateItem(String name, boolean empty) {
                 super.updateItem(name, empty);
@@ -93,40 +93,40 @@ public class GameInitSettingsController implements Initializable, Manageable {
                 }
                 else {
                     switch (name) {
-                        case "BLUE":
+                        case "blue":
                             rect.setFill(Color.BLUE);
                             break;
-                        case "AQUAMARINE":
+                        case "aquamarine":
                             rect.setFill(Color.AQUAMARINE);
                             break;
-                        case "CYAN":
+                        case "cyan":
                             rect.setFill(Color.CYAN);
                             break;
-                        case "GREEN":
+                        case "green":
                             rect.setFill(Color.GREEN);
                             break;
-                        case "LAWNGREEN":
+                        case "lawngreen":
                             rect.setFill(Color.LAWNGREEN);
                             break;
-                        case "PURPLE":
+                        case "purple":
                             rect.setFill(Color.PURPLE);
                             break;
-                        case "SALMON":
+                        case "salmon":
                             rect.setFill(Color.SALMON);
                             break;
-                        case "RED":
+                        case "red":
                             rect.setFill(Color.RED);
                             break;
-                        case "MAROON":
+                        case "maroon":
                             rect.setFill(Color.MAROON);
                             break;
-                        case "BURLYWOOD":
+                        case "burlywood":
                             rect.setFill(Color.BURLYWOOD);
                             break;
-                        case "ORANGE":
+                        case "orange":
                             rect.setFill(Color.ORANGE);
                             break;
-                        case "YELLOW":
+                        case "yellow":
                             rect.setFill(Color.YELLOW);
                             break;
                         default:
@@ -143,8 +143,8 @@ public class GameInitSettingsController implements Initializable, Manageable {
      * sprites based on an Observable collection of Strings.
      */
     private void populateSprites() {
-        pieceData = FXCollections.observableArrayList("BOOT", "CAR", "DOG", "HAT",
-                "IRON", "SHIP", "THIMBLE", "BARROW");
+        pieceData = FXCollections.observableArrayList("boot", "car", "dog", "hat", "iron",
+                                                      "ship", "thimble", "barrow");
         pieceSelection.setItems(pieceData);
         
         pieceSelection.setCellFactory(e -> new ListCell<String>() {
@@ -157,28 +157,28 @@ public class GameInitSettingsController implements Initializable, Manageable {
                 }
                 else {
                     switch (name) {
-                        case "BOOT":
+                        case "boot":
                             view.setImage(new Image("fxmonopoly/resources/images/sprites/Boot.png"));
                             break;
-                        case "CAR":
+                        case "car":
                             view.setImage(new Image("fxmonopoly/resources/images/sprites/Car.png"));
                             break;
-                        case "DOG":
+                        case "dog":
                             view.setImage(new Image("fxmonopoly/resources/images/sprites/Dog.png"));
                             break;
-                        case "HAT":
+                        case "hat":
                             view.setImage(new Image("fxmonopoly/resources/images/sprites/Hat.png"));
                             break;
-                        case "IRON":
+                        case "iron":
                             view.setImage(new Image("fxmonopoly/resources/images/sprites/Iron.png"));
                             break;
-                        case "SHIP":
+                        case "ship":
                             view.setImage(new Image("fxmonopoly/resources/images/sprites/Ship.png"));
                             break;
-                        case "THIMBLE":
+                        case "thimble":
                             view.setImage(new Image("fxmonopoly/resources/images/sprites/Thimble.png"));
                             break;
-                        case "BARROW":
+                        case "barrow":
                             view.setImage(new Image("fxmonopoly/resources/images/sprites/Wheelbarrow.png"));
                             break;
                         default:

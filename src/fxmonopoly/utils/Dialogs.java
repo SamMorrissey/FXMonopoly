@@ -36,7 +36,7 @@ public enum Dialogs {
             aboutAlert.initStyle(StageStyle.TRANSPARENT);
         
             // Synchronises the dialog with the styling css file
-            aboutAlert.getDialogPane().getStylesheets().add(getClass().getClassLoader().getResource("fxmonopoly/mainmenu/MainMenuStyle.css").toExternalForm());
+            aboutAlert.getDialogPane().getStylesheets().add(getClass().getClassLoader().getResource("fxmonopoly/resources/DialogsStyle.css").toExternalForm());
             aboutAlert.getDialogPane().getStyleClass().add("dialog-pane");
         
             // Allows the Dialogs to track the position of the Main Menu
@@ -51,7 +51,7 @@ public enum Dialogs {
                                  +"it on the highest currency demonimation you have and file it in the "
                                  +"nearest available shredder. \n"
                                  +"\n"
-                                 +"All rights to Monopoly are property of Hasbro inc. "
+                                 +"All rights to Monopoly are property of Hasbro inc. \n"
                                  +"This work is produced under the non-commercial research and private study "
                                  +"UK copyright guidelines.");
             aboutAlert.getButtonTypes().add(ButtonType.OK);
@@ -66,7 +66,7 @@ public enum Dialogs {
             selectionAlert.initStyle(StageStyle.TRANSPARENT);
         
             // Synchronises the dialog with the styling css file
-            selectionAlert.getDialogPane().getStylesheets().add(getClass().getClassLoader().getResource("fxmonopoly/gameinitsettings/GameInitSettingsStyle.css").toExternalForm());
+            selectionAlert.getDialogPane().getStylesheets().add(getClass().getClassLoader().getResource("fxmonopoly/resources/DialogsStyle.css").toExternalForm());
             selectionAlert.getDialogPane().getStyleClass().add("dialog-pane");
         
             // Allows the Dialogs to track the position of the Main Menu
@@ -89,7 +89,7 @@ public enum Dialogs {
             rrolledAlert.initStyle(StageStyle.TRANSPARENT);
         
             // Synchronises the dialog with the styling css file
-            rrolledAlert.getDialogPane().getStylesheets().add(getClass().getClassLoader().getResource("fxmonopoly/gameinitsettings/GameInitSettingsStyle.css").toExternalForm());
+            rrolledAlert.getDialogPane().getStylesheets().add(getClass().getClassLoader().getResource("fxmonopoly/resources/DialogsStyle.css").toExternalForm());
             rrolledAlert.getDialogPane().getStyleClass().add("dialog-pane");
         
             // Generates the necessary Media files
@@ -102,7 +102,7 @@ public enum Dialogs {
             viewer.setFitHeight(240.0);
             viewer.setFitWidth(320.0);
             rrolledAlert.getDialogPane().setMaxWidth(340.0);
-            rrolledAlert.setGraphic(viewer);
+            rrolledAlert.getDialogPane().setContent(viewer);
         
             // Allows the Dialogs to track the position of the Main Menu
             rrolledAlert.initModality(Modality.APPLICATION_MODAL);

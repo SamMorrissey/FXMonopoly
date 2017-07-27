@@ -5,6 +5,7 @@
  */
 package fxmonopoly.utils;
 
+import fxmonopoly.utils.interfacing.Manageable;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;

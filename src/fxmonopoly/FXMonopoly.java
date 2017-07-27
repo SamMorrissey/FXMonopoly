@@ -14,11 +14,10 @@ import fxmonopoly.utils.StageManager;
  * @author Sam P. Morrissey
  */
 public class FXMonopoly extends Application {
-    private StageManager manager;
-    
+  
     @Override
     public void start(Stage stage) throws Exception {
-        manager = new StageManager(stage);
+        StageManager manager = new StageManager(stage);
     }
 
     /**

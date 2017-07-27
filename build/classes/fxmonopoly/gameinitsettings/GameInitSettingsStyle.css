@@ -2,17 +2,10 @@
  * Empty Stylesheet file.
  */
 
-#anchor-pane {
+.root {
     -fx-background-color: rgba(255, 255, 255, 1);
     -fx-border-color: rgba(0, 0, 0, 0.8);
     -fx-border-width: 2;
-}
-
-.dialog-pane {
-    -fx-background-color: rgba(255, 255, 255, 1);
-    -fx-border-color: rgba(0, 0, 0, 0.8);
-    -fx-border-width: 2;
-    -fx-cursor: hand;
 }
 
 .button {
@@ -53,11 +46,14 @@
 
 .list-cell {
     -fx-alignment:CENTER;
+    -fx-padding: 2;
 }
 
 .list-cell:hover {
     -fx-border-color: rgba(0, 200, 0, 1);
-    -fx-border-width: 2;   
+    -fx-border-width: 2;  
+    -fx-border-style: solid inside;
+    -fx-padding: 0;
 }
 
 .scroll-bar:vertical, scroll-bar:horizontal {
