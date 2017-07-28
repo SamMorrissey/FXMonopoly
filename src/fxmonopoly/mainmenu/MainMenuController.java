@@ -16,7 +16,9 @@ import fxmonopoly.utils.Dialogs;
 import fxmonopoly.utils.interfacing.Manageable;
 
 /**
- * The controller class for the MainMenu window. Extends the Manageable 
+ * The controller class for the MainMenu window. Implements the Manageable interface
+ * to ensure sufficient instantiation, as all functions in this class operate through
+ * calls to its StageManager variable.
  * @author Sam P. Morrissey
  */
 public class MainMenuController implements Initializable, Manageable {
@@ -33,9 +35,7 @@ public class MainMenuController implements Initializable, Manageable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        singlePlayerButton.setOnAction(e -> {
-            manager.changeScene(View.GAME_INIT);
-                });
+        singlePlayerButton.setOnAction(e -> manager.changeScene(View.GAME_INIT));
         
         aboutButton.setOnAction(e -> manager.getDialog(Dialogs.ABOUT));
         
