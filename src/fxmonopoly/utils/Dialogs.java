@@ -51,7 +51,7 @@ public enum Dialogs {
                                  +"it on the highest currency demonimation you have and file it in the "
                                  +"nearest available shredder. \n"
                                  +"\n"
-                                 +"All rights to Monopoly are property of Hasbro inc. \n"
+                                 +"All rights to Monopoly® are property of Hasbro inc. \n"
                                  +"This work is produced under the non-commercial research and private study "
                                  +"UK copyright guidelines.");
             aboutAlert.getButtonTypes().add(ButtonType.OK);

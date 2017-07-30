@@ -68,7 +68,7 @@ public class GameInitSettingsController implements Initializable, Manageable {
                 manager.getDialog(Dialogs.GAME_INIT_BAD_SEL);
             }
             else {
-                
+                manager.changeScene(View.GAME);
             }
             
         }); 
