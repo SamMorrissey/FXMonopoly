@@ -32,9 +32,11 @@ import java.io.IOException;
  * any transitions between different Scenes in the application, including a transitional
  * animation. Requires a View enum value to specify the scene to transition to.
  * <p>
- * Also provides a way of generating displaying non-Dynamic Dialogs that are utilised 
- * throughout the program from one location. Primarily done to avoid the Stage being
- * utilised in external classes
+ * Also provides a way of displaying non-Dynamic Dialogs that are utilised 
+ * throughout the program from one location, as well as provide a way to get the base
+ * of dynamic dialogs which can have their content modified. Primarily done to avoid the 
+ * Stage being utilised in external classes, since via the aforementioned method, this
+ * class will pass the Stage variable needed for dialog ownership.
  * @author Sam P. Morrissey
  */
 public class StageManager {
@@ -275,10 +277,10 @@ public class StageManager {
             period = Duration.millis(300.0);
         }
         else if(use < 300) {
-            period = Duration.millis(600.0);
+            period = Duration.millis(800.0);
         }
         else {
-            period = Duration.millis(800.0);
+            period = Duration.millis(1600.0);
         }
         return period;
     }
