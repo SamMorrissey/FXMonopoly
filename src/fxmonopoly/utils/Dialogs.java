@@ -118,5 +118,9 @@ public enum Dialogs {
         }
     };
     
+    /**
+     * Displays the specified Dialog window.
+     * @param stage The stage utilised to set ownership of the Dialog.
+     */
     abstract void display(Stage stage);
 }

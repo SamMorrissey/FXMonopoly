@@ -14,10 +14,18 @@ package fxmonopoly.gamedata.decks.cards;
 public abstract class Card {
     private final String description;
     
+    /**
+     * Defines the generic constructor utilised by all Card classes.
+     * @param description The card description.
+     */
     public Card(String description) {
         this.description = description;
     }
     
+    /**
+     * Accesses the description of the Card.
+     * @return The card description.
+     */
     public String getDescription() {
         return description;
     }

@@ -18,6 +18,11 @@ public class CommunityChestDeck {
     private final ArrayList<Card> deck;
     private final ArrayList<Card> shuffledDeck;
     
+    /**
+     * Creates a deck of Community Chest cards to the specified elements, then takes
+     * this initial deck and creates a shuffled deck, of which the top card can
+     * be accessed externally.
+     */
     public CommunityChestDeck() {
         deck = new ArrayList<>();
         
@@ -43,7 +48,7 @@ public class CommunityChestDeck {
     
     /**
      * Utilises the deck created in the constructor and returns a shuffled version,
-     * which can (although highly unlikely) be in the same order as the original.
+     * which can (although highly unlikely to) be in the same order as the original.
      * @return shuffled The shuffled deck of cards.
      */
     private ArrayList<Card> getShuffledDeck() {

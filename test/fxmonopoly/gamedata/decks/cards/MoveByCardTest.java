@@ -9,18 +9,25 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- *
+ * Tests the Move By card class.
  * @author Sam P. Morrissey
  */
 public class MoveByCardTest {
     
     MoveByCard move = new MoveByCard("Testing", -3);
     
+    /**
+     * Tests that the specified distance and retrieved distance are equivalent.
+     */
     @Test
     public void testDistance() {
         assertEquals(-3, move.getDistance());
     }
     
+    /**
+     * Tests that the specified description and retrieved description are 
+     * equivalent.
+     */
     @Test
     public void testDescription() {
         assertEquals("Testing", move.getDescription());

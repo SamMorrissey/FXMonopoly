@@ -10,14 +10,25 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- *
- * @author Slipshod
+ * Tests the Community Chest Deck class.
+ * <p>
+ * Only one test is provided due to the nature of avoiding unnecessary internal
+ * representation exposure. However four tests were part of the initial testing,
+ * which can be seen in the "Automated Testing" document available in the GitHub 
+ * wiki. 
+ * <p>
+ * There are two images specifying the code of both the tests and the methods
+ * necessary within the class being tested.
+ * @author Sam P. Morrissey
  */
 public class CommunityChestDeckTest {
 
     CommunityChestDeck deck = new CommunityChestDeck();
     Card a;
 
+    /**
+     * Tests that the next card is not a null reference.
+     */
     @Test
     public void testGetNextCard() {
         a = deck.getNextCard();

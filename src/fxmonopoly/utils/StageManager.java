@@ -52,6 +52,10 @@ public class StageManager {
     // to null upon a game being completed.
     private Scene gameScene;
     
+    /**
+     * Creates the StageManager utilised throughout the application.
+     * @param stage The stage on which the StageManager acts.
+     */
     public StageManager(Stage stage) {
         this.stage = stage;
         initialDisplay();
@@ -338,7 +342,7 @@ public class StageManager {
         aboutAlert.initStyle(StageStyle.TRANSPARENT);
         
         // Synchronises the dialog with the maine menu styling css file
-        aboutAlert.getDialogPane().getStylesheets().add(getClass().getClassLoader().getResource("fxmonopoly/mainmenu/MainMenuStyle.css").toExternalForm());
+        aboutAlert.getDialogPane().getStylesheets().add(getClass().getClassLoader().getResource("fxmonopoly/resources/DialogsStyle.css").toExternalForm());
         aboutAlert.getDialogPane().getStyleClass().add("dialog-pane");
         
         // Allows the Dialogs to track the position of the currently open window

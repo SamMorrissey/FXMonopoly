@@ -17,16 +17,33 @@ public class PayableCard extends Card {
     private final int value;
     private final boolean perPlayer;
     
+    /**
+     * Creates a Payable card that specifies a single value (positive or negative)
+     * that must be paid, as well as a boolean determining whether this value is
+     * per player or not.
+     * @param description The card description.
+     * @param value The value specified by the card.
+     * @param perPlayer Whether the value is per player in the game.
+     */
     public PayableCard(String description, int value, boolean perPlayer) {
         super(description);
         this.value = value;
         this.perPlayer = perPlayer;
     }
     
+    /**
+     * Retrieves the value specified by the card.
+     * @return The value specified by the card.
+     */
     public int getValue() {
         return value;
     }
     
+    /**
+     * Retrieves the boolean determining whether the specified value is per 
+     * player currently in the game or not.
+     * @return True if the value is per player, false otherwise.
+     */
     public boolean getPerPlayer() {
         return perPlayer;
     }

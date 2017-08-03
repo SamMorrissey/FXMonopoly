@@ -14,11 +14,21 @@ public class NearestUtilityCard extends Card {
     
     private final int multiplier;
     
+    /**
+     * Creates a Nearest Utility card, which as the name suggests is intended to
+     * cause an action that advances the player to the next utility.
+     * @param description The card description.
+     */
     public NearestUtilityCard(String description) {
         super(description);
         multiplier = 10;
     }
     
+    /**
+     * Retrieves the rent multiplier applicable when the utility is owned by 
+     * another player.
+     * @return The rent multiplier.
+     */
     public int getMultiplier() {
         return multiplier;
     }

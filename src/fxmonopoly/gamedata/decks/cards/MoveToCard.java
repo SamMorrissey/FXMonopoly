@@ -13,6 +13,12 @@ package fxmonopoly.gamedata.decks.cards;
 public class MoveToCard extends Card{
     private final int moveLocation;
     
+    /**
+     * Creates a card that designates a specific board location for the player
+     * to move to.
+     * @param description The card description.
+     * @param location The board position to be moved to.
+     */
     public MoveToCard(String description, int location) {
         super(description);
         if(location > 39) {
@@ -26,6 +32,10 @@ public class MoveToCard extends Card{
         }
     }
     
+    /**
+     * Retrieves the location to be moved to.
+     * @return The location to be moved to.
+     */
     public int getMoveLocation() {
         return moveLocation;
     }

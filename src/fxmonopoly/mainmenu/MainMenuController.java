@@ -33,6 +33,9 @@ public class MainMenuController implements Initializable, Manageable {
     @FXML
     private Button singlePlayerButton;
     
+    /**
+     * Initialises the Controller.
+     */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         singlePlayerButton.setOnAction(e -> manager.changeScene(View.GAME_INIT));

@@ -13,6 +13,9 @@ package fxmonopoly.gamedata.decks.cards;
  */
 public class GOJFCard extends Card {
     
+    /**
+     * Creates a Get Out Of Jail Free card.
+     */
     public GOJFCard() {
         super("Get Out Of Jail Free");
     }

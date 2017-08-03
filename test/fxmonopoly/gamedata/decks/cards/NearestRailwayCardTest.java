@@ -9,18 +9,24 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- *
- * @author Slipshod
+ * Tests the Nearest Railway card class.
+ * @author Sam P. Morrissey
  */
 public class NearestRailwayCardTest {
     
     NearestRailwayCard near = new NearestRailwayCard("Testing");
     
+    /**
+     * Tests that the default multiplier is the one retrieved.
+     */
     @Test
     public void testMultiplier() {
         assertEquals(2, near.getMultiplier());
     }
     
+    /**
+     * Tests that the default multiplier is the one retrieved.
+     */
     @Test
     public void testDescription() {
         assertEquals("Testing", near.getDescription());

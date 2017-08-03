@@ -13,11 +13,20 @@ package fxmonopoly.gamedata.decks.cards;
 public class MoveByCard extends Card {
     private final int distance;
     
+    /**
+     * Creates a new MoveBy card, that specified a distance to move.
+     * @param description The description of this card.
+     * @param distance The distance to be moved.
+     */
     public MoveByCard(String description, int distance) {
         super(description);
         this.distance = distance;
     }
     
+    /**
+     * Returns the distance to be moved.
+     * @return The distance to be moved.
+     */
     public int getDistance() {
         return distance;
     }

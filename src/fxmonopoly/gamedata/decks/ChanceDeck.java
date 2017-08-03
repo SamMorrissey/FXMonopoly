@@ -18,6 +18,11 @@ public class ChanceDeck {
     
     private final ArrayList<Card> shuffledDeck;
     
+    /**
+     * Creates a deck of Chance cards to the specified elements, then takes the 
+     * initial deck and creates a shuffled deck of which the top card can be 
+     * accessed externally.
+     */
     public ChanceDeck() {
         deck = new ArrayList<>();
         

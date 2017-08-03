@@ -9,23 +9,32 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- *
+ * Tests the Payable card class.
  * @author Sam P. Morrissey
  */
 public class PayableCardTest {
     
     PayableCard pay = new PayableCard("Testing", -200, false);
-
+    
+    /**
+     * Tests that the specified and retrieved values are equivalent.
+     */
     @Test
     public void testValue() {
         assertEquals(-200, pay.getValue());
     }
     
+    /**
+     * Tests that the specified and retrieved values are equivalent.
+     */
     @Test
     public void testDescription() {
         assertEquals("Testing", pay.getDescription());
     }
     
+    /**
+     * Tests that the specified and retrieved values are equivalent.
+     */
     @Test
     public void testGetPerPlayer() {
         assertEquals(false, pay.getPerPlayer());

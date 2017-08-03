@@ -7,7 +7,11 @@ package fxmonopoly.utils;
 
 
 /**
- *
+ * Each enum defines a specific Scene (or more specifically Parent/Root node) to
+ * be generated via the specified fxml paths.
+ * <p>
+ * Exclusively utilised by the StageManager changeScene(View) method, which itself
+ * can be called from any class that has its own StageManager reference.
  * @author Sam P. Morrissey
  */
 public enum View {
@@ -37,5 +41,9 @@ public enum View {
         }
     };
     
+    /**
+     * A string format relative URL path to the applicable fxml file.
+     * @return The applicable fxml filepath.
+     */
     abstract String getFXMLPath();
 }

@@ -14,11 +14,21 @@ public class NearestRailwayCard extends Card {
     
     private final int multiplier;
     
+    /**
+     * Creates a Nearest Railway card, that as the name suggests is intended to
+     * cause an action that advances the player to the next railway.
+     * @param description The card description. 
+     */
     public NearestRailwayCard(String description) {
         super(description);
         multiplier = 2;
     }
     
+    /**
+     * Retrieves the rent multiplier applicable if the railway is owned by another
+     * player.
+     * @return The rent multiplier.
+     */
     public int getMultiplier() {
         return multiplier;
     }
