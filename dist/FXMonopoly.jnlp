@@ -8,11 +8,11 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="FXMonopoly.jar" size="6464958" download="eager" />
+    <jar href="FXMonopoly.jar" size="6478547" download="eager" />
   </resources>
   <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="FXMonopoly" >
     <param name="requiredFXVersion" value="8.0+"/>
   </applet-desc>
-  <jfx:javafx-desc  width="800" height="600" main-class="fxmonopoly.FXMonopoly"  name="FXMonopoly" />
+  <jfx:javafx-desc  width="800" height="600" main-class="fxmonopoly.Main"  name="FXMonopoly" />
   <update check="always"/>
 </jnlp>
