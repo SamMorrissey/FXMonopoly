@@ -6,25 +6,25 @@
 package fxmonopoly.utils;
 
 import fxmonopoly.utils.interfacing.Manageable;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.image.Image;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import javafx.stage.Modality;
-import javafx.util.Duration;
+import java.io.IOException;
+import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
-import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.SequentialTransition;
 import javafx.animation.Timeline;
 import javafx.beans.value.WritableValue;
-import java.io.IOException;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.image.Image;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.util.Duration;
 
 
 /**
@@ -206,7 +206,8 @@ public class StageManager {
     }
     
     /**
-     * Creates a parallel transition to fade all the Nodes within the current Scene.
+     * Creates a parallel transition to fade all the Nodes within the current Scene. Required
+     * to be done on child nodes, otherwise the entire window becomes transparent.
      * @return Returns the parallel fade transition of all child nodes of the current rootnode.
      */
     private ParallelTransition fadeOut() {

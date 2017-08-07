@@ -6,12 +6,11 @@
 package fxmonopoly.gamedata.board.locations;
 
 import fxmonopoly.gamedata.players.Player;
-import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import static org.mockito.Mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
-
 
 @RunWith(MockitoJUnitRunner.class)
 

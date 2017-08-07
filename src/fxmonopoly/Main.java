@@ -5,9 +5,9 @@
  */
 package fxmonopoly;
 
+import fxmonopoly.utils.StageManager;
 import javafx.application.Application;
 import javafx.stage.Stage;
-import fxmonopoly.utils.StageManager;
 
 /**
  * The base class of the application to specify the initial launch conditions.

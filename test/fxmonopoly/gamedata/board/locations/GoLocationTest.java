@@ -5,8 +5,8 @@
  */
 package fxmonopoly.gamedata.board.locations;
 
-import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  * Tests the Go location class.

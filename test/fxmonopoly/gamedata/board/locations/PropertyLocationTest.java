@@ -7,12 +7,12 @@ package fxmonopoly.gamedata.board.locations;
 
 import fxmonopoly.gamedata.players.Player;
 import org.junit.After;
-import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import static org.mockito.Mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.junit.runner.RunWith;
 
 @RunWith(MockitoJUnitRunner.class)
 
@@ -28,7 +28,8 @@ public class PropertyLocationTest {
     @Before
     public void setUp() {
         
-        property = new PropertyLocation("Testing", 200, 
+        property = new PropertyLocation("Testing", 
+                                        200, 
                                         new int[]{2, 10, 20, 40, 80, 160}, 
                                         200);
     

@@ -5,9 +5,10 @@
  */
 package fxmonopoly.gamedata.decks;
 
-import java.util.ArrayList;
 import fxmonopoly.gamedata.decks.cards.*;
+import java.util.ArrayList;
 import java.util.Random;
+
 /**
  * The deck of chance cards, automatically shuffled on instantiation.
  * @author Sam P. Morrissey

@@ -267,6 +267,9 @@ public class PropertyLocation extends Location{
      */
     public void setInColourMonopolyStatus(boolean status) {
         inColourMonopoly = status;
+        if(!inColourMonopoly) {
+            isDevelopable = false;
+        }
     }
     
     /**

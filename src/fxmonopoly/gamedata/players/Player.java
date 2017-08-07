@@ -6,6 +6,9 @@
 package fxmonopoly.gamedata.players;
 
 import fxmonopoly.gamedata.board.locations.Location;
+import fxmonopoly.gamedata.board.locations.PropertyLocation;
+import fxmonopoly.gamedata.board.locations.RailwayLocation;
+import fxmonopoly.gamedata.board.locations.UtilityLocation;
 import fxmonopoly.gamedata.decks.cards.GOJFCard;
 import java.util.ArrayList;
 
@@ -53,11 +56,82 @@ public abstract class Player {
     }
     
     /**
+     * Adds a location to this player's list of owned locations. Exactly equivalent
+     * to an ArrayList.add() call, as long as the location reference is not already
+     * in the list.
+     * @param location The location to be added.
+     */
+    public void addLocation(Location location) {
+        if(!ownedLocations.contains(location)) {
+            ownedLocations.add(location);
+        }
+    }
+    
+    /**
+     * Removes a location from this player's list of owned locations. The location
+     * must be in the list of owned locations to have any effect.
+     * @param location The location to be removed.
+     */
+    public void removeLocation(Location location) {
+        if(ownedLocations.contains(location)) {
+            ownedLocations.remove(location);
+        }
+    }
+    
+    /**
      * Retrieves the ArrayList of locations owned by the player.
      * @return The list of owned locations.
      */
     public ArrayList<Location> getOwnedLocations() {
         return ownedLocations;
+    }
+    
+    /**
+     * Retrieves the ArrayList of properties owned by the player.
+     * @return The list of owned properties.
+     */
+    public ArrayList<PropertyLocation> getOwnedProperty() {
+        ArrayList<PropertyLocation> owned = new ArrayList<>();
+        
+        ownedLocations.forEach(location -> {
+            if(location instanceof PropertyLocation) {
+                owned.add((PropertyLocation) location);
+            }
+        });
+        
+        return owned;
+    }
+    
+    /**
+     * Retrieves the ArrayList of utilities owned by the player.
+     * @return The list of owned utilities.
+     */
+    public ArrayList<UtilityLocation> getOwnedUtilities() {
+        ArrayList<UtilityLocation> owned = new ArrayList<>();
+        
+        ownedLocations.forEach(location -> {
+            if(location instanceof UtilityLocation) {
+                owned.add((UtilityLocation) location);
+            }
+        });
+        
+        return owned;
+    }
+    
+    /**
+     * Retrieves the ArrayList of railways owned by the player.
+     * @return The list of owned railways.
+     */
+    public ArrayList<RailwayLocation> getOwnedRailways() {
+        ArrayList<RailwayLocation> owned = new ArrayList<>();
+        
+        ownedLocations.forEach(location -> {
+            if(location instanceof RailwayLocation) {
+                owned.add((RailwayLocation) location);
+            }
+        });
+        
+        return owned;
     }
     
     /**
@@ -102,21 +176,45 @@ public abstract class Player {
     }
     
     /**
-     * Moves the player's board position by the specified distance.
+     * Moves the player's board position by the specified distance. The maths at
+     * play here is fine for regular Monopoly, where the largest move in a single 
+     * turn is 35, although in MegaMonopoly for example this would need to be 
+     * changed.
+     * <p>
+     * Resets the board position when above 39 or below 0. 
      * @param distance The distance to move by.
      */
     public void moveBy(int distance) {
-        boardPosition += distance;
+        if((boardPosition + distance) > 39) {
+            boardPosition = ((boardPosition + distance) - 40);
+        }
+        else if((boardPosition + distance) < 0) {
+            // Adding 39 only moves to the location before the intended one
+            boardPosition = ((boardPosition + distance) + 40);
+        }
+        else {
+            boardPosition += distance;
+        }
     }
     
     /**
-     * Moves the player's board position to the specified position.
+     * Moves the player's board position to the specified position. Must be in 
+     * the range of 0 to 39 inclusive.
      * @param location The location to move to.
      */
     public void moveTo(int location) {
-        boardPosition = location;
+        if(location >= 0 && location <= 39) {
+            boardPosition = location;
+        }
     }
     
+    /**
+     * Retrieves the jail status of the player.
+     * @return True if in jail, false otherwise.
+     */
+    public boolean isInJail() {
+        return inJail;
+    }
     /**
      * Sets the inJail boolean to true.
      */
@@ -150,6 +248,5 @@ public abstract class Player {
     public int getCash() {
         return cash;
     }
-    
     
 }
