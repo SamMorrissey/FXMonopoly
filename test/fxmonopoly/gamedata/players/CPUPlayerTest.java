@@ -149,9 +149,11 @@ public class CPUPlayerTest {
         
         player.addGOJFCard(gojf);
         assertTrue(player.hasGOJFCard());
+        assertEquals(gojf, player.getGOJFCard());
         
         player.removeGOJFCard();
         assertFalse(player.hasGOJFCard());
+        assertNull(player.getGOJFCard());
     }
     
     /**

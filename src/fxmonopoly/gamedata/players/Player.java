@@ -144,6 +144,20 @@ public abstract class Player {
     }
     
     /**
+     * Retrieves the first GOJFCard in the list, if one is available. Else returns
+     * null.
+     * @return The Get Out Of Jail Free card.
+     */
+    public GOJFCard getGOJFCard() {
+        if(hasGOJFCard()) {
+            return ownedGOJFCards.get(0);
+        }
+        else {
+            return null;
+        }
+    }
+    
+    /**
      * Adds a Get Out of Jail Free card to the player's owned list.
      * @param card The card to be added.
      */

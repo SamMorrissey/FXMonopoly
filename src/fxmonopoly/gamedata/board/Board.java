@@ -240,23 +240,23 @@ public class Board {
      * @param group The group to be operated on.
      */
     public void assimilateColourGroupBooleans(ArrayList<PropertyLocation> group) {
-        if(group.get(0).getOwner() != null) {
-            boolean sameOwner = true;
+        
+        boolean sameOwner = true;
             
-            for(PropertyLocation property : group) {
-                if(property.getOwner() != group.get(0).getOwner()) {
-                    sameOwner = false;
-                }
-            }
-            
-            if(sameOwner) {
-                group.forEach(property -> property.setInColourMonopolyStatus(true));
-                groupDevelopable(group);
-            }
-            else {
-                group.forEach(property -> property.setInColourMonopolyStatus(false));
+        for(PropertyLocation property : group) {
+            if((property.getOwner() != group.get(0).getOwner()) || property.getOwner() == null) {
+                sameOwner = false;
             }
         }
+            
+        if(sameOwner) {
+            group.forEach(property -> property.setInColourMonopolyStatus(true));
+            groupDevelopable(group);
+        }
+        else {
+            group.forEach(property ->  property.setInColourMonopolyStatus(false));
+        }
+        
     }
     
     /**

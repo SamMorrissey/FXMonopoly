@@ -260,7 +260,14 @@ public class PropertyLocation extends Location{
     public Player getOwner() {
         return owner;
     }
-     
+    
+    /**
+     * Retrieves the colour monopoly status of this property.
+     * @return The colour monopoly status of this property.
+     */
+    public boolean getInColourMonopolyStatus() {
+        return inColourMonopoly;
+    }
     /**
      * Sets the in colour monopoly status to the input parameter.
      * @param status True if part of a colour monopoly, false otherwise.
