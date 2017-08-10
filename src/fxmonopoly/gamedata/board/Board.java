@@ -287,8 +287,8 @@ public class Board {
      * Retrieves the location at the specified board position. Exactly equivalent
      * to an ArrayList.get() method call. Will only provide valid returns in the
      * range of 0 to 39 inclusive.
-     * @param position
-     * @return 
+     * @param position The position of the location to retrieve.
+     * @return         The location retrieved.
      */
     public Location getLocation(int position) {
         

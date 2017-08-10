@@ -39,14 +39,14 @@ public class TradeOfferTest {
     @Before
     public void setUp() {
         playerFrom = mock(CPUPlayer.class);
-        playerTo = mock(UserPlayer.class);
+        
         
         card = mock(GOJFCard.class);
         property = mock(PropertyLocation.class);
         utility = mock(UtilityLocation.class);
         railway = mock(RailwayLocation.class);
         
-        offer = new TradeOffer(playerFrom, playerTo);
+        offer = new TradeOffer(playerFrom);
     }
     
     @After
@@ -68,7 +68,13 @@ public class TradeOfferTest {
     }
     
     @Test
-    public void testGetPlayerTo() {
+    public void testPlayerTo() {
+        assertNull(offer.getPlayerTo());
+        
+        playerTo = mock(UserPlayer.class);
+        offer.setPlayerTo(playerTo);
+        
+        assertTrue(offer.hasPlayerTo());
         assertEquals(playerTo, offer.getPlayerTo());
     }
     
@@ -104,29 +110,29 @@ public class TradeOfferTest {
     
     @Test
     public void testGOJFList() {
-        assertFalse(offer.getContainsGOJFCard());
+        assertFalse(offer.containsGOJFCard());
         
         offer.getGOJFList().add(card);
         
-        assertTrue(offer.getContainsGOJFCard());
+        assertTrue(offer.containsGOJFCard());
         assertEquals(1, offer.getGOJFList().size());
         
         offer.getGOJFList().removeAll(offer.getGOJFList());
-        assertFalse(offer.getContainsGOJFCard());
+        assertFalse(offer.containsGOJFCard());
     }
     
     @Test
     public void testCash() {
-        assertFalse(offer.getContainsCash());
+        assertFalse(offer.containsCash());
         
         offer.addCash(0);
-        assertFalse(offer.getContainsCash());
+        assertFalse(offer.containsCash());
         
         offer.addCash(100);
-        assertTrue(offer.getContainsCash());
+        assertTrue(offer.containsCash());
         
         offer.addCash(-100);
-        assertFalse(offer.getContainsCash());
+        assertFalse(offer.containsCash());
     }
     
 }

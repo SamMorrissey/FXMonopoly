@@ -222,4 +222,20 @@ public class CPUPlayerTest {
         player.addCash(-1600);
         assertEquals(0, player.getCash());
     }
+    
+    /**
+     * Tests that the can roll boolean is both set and retrieved correctly.
+     */
+    @Test
+    public void testCanRoll() {
+        assertFalse(player.getCanRoll());
+        
+        player.setCanRoll(true);
+        
+        assertTrue(player.getCanRoll());
+        
+        player.setCanRoll(false);
+        
+        assertFalse(player.getCanRoll());
+    }
 }

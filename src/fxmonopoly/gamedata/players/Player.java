@@ -28,6 +28,7 @@ public abstract class Player {
     private int boardPosition;
     
     private boolean inJail;
+    private boolean canRoll;
     
     private int cash;
     
@@ -261,6 +262,22 @@ public abstract class Player {
      */
     public int getCash() {
         return cash;
+    }
+    
+    /**
+     * Sets the can roll boolean value to the specified input value.
+     * @param status Whether the player can roll the die or not.
+     */
+    public void setCanRoll(boolean status) {
+        canRoll = status;
+    }
+    
+    /**
+     * Retrieves the can roll status.
+     * @return True if the player can roll, false otherwise.
+     */
+    public boolean getCanRoll() {
+        return canRoll;
     }
     
 }

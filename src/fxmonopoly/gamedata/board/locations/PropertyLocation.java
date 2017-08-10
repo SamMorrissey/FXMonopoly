@@ -265,7 +265,7 @@ public class PropertyLocation extends Location{
      * Retrieves the colour monopoly status of this property.
      * @return The colour monopoly status of this property.
      */
-    public boolean getInColourMonopolyStatus() {
+    public boolean getIinColourMonopolyStatus() {
         return inColourMonopoly;
     }
     /**

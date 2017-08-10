@@ -63,7 +63,7 @@ public class BoardTest {
         board.assimilateColourGroupBooleans(board.getGroup(property));
         
         board.getGroup(property).forEach(e -> {
-            assertTrue(e.getInColourMonopolyStatus());
+            assertTrue(e.getIinColourMonopolyStatus());
             assertTrue(e.getDevelopableStatus());
         });
         
@@ -71,7 +71,7 @@ public class BoardTest {
         board.assimilateColourGroupBooleans(board.getGroup(property));
         
         board.getGroup(property).forEach(e -> {
-            assertTrue(e.getInColourMonopolyStatus());
+            assertTrue(e.getIinColourMonopolyStatus());
             assertFalse(e.getDevelopableStatus());
         });
         
@@ -79,7 +79,7 @@ public class BoardTest {
         board.assimilateColourGroupBooleans(board.getGroup(property));
         
         board.getGroup(property).forEach(e -> {
-            assertFalse(e.getInColourMonopolyStatus());
+            assertFalse(e.getIinColourMonopolyStatus());
             assertFalse(e.getDevelopableStatus());
         });
     }

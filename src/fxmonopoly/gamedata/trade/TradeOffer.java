@@ -17,7 +17,7 @@ import java.util.ArrayList;
 public class TradeOffer {
     
     private final Player playerFrom;
-    private final Player playerTo;
+    private Player playerTo;
     
     private final ArrayList<Location> offerLocations;
     private final ArrayList<Location> forLocations;
@@ -31,9 +31,8 @@ public class TradeOffer {
      * @param playerFrom The player initiating the trade offer.
      * @param playerTo   The player targeted by the trade offer.
      */
-    public TradeOffer(Player playerFrom, Player playerTo) {
+    public TradeOffer(Player playerFrom) {
         this.playerFrom = playerFrom;
-        this.playerTo = playerTo;
         
         offerLocations = new ArrayList<>();
         forLocations = new ArrayList<>();
@@ -46,6 +45,20 @@ public class TradeOffer {
      */
     public Player getPlayerFrom() {
         return playerFrom;
+    }
+    
+    /**
+     * Sets the recipient of the trade offer to the specified input.
+     * @param playerTo 
+     */
+    public void setPlayerTo(Player playerTo) {
+        if(playerTo != null) 
+            this.playerTo = playerTo;
+    }
+    
+    
+    public boolean hasPlayerTo() {
+        return !(playerTo == null);
     }
     
     /**
@@ -104,13 +117,13 @@ public class TradeOffer {
      * offer.
      * @return True if GOJFcard(s) are being offered, false otherwise.
      */
-    public boolean getContainsGOJFCard() {
+    public boolean containsGOJFCard() {
         return !cardList.isEmpty();
     }
     
     /**
      * Adds the specified cash value to the offer. Bearing in mind that any cash
-     * value of 0 or below will cause the getContainsCash method to return false.
+ value of 0 or below will cause the containsCash method to return false.
      * @param cash The cash to be added.
      */
     public void addCash(int cash) {
@@ -122,7 +135,7 @@ public class TradeOffer {
      * offer.
      * @return True if a cash value is being offered, false otherwise.
      */
-    public boolean getContainsCash() {
+    public boolean containsCash() {
         return cash > 0;
     }
     
