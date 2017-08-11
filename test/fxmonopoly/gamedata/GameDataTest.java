@@ -19,7 +19,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 
 /**
- *
+ * Tests the GameData class. Utilises mocking for externally instantiated elements
+ * i.e. the player list, with all internal instantiation covered as far as possible
+ * by asserts of their values.
  * @author Sam P. Morrissey
  */
 public class GameDataTest {
@@ -31,6 +33,18 @@ public class GameDataTest {
     
     ArrayList<Player> array;
     
+    /**
+     * Sets the initial state for each test to manipulate. Both players are 
+     * mocked utilising the when, thenReturn, thenCallRealMethod and doCallRealMethod 
+     * methods of the Mockito library. 
+     * <p>
+     * The user player is mocked more extensively for the purpose of having the
+     * user player set as the active player and thus modified via the GameData
+     * method calls. The aim is to test for behaviour, not for implementation of
+     * other classes where possible. For example the Board and Card Decks cannot
+     * be extensively mocked but also form part of the internal GameData
+     * representation, whereas the player list is passed to its constructor.
+     */
     @Before
     public void setUp() {
         user = mock(UserPlayer.class);
@@ -63,6 +77,9 @@ public class GameDataTest {
         data.setUserPlayer(user);
     }
     
+    /**
+     * Resets the variables utilised to null values.
+     */
     @After
     public void tearDown() {
         data = null;
@@ -94,7 +111,7 @@ public class GameDataTest {
     }
 
     /**
-     * Tests that the next player method, does swap to the next player.
+     * Tests that the next player method does swap to the next player.
      */
     @Test
     public void testNextPlayer() {
@@ -106,7 +123,9 @@ public class GameDataTest {
     }
 
     /**
-     * Test of getActivePlayerLocation method, of class GameData.
+     * Tests that the getActivePlayerLocation method retrieves a Location of the 
+     * specified instantiation type. In this case of the GoLocation type, as all 
+     * players are initially located at position zero, corresponding to the GoLocation.
      */
     @Test
     public void testGetActivePlayerLocation() {
@@ -114,7 +133,7 @@ public class GameDataTest {
     }
 
     /**
-     * Test of getActivePlayerCash method, of class GameData.
+     * Tests that the getActivePlayerCash method retrieves the expected cash value.
      */
     @Test
     public void testGetActivePlayerCash() {
@@ -122,7 +141,7 @@ public class GameDataTest {
     }
 
     /**
-     * Test of getActivePlayerName method, of class GameData.
+     * Tests that the expected and retrieved names are equivalent.
      */
     @Test
     public void testGetActivePlayerName() {
@@ -130,7 +149,8 @@ public class GameDataTest {
     }
 
     /**
-     * Test of getActivePlayerJailStatus method, of class GameData.
+     * Tests that the active player jail status manipulations are performed
+     * correctly.
      */
     @Test
     public void testActivePlayerJailStatus() {
@@ -146,7 +166,8 @@ public class GameDataTest {
     }
 
     /**
-     * Test of getActivePlayerDieRollStatus method, of class GameData.
+     * Tests that the active player die roll status manipulations are 
+     * performed correctly.
      */
     @Test
     public void testActivePlayerDieRollStatus() {
@@ -162,7 +183,7 @@ public class GameDataTest {
     }
 
     /**
-     * Test of moveActivePlayerBy method, of class GameData.
+     * Tests that the move active player by method functions correctly
      */
     @Test
     public void testMoveActivePlayerBy() {
@@ -174,7 +195,7 @@ public class GameDataTest {
     }
 
     /**
-     * Test of moveActivePlayerTo method, of class GameData.
+     * Tests that the move active player to method functions correctly.
      */
     @Test
     public void testMoveActivePlayerTo() {
@@ -186,7 +207,7 @@ public class GameDataTest {
     }
 
     /**
-     * Test of getUserPlayerCash method, of class GameData.
+     * Tests that the UserPlayer's cash is retrieved as expected.
      */
     @Test
     public void testGetUserPlayerCash() {
@@ -194,7 +215,7 @@ public class GameDataTest {
     }
 
     /**
-     * Test of getUserPlayer method, of class GameData.
+     * Tests that the UserPlayer instance is set correctly.
      */
     @Test
     public void testGetUserPlayer() {
@@ -202,7 +223,8 @@ public class GameDataTest {
     }
 
     /**
-     * Test of getNextChanceCard method, of class GameData.
+     * Tests the method to retrieve the next chance card. Asserts that they are
+     * not null, and that consecutive cards are not the same reference.
      */
     @Test
     public void testGetNextChanceCard() {
@@ -211,7 +233,8 @@ public class GameDataTest {
     }
 
     /**
-     * Test of getNextCommunityChestCard method, of class GameData.
+     * Tests the method to retrieve the next community chest card. Asserts that
+     * they are not null, and that consecutive cards are not the same reference.
      */
     @Test
     public void testGetNextCommunityChestCard() {
@@ -220,7 +243,7 @@ public class GameDataTest {
     }
 
     /**
-     * Test of newTrade method, of class GameData.
+     * Tests the Trade manipulations in the GameData class.
      */
     @Test
     public void testTrade() {
@@ -236,7 +259,7 @@ public class GameDataTest {
     }
 
     /**
-     * Test of newBid method, of class GameData.
+     * Tests the Bid manipulations in the GameData class.
      */
     @Test
     public void testBid() {
@@ -249,6 +272,38 @@ public class GameDataTest {
         data.clearActiveBid();
         
         assertNull(data.getActiveBid());
+    }
+    
+    @Test
+    public void testDie() {
+        assertNotNull(data.getDie());
+        
+        int i = data.getDie().rollFirstDie();
+        assertTrue(i > 0 && i <= 6);
+        
+        int j = data.getDie().rollSecondDie();
+        assertTrue(j > 0 && j <= 6);
+        
+        assertTrue(i == data.getDie().getDieOneLastValue() &&
+                   j == data.getDie().getDieTwoLastValue());
+        
+        assertTrue((i + j) == data.getDie().dieRollTotal());
+        
+        int k;
+        for(k = 0; k < 50; k++) {
+            data.getDie().rollFirstDie();
+            data.getDie().rollSecondDie();
+            
+            if(data.getDie().getDieOneLastValue() == 
+               data.getDie().getDieTwoLastValue()) {
+                
+                assertTrue(data.getDie().isDoubles());
+            }
+            else {
+                assertFalse(data.getDie().isDoubles());
+            }
+        }
+        
     }
     
 }

@@ -5,15 +5,15 @@
  */
 package fxmonopoly.mainmenu;
 
+import fxmonopoly.utils.Dialogs;
+import fxmonopoly.utils.StageManager;
+import fxmonopoly.utils.View;
+import fxmonopoly.utils.interfacing.Manageable;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import fxmonopoly.utils.StageManager;
-import fxmonopoly.utils.View;
-import fxmonopoly.utils.Dialogs;
-import fxmonopoly.utils.interfacing.Manageable;
 
 /**
  * The controller class for the MainMenu window. Implements the Manageable interface
@@ -45,8 +45,9 @@ public class MainMenuController implements Initializable, Manageable {
         exitButton.setOnAction(e -> manager.exitProgram());
     }    
     
-    /**Sets the StageManager utilised within this controller
-     * @param manager The StageManager for this controller
+    /**
+     * Sets the StageManager utilised by this controller.
+     * @param manager The StageManager for this controller.
      */
     @Override
     public void setStageManager(StageManager manager) {

@@ -5,7 +5,8 @@
         <group>
             <file>file:/C:/Users/Slipshod/Documents/NetBeansProjects/FXMonopoly/test/fxmonopoly/gamedata/board/BoardTest.java</file>
             <file>file:/C:/Users/Slipshod/Documents/NetBeansProjects/FXMonopoly/src/fxmonopoly/gamedata/board/Board.java</file>
-            <file>file:/C:/Users/Slipshod/Documents/NetBeansProjects/FXMonopoly/test/fxmonopoly/gamedata/players/CPUPlayerTest.java</file>
+            <file>file:/C:/Users/Slipshod/Documents/NetBeansProjects/FXMonopoly/test/fxmonopoly/gamedata/GameDataTest.java</file>
+            <file>file:/C:/Users/Slipshod/Documents/NetBeansProjects/FXMonopoly/src/fxmonopoly/gamedata/GameData.java</file>
         </group>
     </open-files>
 </project-private>

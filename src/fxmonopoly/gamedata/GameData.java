@@ -10,22 +10,24 @@ import fxmonopoly.gamedata.board.Board;
 import fxmonopoly.gamedata.board.locations.*;
 import fxmonopoly.gamedata.decks.*;
 import fxmonopoly.gamedata.decks.cards.*;
+import fxmonopoly.gamedata.die.Die;
 import fxmonopoly.gamedata.players.*;
 import fxmonopoly.gamedata.trade.TradeOffer;
 import java.util.ArrayList;
 
 /**
- * Specified the data necessary for a game. Provides some utility methods to 
+ * Specifies the data necessary for a game. Provides some utility methods to 
  * perform specific actions, and many getter methods to allow for higher level
  * manipulations.
  * @author Sam P. Morrissey
  */
 public class GameData {
     
-    private final ArrayList<Player> playerList;
+    private final Die die;
     private final Board board;
     private final ChanceDeck chance;
     private final CommunityChestDeck community;
+    private final ArrayList<Player> playerList;
     
     private Player activePlayer;
     private TradeOffer activeTrade;
@@ -38,12 +40,22 @@ public class GameData {
      * @param playerList The ordered list of players.
      */
     public GameData(ArrayList<Player> playerList) {
-        this.playerList = playerList;
+        
+        die = new Die();
         board = new Board();
         chance = new ChanceDeck();
         community = new CommunityChestDeck();
+        this.playerList = playerList;
         
-        setActivePlayer(playerList.get(0));
+        activePlayer = playerList.get(0);
+        
+        for(Player player : playerList) {
+            if(player instanceof UserPlayer && user == null) {
+                user = (UserPlayer) player;
+                break;
+            }
+        }
+        
     }
     
     /**
@@ -300,4 +312,14 @@ public class GameData {
     public void clearActiveBid() {
         activeBid = null;
     }
+    
+    /**
+     * Retrieves the Die object.
+     * @return The die to be used.
+     */
+    public Die getDie() {
+        return die;
+    }
+    
+    
 }
