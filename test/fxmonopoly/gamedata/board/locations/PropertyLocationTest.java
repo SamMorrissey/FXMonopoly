@@ -77,35 +77,34 @@ public class PropertyLocationTest {
     @Test
     public void testGetRent() {
         
-        // Tests that the minimum number of houses is 0 and rent is retrieved properly.
-        property.addHouses(-1);
         assertEquals(2, property.getRent());
         
+        property.setDevelopableStatus(true);
         property.setInColourMonopolyStatus(true);
         assertEquals(4, property.getRent());
         
-        property.addHouses(1);
+        property.addHouse();
         assertEquals(10, property.getRent());
         
-        property.addHouses(1);
+        property.addHouse();
         assertEquals(20, property.getRent());
         
-        property.addHouses(1);
+        property.addHouse();
         assertEquals(40, property.getRent());
         
-        property.addHouses(1);
+        property.addHouse();
         assertEquals(80, property.getRent());
         
-        // Tests that the upper bound of houses is 4 and rent is the same as the previous assert.
-        property.addHouses(1);
-        assertEquals(80, property.getRent());
         
-        property.setInColourMonopolyStatus(true);
         property.setUpgradeableToHotel(true);
-        property.upgradeToHotel();
+        property.addHouse();
+        assertTrue(property.getIsHotel());
         assertEquals(160, property.getRent());
         
-        property.downgradeFromHotel();
+        property.removeHouse();
+        
+        assertFalse(property.getIsHotel());
+        assertEquals(80, property.getRent());
     }
 
     /**
@@ -114,13 +113,26 @@ public class PropertyLocationTest {
     @Test
     public void testNumberOfHouses() {
         
-        property.addHouses(-1);
-        assertEquals(0, property.getNumberOfHouses());
+        property.setDevelopableStatus(true);
+        property.addHouse();
+        assertEquals(1, property.getNumberOfHouses());
         
-        property.addHouses(5);
+        property.addHouse();
+        assertEquals(2, property.getNumberOfHouses());
+        
+        property.addHouse();
+        assertEquals(3, property.getNumberOfHouses());
+        
+        property.addHouse();
         assertEquals(4, property.getNumberOfHouses());
         
-        property.addHouses(-4);
+        property.setUpgradeableToHotel(true);
+        property.addHouse();
+        assertEquals(0, property.getNumberOfHouses());
+        
+        property.removeHouse();
+        assertEquals(4, property.getNumberOfHouses());
+        
     }
 
     /**
@@ -133,7 +145,11 @@ public class PropertyLocationTest {
         property.setUpgradeableToHotel(true);
         assertFalse(property.getUpgradeableToHotel());
         
-        property.addHouses(4);
+        property.setDevelopableStatus(true);
+        property.addHouse();
+        property.addHouse();
+        property.addHouse();
+        property.addHouse();
         property.setUpgradeableToHotel(true);
         assertTrue(property.getUpgradeableToHotel());
    
@@ -145,13 +161,15 @@ public class PropertyLocationTest {
     @Test
     public void testUpgradeToHotel() {
         
-        property.setUpgradeableToHotel(false);
-        property.upgradeToHotel();
         assertFalse(property.getIsHotel());
         
-        property.addHouses(4);
+        property.setDevelopableStatus(true);
+        property.addHouse();
+        property.addHouse();
+        property.addHouse();
+        property.addHouse();
         property.setUpgradeableToHotel(true);
-        property.upgradeToHotel();
+        property.addHouse();
         assertTrue(property.getIsHotel());
         
     }
@@ -162,12 +180,16 @@ public class PropertyLocationTest {
     @Test
     public void testDowngradeFromHotel() {
         
-        property.addHouses(4);
+        property.setDevelopableStatus(true);
+        property.addHouse();
+        property.addHouse();
+        property.addHouse();
+        property.addHouse();
         property.setUpgradeableToHotel(true);
-        property.upgradeToHotel();
+        property.addHouse();
         assertTrue(property.getIsHotel());
         
-        property.downgradeFromHotel();
+        property.removeHouse();
         assertFalse(property.getIsHotel());
         
     }

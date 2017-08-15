@@ -88,4 +88,13 @@ public class ChanceDeck {
         shuffledDeck.add(card);
     }
     
+    /**
+     * Retrieves the boolean value regarding whether this deck currently contains
+     * a GOJFCard.
+     * @return True if it contains a GOJFCard, false otherwise.
+     */
+    public boolean containsGOJFCard() {
+        return shuffledDeck.stream().anyMatch((card) -> (card instanceof GOJFCard));
+    }
+    
 }

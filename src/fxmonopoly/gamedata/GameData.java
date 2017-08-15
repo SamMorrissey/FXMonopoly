@@ -7,7 +7,6 @@ package fxmonopoly.gamedata;
 
 import fxmonopoly.gamedata.bid.Bid;
 import fxmonopoly.gamedata.board.Board;
-import fxmonopoly.gamedata.board.locations.*;
 import fxmonopoly.gamedata.decks.*;
 import fxmonopoly.gamedata.decks.cards.*;
 import fxmonopoly.gamedata.die.Die;
@@ -27,34 +26,24 @@ public class GameData {
     private final Board board;
     private final ChanceDeck chance;
     private final CommunityChestDeck community;
-    private final ArrayList<Player> playerList;
+    
+    private ArrayList<Player> playerList;
     
     private Player activePlayer;
     private TradeOffer activeTrade;
     private Bid activeBid;
-    
-    private UserPlayer user;
+    private Card activeCard;
     
     /**
      * Creates a GameData instance utilising the specified player list.
      * @param playerList The ordered list of players.
      */
-    public GameData(ArrayList<Player> playerList) {
+    public GameData() {
         
         die = new Die();
         board = new Board();
         chance = new ChanceDeck();
         community = new CommunityChestDeck();
-        this.playerList = playerList;
-        
-        activePlayer = playerList.get(0);
-        
-        for(Player player : playerList) {
-            if(player instanceof UserPlayer && user == null) {
-                user = (UserPlayer) player;
-                break;
-            }
-        }
         
     }
     
@@ -64,6 +53,16 @@ public class GameData {
      */
     public ArrayList<Player> getPlayerList() {
         return playerList;
+    }
+    
+    /**
+     * Sets the player list of this GameData instance.
+     * @param array The final order player list.
+     */
+    public void setPlayerList(ArrayList<Player> array) {
+        playerList = array;
+        setActivePlayer();
+        activePlayer.setCanRoll(true);
     }
     
     
@@ -95,12 +94,20 @@ public class GameData {
     }
     
     /**
-     * Sets the active player to the specified input parameter.
-     * @param player The new active player.
+     * Retrieves the current active player of the game.
+     * @return The active player.
      */
-    private void setActivePlayer(Player player) {
-        if(player != null) {
-            activePlayer = player;
+    public Player getActivePlayer() {
+        return activePlayer;
+    }
+    
+    /**
+     * Sets the active player to the first entry of the player list, provided the
+     * player list is not null.
+     */
+    private void setActivePlayer() {
+        if(playerList != null) {
+            activePlayer = playerList.get(0);
         }
     }
     
@@ -118,117 +125,6 @@ public class GameData {
     }
     
     /**
-     * Retrieves the Location object associated with the player's board position
-     * int value.
-     * @return The active player's current location.
-     */
-    public Location getActivePlayerLocation() {
-        return board.getLocation(activePlayer.getPosition());
-    }
-    
-    /**
-     * Retrieves the current board position of the active player.
-     * @return The active player's board position.
-     */
-    public int getActivePlayerPosition() {
-        return activePlayer.getPosition();
-    }
-    
-    /**
-     * Retrieves the value of the active player's cash.
-     * @return The active player's cash.
-     */
-    public int getActivePlayerCash() {
-        return activePlayer.getCash();
-    }
-    
-    /**
-     * Retrieves the active player's name.
-     * @return The active player's name.
-     */
-    public String getActivePlayerName() {
-        return activePlayer.getName();
-    }
-    
-    /**
-     * Retrieves the active player's jail status.
-     * @return True if in jail, false otherwise.
-     */
-    public boolean getActivePlayerJailStatus() {
-        return activePlayer.isInJail();
-    }
-    
-    /**
-     * Changes the active player jail status to true.
-     */
-    public void activePlayerEnterJail() {
-        activePlayer.enterJail();
-    }
-    
-    /**
-     * Changes the active player jail status to false.
-     */
-    public void activePlayerExitJail() {
-        activePlayer.exitJail();
-    }
-    
-    /**
-     * Retrieves the active player's can roll die status. 
-     * @return True if can roll, false otherwise.
-     */
-    public boolean getActivePlayerDieRollStatus() {
-        return activePlayer.getCanRoll();
-    }
-    
-    /**
-     * Sets the active player's can roll die status to the specified input.
-     * @param status The value to set the status to.
-     */
-    public void setActivePlayerDieRollStatus(boolean status) {
-        activePlayer.setCanRoll(status);
-    }
-    
-    /**
-     * Moves the active player's board position by the specified distance.
-     * @param distance The distance to move by.
-     */
-    public void moveActivePlayerBy(int distance) {
-        activePlayer.moveBy(distance);
-    }
-    
-    /**
-     * Moves the active player to the specified board position.
-     * @param position The position to move to.
-     */
-    public void moveActivePlayerTo(int position) {
-        activePlayer.moveTo(position);
-    }
-   
-    /**
-     * Sets the use player to the specified user player instance.
-     * @param player The player to be set.
-     */
-    public void setUserPlayer(UserPlayer player) {
-        user = player;
-    }
-    
-    /**
-     * Retrieves the user player instance.
-     * @return The user player.
-     */
-    public UserPlayer getUserPlayer() {
-        return user;
-    }
-    
-    /**
-     * Retrieves the cash of the player instance set as the user player.
-     * @return 
-     */
-    public int getUserPlayerCash() {
-        return user.getCash();
-    }
-    
-    /**
      * Retrieves the board instance.
      * @return The game board.
      */
@@ -238,34 +134,50 @@ public class GameData {
     
     /**
      * Retrieves the next card from the Chance deck.
-     * @return The next chance card.
      */
-    public Card getNextChanceCard() {
-        return chance.getNextCard();
+    public void drawNextChanceCard() {
+        activeCard = chance.getNextCard();
     }
     
     /**
-     * Returns the specified chance card back to the bottom of the deck.
+     * Returns the specified chance card back to the bottom of the deck. If a
+     * GOJFCard is presented, the card will only be inserted if the deck does not
+     * currently contain one. Otherwise it is returned to the other deck.
      * @param card The card to return.
      */
     public void returnChanceCard(Card card) {
-        chance.returnCard(card);
+        if(card instanceof GOJFCard && chance.containsGOJFCard())
+            community.returnCard(card);
+        else
+            chance.returnCard(card);
     }
     
     /**
      * Retrieves the next card from the Community Chest deck.
-     * @return The next community chest card.
      */
-    public Card getNextCommunityChestCard() {
-        return community.getNextCard();
+    public void drawNextCommunityChestCard() {
+        activeCard = community.getNextCard();
     }
     
     /**
      * Returns the specified community chest card back to the bottom of the deck.
+     * If a GOJFCard is presented, the card will only be inserted if the deck 
+     * does not currently contain one. Otherwise it is returned to the other deck.
      * @param card The card to return.
      */
     public void returnCommunityChestCard(Card card) {
-        community.returnCard(card);
+        if(card instanceof GOJFCard && community.containsGOJFCard())
+            chance.returnCard(card);
+        else 
+            community.returnCard(card);
+    }
+    
+    /**
+     * Retrieves the currently active Card. 
+     * @return 
+     */
+    public Card getActiveCard() {
+        return activeCard;
     }
     
     /**

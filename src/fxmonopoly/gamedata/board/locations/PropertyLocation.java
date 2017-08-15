@@ -147,19 +147,28 @@ public class PropertyLocation extends Location{
     }
     
     /**
-     * Adds the specified number of houses to this property. Up to a maximum of four
-     * total on this property, or down to a minimum of 0. Any above four or below zero
-     * will "disappear".
-     * @param houses The houses to be added.
+     * Adds a single house to this property provided that the property currently
+     * has fewer than 4 houses already and is developable. If the property is 
+     * upgradeable to a hotel then it will be converted to a hotel.
      */
-    public void addHouses(int houses) {
-        numberOfHouses += houses;
-        if(numberOfHouses > 4) {
+    public void addHouse() {
+        if(numberOfHouses < 4 && isDevelopable)
+            numberOfHouses++;
+        else if(numberOfHouses == 4 && upgradeableToHotel) 
+            upgradeToHotel();
+    }
+    
+    /**
+     * Removes a single house from this property provided that the property currently
+     * is a hotel or has any houses on it. 
+     */
+    public void removeHouse() {
+        if(numberOfHouses == 0 && isHotel) {
             numberOfHouses = 4;
+            downgradeFromHotel();
         }
-        else if(numberOfHouses < 0) {
-            numberOfHouses = 0;
-        }
+        else if(numberOfHouses > 0)
+            numberOfHouses--;
     }
     
     /**
@@ -205,10 +214,11 @@ public class PropertyLocation extends Location{
      * Upgrades the property to a hotel, as long as upgradeableToHotel is true,
      * and numberOfHouses is 4, otherwise does nothing.
      */
-    public void upgradeToHotel() {
+    private void upgradeToHotel() {
         if(upgradeableToHotel && numberOfHouses == 4) {
             isHotel = true;
             numberOfHouses = 0;
+            upgradeableToHotel = false;
         }
     }
     
@@ -216,7 +226,7 @@ public class PropertyLocation extends Location{
      * Downgrades the property from hotel, as long as it already was a hotel. This
      * includes setting the number of houses to 4. Otherwise this method does nothing.
      */
-    public void downgradeFromHotel() {
+    private void downgradeFromHotel() {
         if(isHotel) {
             isHotel = false;
             numberOfHouses = 4;
@@ -293,5 +303,9 @@ public class PropertyLocation extends Location{
      */
     public void setDevelopableStatus(boolean status) {
         isDevelopable = status;
+    }
+    
+    public int getHousePrice() {
+        return housePrice;
     }
 }

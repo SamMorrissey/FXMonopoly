@@ -29,7 +29,6 @@ public class TradeOffer {
      * Creates a trade offer instance regarding the specified players. Adding
      * Locations must be done via the ArrayList getter methods. 
      * @param playerFrom The player initiating the trade offer.
-     * @param playerTo   The player targeted by the trade offer.
      */
     public TradeOffer(Player playerFrom) {
         this.playerFrom = playerFrom;

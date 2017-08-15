@@ -84,4 +84,120 @@ public class BoardTest {
         });
     }
     
+    @Test
+    public void testEvenlyDevelopAndUnDevelop() {
+        PropertyLocation property = (PropertyLocation) board.getLocation(1);
+        
+        board.getGroup(property).forEach(e -> {
+            assertEquals(0, e.getNumberOfHouses());
+        });
+        
+        board.getGroup(property).forEach(e -> {
+            e.transferOwnership(player);
+            e.setDevelopableStatus(true);
+        });
+        
+        board.evenlyDevelop(property);
+        
+        assertEquals(1, property.getNumberOfHouses());
+        
+        board.evenlyDevelop(property);
+        
+        PropertyLocation second = (PropertyLocation) board.getLocation(3);
+        
+        assertEquals(1, property.getNumberOfHouses());
+        assertEquals(1, second.getNumberOfHouses());
+        
+        board.evenlyDevelop(property);
+        assertEquals(2, property.getNumberOfHouses());
+        assertEquals(1, second.getNumberOfHouses());
+        
+        board.evenlyDevelop(property);
+        assertEquals(2, property.getNumberOfHouses());
+        assertEquals(2, second.getNumberOfHouses());
+        
+        board.evenlyDevelop(property);
+        assertEquals(3, property.getNumberOfHouses());
+        assertEquals(2, second.getNumberOfHouses());
+        
+        board.evenlyDevelop(property);
+        assertEquals(3, property.getNumberOfHouses());
+        assertEquals(3, second.getNumberOfHouses());
+        
+        board.evenlyDevelop(property);
+        assertEquals(4, property.getNumberOfHouses());
+        assertEquals(3, second.getNumberOfHouses());
+        
+        board.evenlyDevelop(property);
+        assertEquals(4, property.getNumberOfHouses());
+        assertEquals(4, second.getNumberOfHouses());
+        
+        board.assimilateColourGroupBooleans(board.getGroup(property));
+        
+        board.evenlyDevelop(property);
+        
+        assertTrue(property.getIsHotel());
+        
+        board.evenlyReduce(property);
+        board.assimilateColourGroupBooleans(board.getGroup(property));
+        
+        assertFalse(property.getIsHotel());
+        
+        board.evenlyReduce(property);
+        
+        assertEquals(3, property.getNumberOfHouses());
+        
+        board.evenlyReduce(property);
+        
+        assertEquals(3, property.getNumberOfHouses());
+        assertEquals(3, second.getNumberOfHouses());
+    }
+    
+    @Test
+    public void testNumberOfHousesLeft() {
+        
+        PropertyLocation property = (PropertyLocation) board.getLocation(1);
+        
+        board.getGroup(property).forEach(e -> {
+            e.transferOwnership(player);
+            e.setDevelopableStatus(true);
+        });
+        
+        board.evenlyDevelop(property);
+        
+        assertEquals(31, board.getNumberOfHousesLeft());
+        
+        board.evenlyDevelop(property);
+        
+        assertEquals(30, board.getNumberOfHousesLeft());
+        
+        board.evenlyReduce(property);
+        
+        assertEquals(31, board.getNumberOfHousesLeft());
+    }
+    
+    @Test
+    public void testNumberOfHotelsLeft() {
+        
+        PropertyLocation property = (PropertyLocation) board.getLocation(1);
+        
+        board.getGroup(property).forEach(e -> {
+            e.transferOwnership(player);
+            e.setDevelopableStatus(true);
+        });
+        
+        assertEquals(10, board.getNumberOfHotelsLeft());
+        
+        while(!property.getIsHotel()) {
+            board.evenlyDevelop(property);
+            board.assimilateColourGroupBooleans(board.getGroup(property));
+        }
+        
+        assertEquals(9, board.getNumberOfHotelsLeft());
+        
+        board.evenlyReduce(property);
+        
+        assertEquals(10, board.getNumberOfHotelsLeft());
+    }
+    
 }

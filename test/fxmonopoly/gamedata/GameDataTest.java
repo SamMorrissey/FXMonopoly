@@ -5,7 +5,7 @@
  */
 package fxmonopoly.gamedata;
 
-import fxmonopoly.gamedata.board.locations.GoLocation;
+import fxmonopoly.gamedata.decks.cards.Card;
 import fxmonopoly.gamedata.players.*;
 import java.util.ArrayList;
 import org.junit.After;
@@ -47,22 +47,8 @@ public class GameDataTest {
      */
     @Before
     public void setUp() {
-        user = mock(UserPlayer.class);
-        when(user.getCash()).thenReturn(1500);
-        
-        when(user.getPosition()).thenCallRealMethod();
-        doCallRealMethod().when(user).moveBy(10);
-        doCallRealMethod().when(user).moveTo(20);
-        
+        user = mock(UserPlayer.class); 
         when(user.getName()).thenReturn("Testing");
-        
-        when(user.isInJail()).thenCallRealMethod();
-        doCallRealMethod().when(user).enterJail();
-        doCallRealMethod().when(user).exitJail();
-        
-        when(user.getCanRoll()).thenCallRealMethod();
-        doCallRealMethod().when(user).setCanRoll(true);
-        doCallRealMethod().when(user).setCanRoll(false);
         
         cpu = mock(CPUPlayer.class);
         when(cpu.getName()).thenReturn("Testing1");
@@ -72,9 +58,9 @@ public class GameDataTest {
         array.add(user);
         array.add(cpu);
         
-        data = new GameData(array);
+        data = new GameData();
+        data.setPlayerList(array);
         
-        data.setUserPlayer(user);
     }
     
     /**
@@ -115,111 +101,11 @@ public class GameDataTest {
      */
     @Test
     public void testNextPlayer() {
-        assertEquals("Testing", data.getActivePlayerName());
+        assertEquals("Testing", data.getActivePlayer().getName());
         
         data.nextPlayer();
         
-        assertNotEquals("Testing", data.getActivePlayerName());
-    }
-
-    /**
-     * Tests that the getActivePlayerLocation method retrieves a Location of the 
-     * specified instantiation type. In this case of the GoLocation type, as all 
-     * players are initially located at position zero, corresponding to the GoLocation.
-     */
-    @Test
-    public void testGetActivePlayerLocation() {
-        assertTrue(data.getActivePlayerLocation() instanceof GoLocation);
-    }
-
-    /**
-     * Tests that the getActivePlayerCash method retrieves the expected cash value.
-     */
-    @Test
-    public void testGetActivePlayerCash() {
-        assertEquals(1500, data.getActivePlayerCash());
-    }
-
-    /**
-     * Tests that the expected and retrieved names are equivalent.
-     */
-    @Test
-    public void testGetActivePlayerName() {
-        assertEquals("Testing", data.getActivePlayerName());
-    }
-
-    /**
-     * Tests that the active player jail status manipulations are performed
-     * correctly.
-     */
-    @Test
-    public void testActivePlayerJailStatus() {
-        assertFalse(data.getActivePlayerJailStatus());
-        
-        data.activePlayerEnterJail();
-        
-        assertTrue(data.getActivePlayerJailStatus());
-        
-        data.activePlayerExitJail();
-        
-        assertFalse(data.getActivePlayerJailStatus());
-    }
-
-    /**
-     * Tests that the active player die roll status manipulations are 
-     * performed correctly.
-     */
-    @Test
-    public void testActivePlayerDieRollStatus() {
-        assertFalse(data.getActivePlayerDieRollStatus());
-        
-        data.setActivePlayerDieRollStatus(true);
-        
-        assertTrue(data.getActivePlayerDieRollStatus());
-        
-        data.setActivePlayerDieRollStatus(false);
-        
-        assertFalse(data.getActivePlayerDieRollStatus());
-    }
-
-    /**
-     * Tests that the move active player by method functions correctly
-     */
-    @Test
-    public void testMoveActivePlayerBy() {
-        assertEquals(0, data.getActivePlayerPosition());
-        
-        data.moveActivePlayerBy(10);
-        
-        assertEquals(10, data.getActivePlayerPosition());
-    }
-
-    /**
-     * Tests that the move active player to method functions correctly.
-     */
-    @Test
-    public void testMoveActivePlayerTo() {
-        assertEquals(0, data.getActivePlayerPosition());
-        
-        data.moveActivePlayerTo(20);
-        
-        assertEquals(20, data.getActivePlayerPosition());
-    }
-
-    /**
-     * Tests that the UserPlayer's cash is retrieved as expected.
-     */
-    @Test
-    public void testGetUserPlayerCash() {
-        assertEquals(1500, data.getUserPlayerCash());
-    }
-
-    /**
-     * Tests that the UserPlayer instance is set correctly.
-     */
-    @Test
-    public void testGetUserPlayer() {
-        assertEquals(user, data.getUserPlayer());
+        assertNotEquals("Testing", data.getActivePlayer().getName());
     }
 
     /**
@@ -228,8 +114,12 @@ public class GameDataTest {
      */
     @Test
     public void testGetNextChanceCard() {
-        assertNotNull(data.getNextChanceCard());
-        assertNotEquals(data.getNextChanceCard(), data.getNextChanceCard());
+        data.drawNextChanceCard();
+        assertNotNull(data.getActiveCard());
+        
+        Card card = data.getActiveCard();
+        data.drawNextChanceCard();
+        assertNotEquals(card, data.getActiveCard());
     }
 
     /**
@@ -238,8 +128,12 @@ public class GameDataTest {
      */
     @Test
     public void testGetNextCommunityChestCard() {
-        assertNotNull(data.getNextCommunityChestCard());
-        assertNotEquals(data.getNextCommunityChestCard(), data.getNextCommunityChestCard());
+        data.drawNextCommunityChestCard();
+        assertNotNull(data.getActiveCard());
+        
+        Card card = data.getActiveCard();
+        data.drawNextCommunityChestCard();
+        assertNotEquals(card, data.getActiveCard());
     }
 
     /**
