@@ -84,6 +84,10 @@ public class BoardTest {
         });
     }
     
+    /**
+     * Tests that the even development and regression utilised performs as 
+     * expected.
+     */
     @Test
     public void testEvenlyDevelopAndUnDevelop() {
         PropertyLocation property = (PropertyLocation) board.getLocation(1);
@@ -155,6 +159,9 @@ public class BoardTest {
         
     }
     
+    /**
+     * Tests that the number of houses are modified correctly.
+     */
     @Test
     public void testNumberOfHousesLeft() {
         
@@ -178,6 +185,9 @@ public class BoardTest {
         assertEquals(31, board.getNumberOfHousesLeft());
     }
     
+    /**
+     * Tests that the number of hotels are modified correctly.
+     */
     @Test
     public void testNumberOfHotelsLeft() {
         

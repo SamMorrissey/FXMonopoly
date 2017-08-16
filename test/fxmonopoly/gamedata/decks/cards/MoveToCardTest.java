@@ -15,14 +15,14 @@ import org.junit.Test;
 public class MoveToCardTest {
     
     // Used for testing that the board position upper bound works correctly
-    MoveToCard move = new MoveToCard("Testing", 40);
-    MoveToCard move2 = new MoveToCard("Testing", 39);
+    MoveToCard move = new MoveToCard("Testing", false, 40);
+    MoveToCard move2 = new MoveToCard("Testing", false, 39);
 
     // Used for testing that the board position lower bound works correctly
-    MoveToCard move3 = new MoveToCard("Testing", -1);
-    MoveToCard move4 = new MoveToCard("Testing", 0);
+    MoveToCard move3 = new MoveToCard("Testing", false, -1);
+    MoveToCard move4 = new MoveToCard("Testing", false, 0);
     
-    MoveToCard move5 = new MoveToCard("Testing", 22);
+    MoveToCard move5 = new MoveToCard("Testing", false, 22);
     
     /**
      * Tests that the upper bound condition is effective.
@@ -55,5 +55,13 @@ public class MoveToCardTest {
     @Test
     public void testDescription() {
         assertEquals(move.getDescription(), move2.getDescription());
+    }
+    
+    /**
+     * Tests that the from chance deck boolean is retrieved as expected.
+     */
+    @Test
+    public void testFromChanceDeck() {
+        assertFalse(move.getFromChanceDeck());
     }
 }

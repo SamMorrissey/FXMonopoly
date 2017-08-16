@@ -6,9 +6,7 @@
 package fxmonopoly.game;
 
 import fxmonopoly.gamedata.board.locations.*;
-import fxmonopoly.gamedata.decks.cards.Card;
-import fxmonopoly.gamedata.decks.cards.GOJFCard;
-import fxmonopoly.gamedata.players.CPUPlayer;
+import fxmonopoly.gamedata.decks.cards.*;
 import fxmonopoly.gamedata.players.Player;
 import fxmonopoly.gamedata.players.UserPlayer;
 import org.junit.After;
@@ -19,10 +17,11 @@ import org.junit.runner.RunWith;
 import static org.mockito.Mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
 
+
 @RunWith(MockitoJUnitRunner.class)
 
 /**
- *
+ * Tests that the GameModel functions and manipulates as expected.
  * @author Sam P. Morrissey
  */
 public class GameModelTest {
@@ -66,7 +65,7 @@ public class GameModelTest {
         model.createAndAddCPU();
         model.createAndAddCPU();
         
-        model.reorderingList(10);
+        model.reorderList(10);
         assertTrue(model.getReorderedList().containsAll(model.getInitialList()));
         
         // Two are automatically instantiated in the test set up.
@@ -92,7 +91,7 @@ public class GameModelTest {
      */
     @Test
     public void testNextPlayer() {
-        model.reorderingList(10);
+        model.reorderList(10);
         
         boolean userActive = model.userIsActive();
         
@@ -106,83 +105,22 @@ public class GameModelTest {
     }
     
     /**
-     * Tests that the active player location is retrieved as expected.
-     */
-    @Test
-    public void testGetActivePlayerLocation() {
-        model.reorderingList(10);
-        
-        assertTrue(model.getActivePlayerLocation() instanceof GoLocation);
-    }
-    
-    /**
-     * Tests that the active player position is retrieved as expected.
-     */
-    @Test
-    public void testGetActivePlayerPosition() {
-        model.reorderingList(10);
-        
-        assertEquals(model.getActivePlayerPosition(), model.getReorderedList().get(0).getPosition());
-    }
-    
-    /**
-     * Tests that the active player cash is retrieved as expected.
-     */
-    @Test
-    public void testGetActivePlayerCash() {
-        model.reorderingList(10);
-        
-        assertEquals(model.getActivePlayerCash(), model.getReorderedList().get(0).getCash());
-    }
-    
-    /**
-     * Tests that the active player name is retrieved as expected.
-     */
-    @Test
-    public void testGetActivePlayerName() {
-        model.reorderingList(10);
-        
-        if(model.getReorderedList().get(0) instanceof CPUPlayer)
-            assertEquals("CPU1", model.getActivePlayerName());
-        else 
-            assertEquals("Testing", model.getActivePlayerName());
-    }
-    
-    /**
-     * Tests that the active player jail status is retrieved as expected.
-     */
-    @Test
-    public void testGetActivePlayerJailStatus() {
-        model.reorderingList(10);
-        
-        assertFalse(model.getActivePlayerJailStatus());
-        
-        model.getReorderedList().get(0).enterJail();
-        
-        assertTrue(model.getActivePlayerJailStatus());
-        
-        model.getReorderedList().get(0).exitJail();
-        
-        assertFalse(model.getActivePlayerJailStatus());
-    }
-    
-    /**
      * Tests that the active player pay to exit jail function, works as expected.
      */
     @Test
     public void testActivePlayerPayToExitJail() {
-        model.reorderingList(10);
+        model.reorderList(10);
         
-        assertFalse(model.getActivePlayerJailStatus());
+        assertFalse(model.getActivePlayer().isInJail());
         
         model.getReorderedList().get(0).enterJail();
         
-        assertTrue(model.getActivePlayerJailStatus());
+        assertTrue(model.getActivePlayer().isInJail());
         
         model.activePlayerPayToExitJail();
         
-        assertEquals(1450, model.getActivePlayerCash());
-        assertFalse(model.getActivePlayerJailStatus());
+        assertEquals(1450, model.getActivePlayer().getCash());
+        assertFalse(model.getActivePlayer().isInJail());
     }
     
     /**
@@ -191,23 +129,23 @@ public class GameModelTest {
      */
     @Test
     public void testActivePlayerGOJFCard() {
-        model.reorderingList(0);
+        model.reorderList(0);
         
-        assertFalse(model.getActivePlayerHasGOJFCard());
+        assertFalse(model.getActivePlayer().hasGOJFCard());
         
         Card card = mock(GOJFCard.class);
         model.getReorderedList().get(0).addGOJFCard((GOJFCard) card);
         
-        assertTrue(model.getActivePlayerHasGOJFCard());
+        assertTrue(model.getActivePlayer().hasGOJFCard());
         
         model.getReorderedList().get(0).enterJail();
         
-        assertTrue(model.getActivePlayerJailStatus());
+        assertTrue(model.getActivePlayer().isInJail());
         
         model.useActivePlayerGOJFCard();
         
-        assertFalse(model.getActivePlayerHasGOJFCard());
-        assertFalse(model.getActivePlayerJailStatus());
+        assertFalse(model.getActivePlayer().hasGOJFCard());
+        assertFalse(model.getActivePlayer().isInJail());
     }
     
     /**
@@ -215,43 +153,19 @@ public class GameModelTest {
      */
     @Test
     public void testActivePlayerRollDieAndMove() {
-        model.reorderingList(10);
+        model.reorderList(10);
         
-        assertTrue(model.getActivePlayerDieRollStatus());
+        assertTrue(model.getActivePlayer().getCanRoll());
         
         int[] i = model.rollDieAndMove();
         
         if(i[0] == i[1]) {
-            assertTrue(model.getActivePlayerDieRollStatus());
+            assertTrue(model.getActivePlayer().getCanRoll());
         }
         else {
-            assertFalse(model.getActivePlayerDieRollStatus());
+            assertFalse(model.getActivePlayer().getCanRoll());
         }
         
-    }
-    
-    /**
-     * Tests that the user player cash is retrieved as expected.
-     */
-    @Test
-    public void testUserPlayerGetCash() {
-        model.reorderingList(12);
-        assertEquals(1500, model.getUserPlayerCash());
-        
-        for(Player player : model.getReorderedList()) {
-            if(player instanceof UserPlayer) {
-                player.addCash(-100);
-                assertEquals(1400, model.getUserPlayerCash());
-            }
-        }
-    }
-    
-    /**
-     * Tests that the user player name is retrieved as expected.
-     */
-    @Test
-    public void testUserPlayerGetName() {
-        assertEquals("Testing", model.getUserPlayerName());
     }
     
     /**
@@ -259,7 +173,7 @@ public class GameModelTest {
      */
     @Test
     public void testUserIsActive() {
-        model.reorderingList(12);
+        model.reorderList(12);
         
         if(model.getReorderedList().get(0) instanceof UserPlayer) {
             assertTrue(model.userIsActive());
@@ -274,11 +188,11 @@ public class GameModelTest {
      */
     @Test
     public void testActivePlayerBuyLocation() {
-        model.reorderingList(12);
+        model.reorderList(12);
         
-        while(!(model.getLocationByPosition(model.getActivePlayerPosition()) instanceof PropertyLocation) &&
-              !(model.getLocationByPosition(model.getActivePlayerPosition()) instanceof UtilityLocation) &&
-              !(model.getLocationByPosition(model.getActivePlayerPosition()) instanceof RailwayLocation)) {
+        while(!(model.retrieveLocation(model.getActivePlayer().getPosition()) instanceof PropertyLocation) &&
+              !(model.retrieveLocation(model.getActivePlayer().getPosition()) instanceof UtilityLocation) &&
+              !(model.retrieveLocation(model.getActivePlayer().getPosition()) instanceof RailwayLocation)) {
             
             model.rollDieAndMove();
             model.nextPlayer(); 
@@ -287,50 +201,16 @@ public class GameModelTest {
         Player player;
         
         for(Player temp : model.getReorderedList()) {
-            if(temp.getPosition() == model.getActivePlayerPosition()) {
+            if(temp.getPosition() == model.getActivePlayer().getPosition()) {
                 player = temp;
                 assertTrue(player.getOwnedLocations().isEmpty());
                 model.activePlayerBuyLocation();
                 assertFalse(player.getOwnedLocations().isEmpty());
-                assertTrue(player.getOwnedLocations().get(0) == model.getLocationByPosition(model.getActivePlayerPosition()));
+                assertTrue(player.getOwnedLocations().get(0) == model.retrieveLocation(model.getActivePlayer().getPosition()));
                 break;
             }
         }
         
-    }
-    
-    /**
-     * Tests that the user owns location boolean functions as expected.
-     */
-    @Test
-    public void testUserOwnsLocation() {
-        model.reorderingList(10);
-        
-        while(!(model.getLocationByPosition(model.getUserPosition()) instanceof PropertyLocation) &&
-              !(model.getLocationByPosition(model.getUserPosition()) instanceof UtilityLocation) &&
-              !(model.getLocationByPosition(model.getUserPosition()) instanceof RailwayLocation)) {
-            
-            model.rollDieAndMove();
-            model.nextPlayer();
-        }
-        
-        Location location = model.getLocationByPosition(model.getUserPosition());
-        
-        if(location instanceof PropertyLocation) {
-            assertFalse(model.userOwnsSpecificLocation(location));
-            ((PropertyLocation) location).transferOwnership(model.getUser());
-            assertTrue(model.userOwnsSpecificLocation(location));
-        }
-        else if(location instanceof UtilityLocation) {
-            assertFalse(model.userOwnsSpecificLocation(location));
-            ((UtilityLocation) location).setOwner(model.getUser());
-            assertTrue(model.userOwnsSpecificLocation(location));
-        }
-        else if(location instanceof RailwayLocation) {
-            assertFalse(model.userOwnsSpecificLocation(location));
-            ((RailwayLocation) location).setOwner(model.getUser());
-            assertTrue(model.userOwnsSpecificLocation(location));
-        }
     }
     
     /**
@@ -365,7 +245,7 @@ public class GameModelTest {
      */
     @Test
     public void testGetActivePlayer() {
-        model.reorderingList(10);
+        model.reorderList(10);
         
         assertEquals(model.getActivePlayer(), model.getReorderedList().get(0));
         
@@ -379,7 +259,7 @@ public class GameModelTest {
      */
     @Test
     public void testIsActivePlayerBankrupt() {
-        model.reorderingList(10);
+        model.reorderList(10);
         
         assertFalse(model.isActivePlayerBankrupt());
         
@@ -399,14 +279,14 @@ public class GameModelTest {
      */
     @Test
     public void testResolveExtraBalance() {
-        model.reorderingList(12);
+        model.reorderList(12);
         
         if(model.userIsActive()) {
             model.nextPlayer();
         }
         
         model.getUser().addCash(-1500);
-        PropertyLocation location = (PropertyLocation) model.getLocationByPosition(1);
+        PropertyLocation location = (PropertyLocation) model.retrieveLocation(1);
         location.transferOwnership(model.getActivePlayer());
         model.getUser().moveTo(1);
         model.getUser().addCash(-location.getRent());
@@ -422,7 +302,7 @@ public class GameModelTest {
      */
     @Test
     public void testRemoveActivePlayerFromGame() {
-        model.reorderingList(12);
+        model.reorderList(12);
         
         if(!model.userIsActive()) {
             model.nextPlayer();
@@ -439,6 +319,9 @@ public class GameModelTest {
         assertTrue(model.userIsActive());
     }
     
+    /**
+     * Tests that a trade is started and retrieved as expected.
+     */
     @Test
     public void testStartTrade() {
         assertNull(model.getActiveTrade());
@@ -449,6 +332,9 @@ public class GameModelTest {
         assertNotNull(model.getActiveTrade());
     }
     
+    /**
+     * Tests that the trades resolve in the expected manner.
+     */
     @Test
     public void testResolveTrade() {
         model.startTrade(model.getInitialList().get(0));
@@ -456,10 +342,10 @@ public class GameModelTest {
         
         assertNotNull(model.getActiveTrade());
         
-        PropertyLocation property = (PropertyLocation) model.getLocationByPosition(1);
+        PropertyLocation property = (PropertyLocation) model.retrieveLocation(1);
         model.getActiveTrade().getOfferList().add(property);
         
-        PropertyLocation property2 = (PropertyLocation) model.getLocationByPosition(3);
+        PropertyLocation property2 = (PropertyLocation) model.retrieveLocation(3);
         model.getActiveTrade().getForList().add(property2);
         
         GOJFCard card = mock(GOJFCard.class);
@@ -476,6 +362,23 @@ public class GameModelTest {
         assertNull(model.getActiveTrade());
     }
     
+    /**
+     * Tests that the trade is nullified as expected.
+     */
+    @Test
+    public void testCancelTrade() {
+        model.startTrade(model.getInitialList().get(0));
+        
+        assertNotNull(model.getActiveTrade());
+        
+        model.cancelActiveTrade();
+        
+        assertNull(model.getActiveTrade());
+    }
+    
+    /**
+     * Tests that a bid is created and retrieved as expected.
+     */
     @Test
     public void testStartBid() {
         assertNull(model.getActiveBid());
@@ -485,34 +388,112 @@ public class GameModelTest {
         assertNotNull(model.getActiveBid());
     }
     
+    /**
+     * Tests that a bid is resolved in the manner expected.
+     */
     @Test
     public void testResolveBid() {
         model.startBid();
         
-        
-        
         model.getActiveBid().addBid(model.getInitialList().get(0), 1);
         model.getActiveBid().addBid(model.getInitialList().get(1), 2);
         
-        Location location = model.getLocationByPosition(1);
-        
-        
-        
+        Location location = model.retrieveLocation(1);  
         model.getActiveBid().setLocation(location);
+        
         assertTrue(model.getActiveBid().containsLocation());
         
-        model.resolveBid();
-        
-        System.out.println(model.getInitialList().get(1).getOwnedProperty().size());
+        model.resolveActiveBid();
         
         ((PropertyLocation) location).transferOwnership(model.getInitialList().get(1));
         model.getInitialList().get(1).addLocation(location);
-        
         
         
         assertEquals(1498, model.getInitialList().get(1).getCash());
         assertEquals(location, model.getInitialList().get(1).getOwnedLocations().get(0));
         assertEquals(((PropertyLocation) location).getOwner(), model.getInitialList().get(1));
         assertEquals(1500, model.getInitialList().get(0).getCash());
+    }
+    
+    /**
+     * Tests that the bid is nullified as expected.
+     */
+    @Test
+    public void testCancelBid() {
+        model.startBid();
+        
+        assertNotNull(model.getActiveBid());
+        
+        model.clearActiveBid();
+        
+        assertNull(model.getActiveBid());
+    }
+    
+    /**
+     * Tests that card and required position actions are performing as expected.
+     */
+    @Test
+    public void testProcessCardAndRequiredLocationActions() {
+        model.reorderList(12);
+        model.getActivePlayer().moveTo(1);
+        
+        assertEquals(1500, model.getActivePlayer().getCash());
+        
+        model.processRequiredPositionAction();
+        
+        assertEquals(1500, model.getActivePlayer().getCash());
+        
+        model.nextPlayer();
+        
+        PropertyLocation location = (PropertyLocation) model.retrieveLocation(3);
+        location.transferOwnership(model.getActivePlayer());
+        model.getActivePlayer().addLocation(location);
+        
+        model.nextPlayer();
+        
+        model.getActivePlayer().moveTo(3);
+        model.processRequiredPositionAction();
+        
+        assertEquals((1500 - location.getRent()), model.getActivePlayer().getCash());
+        
+        model.getActivePlayer().moveTo(2);
+        model.processRequiredPositionAction();
+        
+        assertEquals(false, model.getActiveCard().getFromChanceDeck());
+        
+        // If position is set to a chance location then the first assert should be
+        // flipped, but the rest can remain the same.
+        int i;
+        for(i = 0; i < 16; i++) {
+            model.getActivePlayer().moveTo(2);
+            model.processRequiredPositionAction();
+            
+            assertEquals(false, model.getActiveCard().getFromChanceDeck());
+            
+            model.processCardActions();
+            
+            if(model.getActiveCard() instanceof GOJFCard) {
+                assertTrue(model.getActivePlayer().hasGOJFCard());
+                assertEquals(model.getActiveCard(), model.getActivePlayer().removeGOJFCard());
+            }
+            else if(model.getActiveCard() instanceof MoveToCard) {
+            
+                if(model.getActiveCard().getDescription().contains("Go to Jail")) {
+                    assertTrue(model.getActivePlayer().isInJail());
+                }
+                else {
+                    assertEquals(model.getActivePlayer().getPosition(), ((MoveToCard) model.getActiveCard()).getMoveLocation());
+                }
+            }
+            else if(model.getActiveCard() instanceof NearestRailwayCard) {
+                assertTrue(model.retrieveLocation(model.getActivePlayer().getPosition()) instanceof RailwayLocation);
+            }
+            else if(model.getActiveCard() instanceof NearestUtilityCard) {
+                assertTrue(model.retrieveLocation(model.getActivePlayer().getPosition()) instanceof UtilityLocation);
+            }
+            
+             
+        }
+        
     }
 }

@@ -26,8 +26,8 @@ public class DoublePayableCard extends Card{
      * @param firstValue The first value mentioned on the card.
      * @param secondValue The second value mentioned on the card.
      */
-    public DoublePayableCard(String description, int firstValue, int secondValue) {
-        super(description);
+    public DoublePayableCard(String description, boolean fromChanceDeck, int firstValue, int secondValue) {
+        super(description, fromChanceDeck);
         this.firstValue = firstValue;
         this.secondValue = secondValue;
     }

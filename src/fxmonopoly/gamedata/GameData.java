@@ -34,6 +34,10 @@ public class GameData {
     private Bid activeBid;
     private Card activeCard;
     
+    private UserPlayer user;
+    
+    private int doublesInARow;
+    
     /**
      * Creates a GameData instance utilising the specified player list.
      */
@@ -112,16 +116,44 @@ public class GameData {
     }
     
     /**
+     * Retrieves the user player of the game.
+     * @return The user player.
+     */
+    public UserPlayer getUserPlayer() {
+        return user;
+    }
+    
+    /**
+     * Sets the user player to the specified UserPlayer instance.
+     * @param user The user player.
+     */
+    public void setUserPlayer(UserPlayer user) {
+        this.user = user;
+    }
+    
+    /**
      * Switches the active player to the next player in the list, or returning
      * to the first player in the list from the last player in the list.
      */
     public void nextPlayer() {
         if(playerList.indexOf(activePlayer) + 1 < playerList.size()) {
             activePlayer = playerList.get(playerList.indexOf(activePlayer) + 1);
+            doublesInARow = 0;
+            activePlayer.setCanRoll(true);
         }
         else if(playerList.indexOf(activePlayer) + 1 == playerList.size()) {
             activePlayer = playerList.get(0);
+            doublesInARow = 0;
+            activePlayer.setCanRoll(true);
         }
+    }
+    
+    public int getDoublesInARow() {
+        return doublesInARow;
+    }
+    
+    public void incrementDoublesInARow() {
+        doublesInARow++;
     }
     
     /**
@@ -140,16 +172,14 @@ public class GameData {
     }
     
     /**
-     * Returns the specified chance card back to the bottom of the deck. If a
-     * GOJFCard is presented, the card will only be inserted if the deck does not
-     * currently contain one. Otherwise it is returned to the other deck.
+     * Returns the specified chance card back to the bottom of the deck.
      * @param card The card to return.
      */
     public void returnChanceCard(Card card) {
-        if(card instanceof GOJFCard && chance.containsGOJFCard())
-            community.returnCard(card);
-        else
+        if(card.getFromChanceDeck()) {
             chance.returnCard(card);
+            activeCard = null;
+        }
     }
     
     /**
@@ -166,10 +196,10 @@ public class GameData {
      * @param card The card to return.
      */
     public void returnCommunityChestCard(Card card) {
-        if(card instanceof GOJFCard && community.containsGOJFCard())
-            chance.returnCard(card);
-        else 
+        if(!card.getFromChanceDeck()) {
             community.returnCard(card);
+            activeCard = null;
+        }
     }
     
     /**

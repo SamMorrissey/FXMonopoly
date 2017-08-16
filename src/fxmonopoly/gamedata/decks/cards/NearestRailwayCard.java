@@ -19,8 +19,8 @@ public class NearestRailwayCard extends Card {
      * cause an action that advances the player to the next railway.
      * @param description The card description. 
      */
-    public NearestRailwayCard(String description) {
-        super(description);
+    public NearestRailwayCard(String description, boolean fromChanceDeck) {
+        super(description, fromChanceDeck);
         multiplier = 2;
     }
     

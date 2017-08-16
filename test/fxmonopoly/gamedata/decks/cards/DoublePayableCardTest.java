@@ -14,7 +14,7 @@ import org.junit.Test;
  */
 public class DoublePayableCardTest {
     
-    DoublePayableCard newCard = new DoublePayableCard("Testing", 40, 100);
+    DoublePayableCard newCard = new DoublePayableCard("Testing", false, 40, 100);
     
     /**
      * Tests that the specified first value and the retrieved first value are
@@ -43,4 +43,11 @@ public class DoublePayableCardTest {
         assertEquals("Testing", newCard.getDescription());
     }
     
+    /**
+     * Tests that the from chance deck boolean is retrieved as expected.
+     */
+    @Test
+    public void testFromChanceDeck() {
+        assertFalse(newCard.getFromChanceDeck());
+    }
 }

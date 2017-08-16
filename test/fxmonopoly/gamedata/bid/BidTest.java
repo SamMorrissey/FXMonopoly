@@ -5,6 +5,8 @@
  */
 package fxmonopoly.gamedata.bid;
 
+import fxmonopoly.gamedata.board.locations.Location;
+import fxmonopoly.gamedata.decks.cards.GOJFCard;
 import fxmonopoly.gamedata.players.CPUPlayer;
 import fxmonopoly.gamedata.players.UserPlayer;
 import org.junit.After;
@@ -79,7 +81,50 @@ public class BidTest {
         bid.addBid(player, 100);
         bid.addBid(cpu, 150);
         
-        assertEquals(cpu, bid.getHighestBidder());
+        assertEquals(cpu, bid.getHighestBidder().get(0));
+    }
+    
+    /**
+     * Tests that the second highest bid is retrieved correctly.
+     */
+    @Test
+    public void testGetSecondHighestBid() {
+        bid.addBid(player, 10);
+        bid.addBid(cpu, 11);
+        
+        assertEquals(10, bid.getSecondHighestBid());
+    }
+    
+    /**
+     * Tests that the Location methods function as expected.
+     */
+    @Test
+    public void testLocationMethods() {
+        Location location = mock(Location.class);
+        
+        assertNull(bid.getLocation());
+        assertFalse(bid.containsLocation());
+        
+        bid.setLocation(location);
+        
+        assertEquals(location, bid.getLocation());
+        assertTrue(bid.containsLocation());
+    }
+    
+    /**
+     * Tests that the GOJFCard methods function as expected.
+     */
+    @Test
+    public void testGOJFMethods() {
+        GOJFCard card = mock(GOJFCard.class);
+        
+        assertNull(bid.getGOJFCard());
+        assertFalse(bid.containsGOJFCard());
+        
+        bid.setGOJFCard(card);
+        
+        assertEquals(card, bid.getGOJFCard());
+        assertTrue(bid.containsGOJFCard());
     }
     
 }

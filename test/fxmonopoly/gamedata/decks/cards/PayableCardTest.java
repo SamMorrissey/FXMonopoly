@@ -14,7 +14,7 @@ import org.junit.Test;
  */
 public class PayableCardTest {
     
-    PayableCard pay = new PayableCard("Testing", -200, false);
+    PayableCard pay = new PayableCard("Testing", false, -200, false);
     
     /**
      * Tests that the specified and retrieved values are equivalent.
@@ -40,5 +40,11 @@ public class PayableCardTest {
         assertEquals(false, pay.getPerPlayer());
     }
     
-    
+    /**
+     * Tests that the from chance deck boolean is retrieved as expected.
+     */
+    @Test
+    public void testFromChanceDeck() {
+        assertFalse(pay.getFromChanceDeck());
+    }
 }

@@ -27,22 +27,22 @@ public class ChanceDeck {
     public ChanceDeck() {
         deck = new ArrayList<>();
         
-        deck.add(new MoveToCard("Advance to Go. \n" + "Collect £200", 0));
-        deck.add(new MoveToCard("Advance to Trafalgar Square. \n" + "If you pass Go, collect £200", 24));
-        deck.add(new MoveToCard("Advance to Pall Mall \n" + "If you pass Go, collect £200", 11));
-        deck.add(new NearestUtilityCard("Advance token to nearest Utility. \n" + "If unowned, you may buy it from the Bank. If owned, throw die and pay owner a total ten times the amount thrown."));
-        deck.add(new NearestRailwayCard("Advance token to the nearest Railway, and pay the owner twice the rental to which he/she is otherwise entitled."));
-        deck.add(new NearestRailwayCard("Advance token to the nearest Railway, and pay the owner twice the rental to which he/she is otherwise entitled."));
-        deck.add(new PayableCard("Bank pays you a dividend of £50.", 50, false));
-        deck.add(new GOJFCard());
-        deck.add(new MoveByCard("Go back three spaces.", -3));
-        deck.add(new MoveToCard("Go to Jail. \n" + "Do not pass Go, do not collect £200.", 10));
-        deck.add(new DoublePayableCard("Make general repairs on all your property. \n" + "For each house pay £25, for each hotel pay £100.", 25, 100));
-        deck.add(new PayableCard("Pay speeding fine of £15.", -15, false));
-        deck.add(new MoveToCard("Take a trip to King's Cross Station. \n" + "If you pass Go, collect £200.", 25));
-        deck.add(new MoveToCard("Take a walk to Mayfair.", 39));
-        deck.add(new PayableCard("You have been elected Chariman of the Board. \n" + "Pay each player £50.", -50, true));
-        deck.add(new PayableCard("Your building loan matures. \n" + "Collect £150.", 150, false));
+        deck.add(new MoveToCard("Advance to Go. \n" + "Collect £200", true, 0));
+        deck.add(new MoveToCard("Advance to Trafalgar Square. \n" + "If you pass Go, collect £200", true, 24));
+        deck.add(new MoveToCard("Advance to Pall Mall \n" + "If you pass Go, collect £200", true, 11));
+        deck.add(new NearestUtilityCard("Advance token to nearest Utility. \n" + "If unowned, you may buy it from the Bank. If owned, throw die and pay owner a total ten times the amount thrown.", true));
+        deck.add(new NearestRailwayCard("Advance token to the nearest Railway, and pay the owner twice the rental to which he/she is otherwise entitled.", true));
+        deck.add(new NearestRailwayCard("Advance token to the nearest Railway, and pay the owner twice the rental to which he/she is otherwise entitled.", true));
+        deck.add(new PayableCard("Bank pays you a dividend of £50.", true, 50, false));
+        deck.add(new GOJFCard(true));
+        deck.add(new MoveByCard("Go back three spaces.", true, -3));
+        deck.add(new MoveToCard("Go to Jail. \n" + "Do not pass Go, do not collect £200.", true, 10));
+        deck.add(new DoublePayableCard("Make general repairs on all your property. \n" + "For each house pay £25, for each hotel pay £100.", true, 25, 100));
+        deck.add(new PayableCard("Pay speeding fine of £15.", true, -15, false));
+        deck.add(new MoveToCard("Take a trip to King's Cross Station. \n" + "If you pass Go, collect £200.", true, 25));
+        deck.add(new MoveToCard("Take a walk to Mayfair.", true, 39));
+        deck.add(new PayableCard("You have been elected Chariman of the Board. \n" + "Pay each player £50.", true, -50, true));
+        deck.add(new PayableCard("Your building loan matures. \n" + "Collect £150.", true, 150, false));
         
         shuffledDeck = getShuffledDeck();
     }

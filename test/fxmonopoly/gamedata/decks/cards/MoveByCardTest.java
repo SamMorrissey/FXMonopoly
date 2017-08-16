@@ -14,7 +14,7 @@ import org.junit.Test;
  */
 public class MoveByCardTest {
     
-    MoveByCard move = new MoveByCard("Testing", -3);
+    MoveByCard move = new MoveByCard("Testing", false, -3);
     
     /**
      * Tests that the specified distance and retrieved distance are equivalent.
@@ -33,4 +33,11 @@ public class MoveByCardTest {
         assertEquals("Testing", move.getDescription());
     }
     
+    /**
+     * Tests that the from chance deck boolean is retrieved as expected.
+     */
+    @Test
+    public void testFromChanceDeck() {
+        assertFalse(move.getFromChanceDeck());
+    }
 }

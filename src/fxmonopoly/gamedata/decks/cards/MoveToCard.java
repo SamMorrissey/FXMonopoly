@@ -19,8 +19,8 @@ public class MoveToCard extends Card{
      * @param description The card description.
      * @param location The board position to be moved to.
      */
-    public MoveToCard(String description, int location) {
-        super(description);
+    public MoveToCard(String description, boolean fromChanceDeck, int location) {
+        super(description, fromChanceDeck);
         if(location > 39) {
             this.moveLocation = 39;
         }

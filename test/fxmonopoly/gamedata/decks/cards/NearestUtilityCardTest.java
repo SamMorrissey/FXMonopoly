@@ -14,7 +14,7 @@ import org.junit.Test;
  */
 public class NearestUtilityCardTest {
     
-    NearestUtilityCard near = new NearestUtilityCard("Testing");
+    NearestUtilityCard near = new NearestUtilityCard("Testing", false);
     
     /**
      * Tests that the default multiplier is the one returned.
@@ -30,5 +30,13 @@ public class NearestUtilityCardTest {
     @Test
     public void testDescription() {
         assertEquals("Testing", near.getDescription());
+    }
+    
+    /**
+     * Tests that the from chance deck boolean is retrieved as expected.
+     */
+    @Test
+    public void testFromChanceDeck() {
+        assertFalse(near.getFromChanceDeck());
     }
 }

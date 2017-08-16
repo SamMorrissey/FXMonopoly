@@ -25,8 +25,8 @@ public class PayableCard extends Card {
      * @param value The value specified by the card.
      * @param perPlayer Whether the value is per player in the game.
      */
-    public PayableCard(String description, int value, boolean perPlayer) {
-        super(description);
+    public PayableCard(String description, boolean fromChanceDeck, int value, boolean perPlayer) {
+        super(description, fromChanceDeck);
         this.value = value;
         this.perPlayer = perPlayer;
     }

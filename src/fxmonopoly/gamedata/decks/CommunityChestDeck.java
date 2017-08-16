@@ -26,22 +26,22 @@ public class CommunityChestDeck {
     public CommunityChestDeck() {
         deck = new ArrayList<>();
         
-        deck.add(new MoveToCard("Advance to Go. \n" + "Collect £200.", 0));
-        deck.add(new PayableCard("Bank error in your favour. \n" + "Collect £200.", 200, false));
-        deck.add(new PayableCard("Doctor's fees. \n" + "Pay £50.", -50, false));
-        deck.add(new PayableCard("From sale of stock you get £50.", 50, false));
-        deck.add(new GOJFCard());
-        deck.add(new MoveToCard("Go to Jail. \n" + "Do not pass Go, do not collect £200", 10));
-        deck.add(new PayableCard("Grand Opera Night. \n" + "Collect £50 from every player for opening night seats.", 50, true));
-        deck.add(new PayableCard("Xmas fund matures. \n" + "Collect £200", 200, false));
-        deck.add(new PayableCard("Income tax refund.", 20, false));
-        deck.add(new PayableCard("Life insurance matures. \n" + "Collect £100.", 100, false));
-        deck.add(new PayableCard("Pay hospital fees of £100.", -100, false));
-        deck.add(new PayableCard("Pay school fees of £150", -150, false));
-        deck.add(new PayableCard("Receive £25 consultancy fee.", 25, false));
-        deck.add(new DoublePayableCard("You are assessed for street repairs. \n" + "£40 per house, £115 per hotel.", 40, 115));
-        deck.add(new PayableCard("You have won second prize in a beauty contest. \n" + "Collect £10.", 10, false));
-        deck.add(new PayableCard("You inherit £100.", 100, false));
+        deck.add(new MoveToCard("Advance to Go. \n" + "Collect £200.", false, 0));
+        deck.add(new PayableCard("Bank error in your favour. \n" + "Collect £200.", false, 200, false));
+        deck.add(new PayableCard("Doctor's fees. \n" + "Pay £50.", false, -50, false));
+        deck.add(new PayableCard("From sale of stock you get £50.", false, 50, false));
+        deck.add(new GOJFCard(false));
+        deck.add(new MoveToCard("Go to Jail. \n" + "Do not pass Go, do not collect £200", false, 10));
+        deck.add(new PayableCard("Grand Opera Night. \n" + "Collect £50 from every player for opening night seats.", false, 50, true));
+        deck.add(new PayableCard("Xmas fund matures. \n" + "Collect £200", false, 200, false));
+        deck.add(new PayableCard("Income tax refund.", false, 20, false));
+        deck.add(new PayableCard("Life insurance matures. \n" + "Collect £100.", false, 100, false));
+        deck.add(new PayableCard("Pay hospital fees of £100.", false, -100, false));
+        deck.add(new PayableCard("Pay school fees of £150", false, -150, false));
+        deck.add(new PayableCard("Receive £25 consultancy fee.", false, 25, false));
+        deck.add(new DoublePayableCard("You are assessed for street repairs. \n" + "£40 per house, £115 per hotel.", false, 40, 115));
+        deck.add(new PayableCard("You have won second prize in a beauty contest. \n" + "Collect £10.", false, 10, false));
+        deck.add(new PayableCard("You inherit £100.", false, 100, false));
         
         shuffledDeck = getShuffledDeck();
     }

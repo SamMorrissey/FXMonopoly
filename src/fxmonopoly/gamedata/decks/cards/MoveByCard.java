@@ -18,8 +18,8 @@ public class MoveByCard extends Card {
      * @param description The description of this card.
      * @param distance The distance to be moved.
      */
-    public MoveByCard(String description, int distance) {
-        super(description);
+    public MoveByCard(String description, boolean fromChanceDeck, int distance) {
+        super(description, fromChanceDeck);
         this.distance = distance;
     }
     

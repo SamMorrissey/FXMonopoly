@@ -43,6 +43,10 @@ public class RailwayLocation extends Location {
         return price;
     }
     
+    public int getBaseRent() {
+        return baseRent;
+    }
+    
     /**
      * Determines the multiplier to be placed on the base rent. This method could
      * utilise a method specified in the player class (getOwnedRailways) however

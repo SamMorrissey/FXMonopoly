@@ -72,12 +72,31 @@ public class Bid {
         ArrayList<Player> highestBidders = new ArrayList<>();
         
         for(Player player : bidMap.keySet()) {
-            if(bidMap.get(player) == getHighestBid()) {
+            if(bidMap.get(player).equals(getHighestBid())) {
                 highestBidders.add(player);
             }
         }
 
         return highestBidders;
+    }
+    
+    /**
+     * Retrieves the second highest bid, as long as there is a single highest bidder.
+     * @return The second highest bid.
+     */
+    public int getSecondHighestBid() {
+        int i = 0;
+        
+        if(getHighestBidder().size() == 1) {
+            
+            for(Player player : bidMap.keySet()) {
+                if(bidMap.get(player) > i && !bidMap.get(player).equals(bidMap.get(getHighestBidder().get(0)))) {
+                    i = bidMap.get(player);
+                }
+            }
+        }
+        
+        return i;
     }
     
     /**

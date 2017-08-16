@@ -34,16 +34,7 @@ public class GameDataTest {
     ArrayList<Player> array;
     
     /**
-     * Sets the initial state for each test to manipulate. Both players are 
-     * mocked utilising the when, thenReturn, thenCallRealMethod and doCallRealMethod 
-     * methods of the Mockito library. 
-     * <p>
-     * The user player is mocked more extensively for the purpose of having the
-     * user player set as the active player and thus modified via the GameData
-     * method calls. The aim is to test for behaviour, not for implementation of
-     * other classes where possible. For example the Board and Card Decks cannot
-     * be extensively mocked but also form part of the internal GameData
-     * representation, whereas the player list is passed to its constructor.
+     * Sets the initial state for each test to manipulate.
      */
     @Before
     public void setUp() {
@@ -168,6 +159,9 @@ public class GameDataTest {
         assertNull(data.getActiveBid());
     }
     
+    /**
+     * Tests that the die functions and is retrieved as intended.
+     */
     @Test
     public void testDie() {
         assertNotNull(data.getDie());
@@ -198,6 +192,26 @@ public class GameDataTest {
             }
         }
         
+    }
+    
+    /**
+     * Tests that the active player is retrieved as expected.
+     */
+    @Test
+    public void testGetActivePlayer() {
+        assertEquals(user, data.getActivePlayer());
+    }
+    
+    /**
+     * Tests that the user player methods perform as expected.
+     */
+    @Test
+    public void testUserPlayerMethods() {
+        assertNull(data.getUserPlayer());
+        
+        data.setUserPlayer(user);
+        
+        assertEquals(user, data.getUserPlayer());
     }
     
 }
