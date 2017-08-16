@@ -21,9 +21,12 @@ public class TradeOffer {
     
     private final ArrayList<Location> offerLocations;
     private final ArrayList<Location> forLocations;
-    private final ArrayList<GOJFCard> cardList;
     
-    private int cash;
+    private final ArrayList<GOJFCard> cardListFrom;
+    private final ArrayList<GOJFCard> cardListTo;
+    
+    private int cashFrom;
+    private int cashTo;
     
     /**
      * Creates a trade offer instance regarding the specified players. Adding
@@ -35,7 +38,8 @@ public class TradeOffer {
         
         offerLocations = new ArrayList<>();
         forLocations = new ArrayList<>();
-        cardList = new ArrayList<>();
+        cardListTo = new ArrayList<>();
+        cardListFrom = new ArrayList<>();
     }
     
     /**
@@ -104,38 +108,76 @@ public class TradeOffer {
     }
     
     /**
-     * Retrieves the list of GOJF cards being offered. 
-     * @return The list of GOJF card being offered.
+     * Retrieves the list of GOJF cards being offered by the initiating player.
+     * @return The list of GOJF card being offered by the initiating player.
      */
-    public ArrayList<GOJFCard> getGOJFList() {
-        return cardList;
+    public ArrayList<GOJFCard> getGOJFListTo() {
+        return cardListTo;
+    }
+    
+    public ArrayList<GOJFCard> getGOJFListFrom() {
+        return cardListFrom;
     }
     
     /**
      * Retrieves the boolean representing whether there are any GOJF cards in the
      * offer.
-     * @return True if GOJFcard(s) are being offered, false otherwise.
+     * @return True if unequal amounts of GOJFCards are being offered, false if both
+     * lists are empty or there are equal quantities on offer.
      */
     public boolean containsGOJFCard() {
-        return !cardList.isEmpty();
+        if(cardListTo.isEmpty() && cardListFrom.isEmpty())
+            return false;
+        else
+            return !(cardListTo.size() == cardListFrom.size());
     }
     
     /**
      * Adds the specified cash value to the offer. Bearing in mind that any cash
- value of 0 or below will cause the containsCash method to return false.
-     * @param cash The cash to be added.
+     * value of 0 or below will cause the containsCash method to return false.
+     * @param cashTo The cash to be added.
      */
-    public void addCash(int cash) {
-        this.cash = cash;
+    public void addCashTo(int cashTo) {
+        this.cashTo = cashTo;
     }
     
     /**
-     * Retrieves the boolean representing whether there are any GOJF cards in the 
-     * offer.
-     * @return True if a cash value is being offered, false otherwise.
+     * Retrieves the cashTo value associated with this trade.
+     * @return The cash value from the initiating player;
+     */
+    public int getCashTo() {
+        return cashTo;
+    }
+    
+    /**
+     * Adds the specified cash value to the offer. Any value of 0 or below will
+     * cause the containsCash method to return false.
+     * @param cashFrom 
+     */
+    public void addCashFrom(int cashFrom) {
+        this.cashFrom = cashFrom;
+    }
+    
+    /**
+     * Retrieves the cashFrom value associated with this trade.
+     * @return The cash value to the initiating player.
+     */
+    public int getCashFrom() {
+        return cashFrom;
+    }
+    
+    /**
+     * Retrieves the boolean representing whether the cash values cancel each other
+     * out or not. Since if the cash values are equal there is no point transferring
+     * money across.
+     * @return True if a cash value is being offered, false if both cashTo and cashFrom
+     * are 0 or if both values are equal.
      */
     public boolean containsCash() {
-        return cash > 0;
+        if(cashTo == 0 && cashFrom == 0) 
+            return false;
+        else 
+            return !(cashTo == cashFrom);
     }
     
 }

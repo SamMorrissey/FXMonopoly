@@ -21,6 +21,7 @@ public class UtilityLocation extends Location {
     private final int price;
     
     private boolean isOwned;
+    private boolean isMortgaged;
     private Player owner;
     
     /**
@@ -101,4 +102,19 @@ public class UtilityLocation extends Location {
         setIsOwned(false);
     }
     
+    /**
+     * Sets the mortgaged status to the specified input.
+     * @param status The mortgaged status.
+     */
+    public void setIsMortgaged(boolean status) {
+        this.isMortgaged = status;
+    }
+    
+    /**
+     * Retrieves the mortgaged status of this location.
+     * @return True if mortgaged, false otherwise.
+     */
+    public boolean getIsMortgaged() {
+        return isMortgaged;
+    }
 }

@@ -20,6 +20,7 @@ public class RailwayLocation extends Location {
     private final int price;
     
     private boolean isOwned;
+    private boolean isMortgaged;
     private Player owner;
     
     /**
@@ -71,6 +72,8 @@ public class RailwayLocation extends Location {
                 break;
         }
         
+        
+        
         return multiplier;
     }
     
@@ -114,4 +117,21 @@ public class RailwayLocation extends Location {
         owner = null;
         setIsOwned(false);
     }
+    
+    /**
+     * Sets the mortgaged status to the specified input.
+     * @param status The mortgaged status.
+     */
+    public void setIsMortgaged(boolean status) {
+        isMortgaged = status;
+    }
+    
+    /**
+     * Retrieves the mortgaged status of this location.
+     * @return True if mortgaged, false otherwise.
+     */
+    public boolean getIsMortgaged() {
+        return isMortgaged;
+    }
+    
 }

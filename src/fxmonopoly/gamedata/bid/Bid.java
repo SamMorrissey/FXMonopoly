@@ -5,7 +5,10 @@
  */
 package fxmonopoly.gamedata.bid;
 
+import fxmonopoly.gamedata.board.locations.Location;
+import fxmonopoly.gamedata.decks.cards.GOJFCard;
 import fxmonopoly.gamedata.players.Player;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -17,6 +20,8 @@ import java.util.HashMap;
 public class Bid {
     
     private final HashMap<Player, Integer> bidMap;
+    private Location location;
+    private GOJFCard card;
     
     public Bid() {
         bidMap = new HashMap<>();
@@ -38,7 +43,7 @@ public class Bid {
      */
     public void addBid(Player player, int bid) {
         if(bid > 0) {
-            bidMap.put(player, bid);
+           bidMap.put(player, bid);
         }
     }
     
@@ -62,14 +67,70 @@ public class Bid {
      * Retrieves the player that made the highest bid.
      * @return The highest bidding player.
      */
-    public Player getHighestBidder() {
-        Player bidder = null;
+    public ArrayList<Player> getHighestBidder() {
+        
+        ArrayList<Player> highestBidders = new ArrayList<>();
         
         for(Player player : bidMap.keySet()) {
-            if(bidMap.get(player).equals(getHighestBid())) {
-                bidder = player;
+            if(bidMap.get(player) == getHighestBid()) {
+                highestBidders.add(player);
             }
         }
-        return bidder;
+
+        return highestBidders;
+    }
+    
+    /**
+     * Sets the GOJFCard being bid on.
+     * @param card The GOJFCard the bid concerns.
+     */
+    public void setGOJFCard(GOJFCard card) {
+        this.card = card;
+        if(card != null) {
+            location = null;
+        }
+    }
+    
+    /**
+     * Retrieves the GOJFCard being bid on.
+     * @return The GOJFCard being bid on.
+     */
+    public GOJFCard getGOJFCard() {
+        return card;
+    }
+    
+    /**
+     * Determines whether the bid concerns a GOJFCard.
+     * @return True if there is a GOJFCard, false otherwise.
+     */
+    public boolean containsGOJFCard() {
+        return card != null;
+    }
+    
+    /**
+     * Sets the Location being bid on.
+     * @param location The Location the bid concerns.
+     */
+    public void setLocation(Location location) {
+        this.location = location;
+        if(location != null) {
+            card = null;
+        }
+    }
+    
+    /**
+     * Retrieves the Location being bid on.
+     * @return The location being bid on.
+     */
+    public Location getLocation() {
+        return location;
+    }
+    
+    /**
+     * Determines whether the bid concerns a Location.
+     * @return True if there is a Location, false otherwise.
+     */
+    public boolean containsLocation() {
+        return location != null;
     }
 }

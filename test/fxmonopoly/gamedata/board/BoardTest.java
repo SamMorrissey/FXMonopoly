@@ -142,6 +142,7 @@ public class BoardTest {
         board.assimilateColourGroupBooleans(board.getGroup(property));
         
         assertFalse(property.getIsHotel());
+        assertEquals(4, property.getNumberOfHouses());
         
         board.evenlyReduce(property);
         
@@ -151,6 +152,7 @@ public class BoardTest {
         
         assertEquals(3, property.getNumberOfHouses());
         assertEquals(3, second.getNumberOfHouses());
+        
     }
     
     @Test

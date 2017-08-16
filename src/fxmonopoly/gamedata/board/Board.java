@@ -351,7 +351,6 @@ public class Board {
      * distinctly the least developed, or equal to the least developed. Otherwise
      * it will enact on the least developed property in the group, and if two
      * are equal then the earliest on the board will receive the development.
-     * <p>
      * @param property The property to improve.
      * @return         The value of the cost of the improvement.
      */
@@ -372,16 +371,18 @@ public class Board {
                 property.addHouse();
                 cost = property.getHousePrice();
                 houses += 4;
-                hotels -= 1;
+                hotels -= 1;  
             }
             else if(property.getNumberOfHouses() == j && !property.getUpgradeableToHotel() && !property.getIsHotel()) {
-                property.addHouse();
-                cost = property.getHousePrice();
-                houses -= 1;
+                if(property.getDevelopableStatus()) {
+                    property.addHouse();
+                    cost = property.getHousePrice();
+                    houses -= 1;
+                }
             }
             else if(property.getNumberOfHouses() != j && property.getIsHotel()) {
                 for(PropertyLocation temp : getGroup(property)) {
-                    if(temp != property && temp.getNumberOfHouses() == j) {
+                    if(temp != property && temp.getNumberOfHouses() == j && temp.getDevelopableStatus()) {
                         temp.addHouse();
                         cost = temp.getHousePrice();
                         houses += 4;
@@ -392,7 +393,7 @@ public class Board {
             }
             else if(property.getNumberOfHouses() != j && !property.getIsHotel()) {
                 for(PropertyLocation temp : getGroup(property)) {
-                    if(temp != property && temp.getNumberOfHouses() == j) {
+                    if(temp != property && temp.getNumberOfHouses() == j && temp.getDevelopableStatus()) {
                         temp.addHouse();
                         cost = temp.getHousePrice();
                         this.houses -= 1;
@@ -431,7 +432,8 @@ public class Board {
             hotels += 1;
             reimburse = property.getHousePrice() / 2;
         }
-        else if(property.getNumberOfHouses() == retrieveMostDeveloped(getGroup(property)).getNumberOfHouses()) {
+        else if(property.getNumberOfHouses() == retrieveMostDeveloped(getGroup(property)).getNumberOfHouses() &&
+                property.getNumberOfHouses() != 0) {
             property.removeHouse();
             houses += 1;
             reimburse = property.getHousePrice() / 2;
@@ -448,9 +450,11 @@ public class Board {
                 reimburse = temp.getHousePrice() / 2;
             }
             else {
-                temp.removeHouse();
-                houses += 1;
-                reimburse = temp.getHousePrice() / 2;
+                if(temp.getNumberOfHouses() != 0) {
+                    temp.removeHouse();
+                    houses += 1;
+                    reimburse = temp.getHousePrice() / 2;
+                }
             }
         }
         
@@ -597,7 +601,7 @@ public class Board {
      */
     private void notAllHotelsUndevelop(ArrayList<PropertyLocation> areHotels, ArrayList<PropertyLocation> nonHotels, PropertyLocation property) {
         
-        while(!(((houses / areHotels.size()) - retrieveMostDeveloped(nonHotels).getNumberOfHouses()) == -1) || 
+        while(!(((houses / areHotels.size()) - retrieveMostDeveloped(nonHotels).getNumberOfHouses()) == -1) && 
               !(((houses / areHotels.size()) - retrieveMostDeveloped(nonHotels).getNumberOfHouses()) == 0)) {
             retrieveMostDeveloped(nonHotels).removeHouse();
             houses++;
@@ -638,8 +642,10 @@ public class Board {
      * @return         The location retrieved.
      */
     public Location getLocation(int position) {
-        
-        return boardLocations.get(position);
+        if(position >= 0 && position <= 39) 
+            return boardLocations.get(position);
+        else
+            return null;
         
     }
     
@@ -657,6 +663,22 @@ public class Board {
      */
     public int getNumberOfHotelsLeft() {
         return hotels;
+    }
+    
+    public int getUtilityGroupMultiplier() {
+        
+        UtilityLocation electric = (UtilityLocation) getLocation(12);
+        UtilityLocation water = (UtilityLocation) getLocation(28);
+        
+        if(!(electric.getIsOwned()) || !(water.getIsOwned())) {
+            return electric.getSingleMultiplier();
+        }
+        else if(electric.getOwner() != water.getOwner()) {
+            return electric.getSingleMultiplier();
+        }
+        else {
+            return electric.getDoubleMultiplier();
+        }
     }
     
     

@@ -95,13 +95,16 @@ public class PropertyLocation extends Location{
     
     /**
      * Sets the mortgaged status of this property. Automatically sets the 
-     * isDevelopable boolean to false if the input parameter is true.
+     * isDevelopable boolean to false if the input parameter is true. Only sets
+     * the status provided that the number of houses is 0, otherwise has no effect.
      * @param mortgaged True if to be mortgaged, false otherwise.
      */
     public void setMortgaged(boolean mortgaged) {
-        isMortgaged = mortgaged;
-        if(isMortgaged) {
-            isDevelopable = false;
+        if(numberOfHouses == 0) {
+            isMortgaged = mortgaged;
+            if(isMortgaged) {
+                isDevelopable = false;
+            }
         }
     }
     
@@ -305,7 +308,19 @@ public class PropertyLocation extends Location{
         isDevelopable = status;
     }
     
+    /**
+     * Retrieves the house/hotel price for this location.
+     * @return The price of each house/hotel.
+     */
     public int getHousePrice() {
         return housePrice;
+    }
+    
+    /**
+     * Retrieves the is owned status of this property.
+     * @return True if owned, false otherwise.
+     */
+    public boolean getIsOwned() {
+        return isOwned;
     }
 }

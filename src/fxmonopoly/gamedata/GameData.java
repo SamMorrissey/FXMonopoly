@@ -36,7 +36,6 @@ public class GameData {
     
     /**
      * Creates a GameData instance utilising the specified player list.
-     * @param playerList The ordered list of players.
      */
     public GameData() {
         
@@ -62,7 +61,6 @@ public class GameData {
     public void setPlayerList(ArrayList<Player> array) {
         playerList = array;
         setActivePlayer();
-        activePlayer.setCanRoll(true);
     }
     
     
@@ -87,7 +85,8 @@ public class GameData {
     public void removePlayer(Player player) {
         if(playerList.contains(player)) {
             playerList.remove(player);
-            if(activePlayer == player && playerList.size() != 1) {
+    
+            if(playerList.size() > 1) {
                 nextPlayer();
             }
         }
@@ -108,6 +107,7 @@ public class GameData {
     private void setActivePlayer() {
         if(playerList != null) {
             activePlayer = playerList.get(0);
+            activePlayer.setCanRoll(true);
         }
     }
     

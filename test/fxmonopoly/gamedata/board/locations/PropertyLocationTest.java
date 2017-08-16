@@ -201,12 +201,15 @@ public class PropertyLocationTest {
     public void testOwnership() {
         
         assertNull(property.getOwner());
+        assertFalse(property.getIsOwned());
         
         property.transferOwnership(player);
         assertEquals(player, property.getOwner());
+        assertTrue(property.getIsOwned());
         
         property.removeOwnership();
         assertNull(property.getOwner());
+        assertFalse(property.getIsOwned());
         
     }
 

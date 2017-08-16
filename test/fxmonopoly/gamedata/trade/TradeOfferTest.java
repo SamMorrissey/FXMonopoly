@@ -109,15 +109,22 @@ public class TradeOfferTest {
     }
     
     @Test
-    public void testGOJFList() {
+    public void testGOJFMethods() {
         assertFalse(offer.containsGOJFCard());
         
-        offer.getGOJFList().add(card);
-        
+        offer.getGOJFListTo().add(card);
         assertTrue(offer.containsGOJFCard());
-        assertEquals(1, offer.getGOJFList().size());
         
-        offer.getGOJFList().removeAll(offer.getGOJFList());
+        offer.getGOJFListFrom().add(card);
+        assertFalse(offer.containsGOJFCard());
+        
+        assertEquals(1, offer.getGOJFListTo().size());
+        assertEquals(1, offer.getGOJFListFrom().size());
+        
+        offer.getGOJFListTo().removeAll(offer.getGOJFListTo());
+        assertTrue(offer.containsGOJFCard());
+        
+        offer.getGOJFListFrom().removeAll(offer.getGOJFListFrom());
         assertFalse(offer.containsGOJFCard());
     }
     
@@ -125,13 +132,13 @@ public class TradeOfferTest {
     public void testCash() {
         assertFalse(offer.containsCash());
         
-        offer.addCash(0);
+        offer.addCashTo(0);
         assertFalse(offer.containsCash());
         
-        offer.addCash(100);
+        offer.addCashFrom(100);
         assertTrue(offer.containsCash());
         
-        offer.addCash(-100);
+        offer.addCashTo(100);
         assertFalse(offer.containsCash());
     }
     

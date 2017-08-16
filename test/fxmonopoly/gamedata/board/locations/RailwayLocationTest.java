@@ -82,4 +82,16 @@ public class RailwayLocationTest {
         assertEquals("Testing", location.getName());
     }
     
+    /**
+     * Tests that the mortgaged status is set and retrieved as expected.
+     */
+    @Test
+    public void testMortgagedStatus() {
+        assertFalse(location.getIsMortgaged());
+        
+        location.setIsMortgaged(true);
+        
+        assertTrue(location.getIsMortgaged());
+    }
+    
 }

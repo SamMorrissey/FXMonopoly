@@ -6,15 +6,22 @@
 package fxmonopoly.game;
 
 import fxmonopoly.gamedata.GameData;
+import fxmonopoly.gamedata.bid.Bid;
 import fxmonopoly.gamedata.board.locations.*;
+import fxmonopoly.gamedata.decks.cards.*;
 import fxmonopoly.gamedata.players.*;
+import fxmonopoly.gamedata.trade.TradeOffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 
 /**
- *
+ * Defines the GameModel class, which provides all methods necessary for the 
+ * GameController to define the game flow.
+ * <p>
+ * This includes getters for elements necessary to be displayed in UI, or that have
+ * potential to define some UI interactions. Alongside many high level manipulations.
  * @author Sam P. Morrissey
  */
 public class GameModel {
@@ -82,14 +89,14 @@ public class GameModel {
      */
     public boolean containsCPU() {
         
-        boolean user = false;
+        boolean cpu = false;
         for(Player player : initialList) {
             if(player instanceof CPUPlayer) {
-                user = true;
+                cpu = true;
             }
         }
         
-        return user;
+        return cpu;
     }
     
     /**
@@ -311,7 +318,7 @@ public class GameModel {
      * the list actually has a card in.
      */
     public void useActivePlayerGOJFCard() {
-        if(data.getActivePlayer().hasGOJFCard()) {
+        if(data.getActivePlayer().hasGOJFCard() && data.getActivePlayer().isInJail()) {
             data.getActivePlayer().exitJail();
             // Does not matter which deck it is returned to, if the specified
             // one already has a GOJFCard, it is returned to the other instead.
@@ -391,7 +398,12 @@ public class GameModel {
      * @return True if the user is the active player, false otherwise.
      */
     public boolean userIsActive() {
-        return user == data.getActivePlayer();
+        if(user == null || data.getActivePlayer() == null) {
+            return false;
+        }
+        else {
+            return user == data.getActivePlayer();
+        }
     }
     
     /**
@@ -441,7 +453,533 @@ public class GameModel {
         } 
     }
     
-    public void sellHouses() {
+    /**
+     * Develops the specified property provided that the user is the owner. If
+     * either the user doesn't own the property or the property/none of its colour
+     * group can be developed then this will return 0 and have no effect on 
+     * development.
+     * @param property The property to develop
+     * @return The cost of the development.
+     */
+    public int userDevelopProperty(PropertyLocation property) {
         
+        if(property.getOwner() == user) {
+            int cost = data.getBoard().evenlyDevelop(property);
+            data.getBoard().assimilateColourGroupBooleans(data.getBoard().getGroup(property));
+            user.addCash(-cost);
+            return cost;
+        }
+        
+        return 0;
+    }
+    
+    /**
+     * Regresses the specified property provided that the user is the owner. If
+     * either the user doesn't own the property or the property/none of its colour
+     * group can be regressed then this will return 0 and have no effect on 
+     * development.
+     * @param property The property to regress.
+     * @return The value of the reimbursement.
+     */
+    public int userRegressProperty(PropertyLocation property) {
+        
+        if(property.getOwner() == user) {
+            int reimbursement = data.getBoard().evenlyReduce(property);
+            data.getBoard().assimilateColourGroupBooleans(data.getBoard().getGroup(property));
+            user.addCash(reimbursement);
+            return reimbursement;
+        }
+        
+        return 0;
+    }
+    
+    /**
+     * Develops the specified property provided that the active player is the owner.
+     * If either the active player doesn't own this property or the property/none
+     * of its colour group can be developed then this will return 0 and have no 
+     * effect on development.
+     * @param property The property to develop.
+     * @return The cost of the development.
+     */
+    public int activePlayerDevelopProperty(PropertyLocation property) {
+        if(property.getOwner() == data.getActivePlayer()) {
+            int cost = data.getBoard().evenlyDevelop(property);
+            data.getBoard().assimilateColourGroupBooleans(data.getBoard().getGroup(property));
+            data.getActivePlayer().addCash(-cost);
+            return cost;
+        }
+        
+        return 0;
+    }
+    
+    /**
+     * Regresses the specified property provided that the active player is the owner.
+     * If either the active player doesn't own this property of the property/none
+     * of its colour group can be regressed then this will return 0 and have no
+     * effect on development.
+     * @param property The property to regress.
+     * @return The value of the reimbursement.
+     */
+    public int activePlayerRegressProperty(PropertyLocation property) {
+        if(property.getOwner() == data.getActivePlayer()) {
+            int reimburse = data.getBoard().evenlyReduce(property);
+            data.getBoard().assimilateColourGroupBooleans(data.getBoard().getGroup(property));
+            data.getActivePlayer().addCash(reimburse);
+            return reimburse;
+        }
+        
+        return 0;
+    }
+    
+    /**
+     * Retrieves whether the user owns a specified location.
+     * @param location The location to check.
+     * @return True if the user does own the location, false otherwise.
+     */
+    public boolean userOwnsSpecificLocation(Location location) {
+        if(location instanceof PropertyLocation) {
+            return ((PropertyLocation) location).getOwner() == user;
+        }
+        else if(location instanceof RailwayLocation) {
+            return ((RailwayLocation) location).getOwner() == user;
+        }
+        else if(location instanceof UtilityLocation) {
+            return ((UtilityLocation) location).getOwner() == user;
+        }
+        else {
+            return false;
+        }
+    }
+    
+    /**
+     * Retrieves the location at the specified position.
+     * @param position The position of the location.
+     * @return The location at the specified position, or null if out of bounds.
+     */
+    public Location retrieveLocation(int position) {
+        return data.getBoard().getLocation(position);
+    }
+    
+    /**
+     * Retrieves the current board position of the user.
+     * @return The position of the user.
+     */
+    public int getUserPosition() {
+        return user.getPosition();
+    }
+    
+    /**
+     * Retrieves the colour group containing the specified property.
+     * @param property The property in the group.
+     * @return The group of properties containing the property.
+     */
+    public ArrayList<PropertyLocation> getColourGroup(PropertyLocation property) {
+        return data.getBoard().getGroup(property);
+    }
+    
+    /**
+     * Retrieves the user player associated with this game.
+     * @return The user player instance.
+     */
+    public UserPlayer getUser() {
+        return user;
+    }
+    
+    /**
+     * Retrieves the currently active player instance.
+     * @return The active player instance.
+     */
+    public Player getActivePlayer() {
+        return data.getActivePlayer();
+    }
+    
+    /**
+     * Retrieves the active player bankruptcy status.
+     * @return True if the player is certified bankrupt, false otherwise.
+     */
+    public boolean isActivePlayerBankrupt() {
+        return data.getActivePlayer().getOwnedLocations().isEmpty() &&
+               data.getActivePlayer().getCash() < 0 &&
+               !data.getActivePlayer().hasGOJFCard();
+    }
+    
+    /**
+     * Resolves unpayable rent amounts, when the active player has become bankrupt,
+     * and sales of property/GOJFCards cannot cover the disparity. Only checks for
+     * location 
+     */
+    public void resolveExtraBalance() {
+        if(getLocationByPosition(data.getActivePlayer().getPosition()) instanceof PropertyLocation) {
+           PropertyLocation property = (PropertyLocation) getLocationByPosition(data.getActivePlayer().getPosition());
+           property.getOwner().addCash(data.getActivePlayer().getCash());
+        }
+        else if(getLocationByPosition(data.getActivePlayer().getPosition()) instanceof UtilityLocation) {
+           UtilityLocation utility = (UtilityLocation) getLocationByPosition(data.getActivePlayer().getPosition());
+           utility.getOwner().addCash(data.getActivePlayer().getCash());
+        }
+        else if(getLocationByPosition(data.getActivePlayer().getPosition()) instanceof RailwayLocation) {
+            RailwayLocation railway = (RailwayLocation) getLocationByPosition(data.getActivePlayer().getPosition());
+            railway.getOwner().addCash(data.getActivePlayer().getCash());
+        }
+    }
+    
+    /**
+     * Removes the active player from the game, only if they are confirmed bankrupt,
+     * otherwise this method does nothing. Also continues on to the next player, 
+     * if the player list contains more than a single player.
+     */
+    public void removeActivePlayerFromGame() {
+        if(isActivePlayerBankrupt()) {
+            data.removePlayer(data.getActivePlayer());
+            
+            if(data.getPlayerList().size() > 1) {
+                nextPlayer();
+            } 
+        }  
+    }
+    
+    /**
+     * Initialises an active trade instance.
+     * @param playerfrom The player initiating the trade.
+     */
+    public void startTrade(Player playerfrom) {
+        data.newTrade(playerfrom);
+    }
+    
+    /**
+     * Retrieves the active trade instance for modification.
+     * @return The active trade instance, or null if no trade has been initiated.
+     */
+    public TradeOffer getActiveTrade() {
+        return data.getActiveTrade();
+    }
+    
+    /**
+     * Fully resolves the active trade instance between two players.
+     */
+    public void resolveActiveTrade() {
+        
+        if(data.getActiveTrade().hasPlayerTo()) {
+            
+            transferTradeTo();
+            transferTradeFrom();
+        }
+        
+        data.clearActiveTrade();
+    }
+    
+    /**
+     * Transfers all items specified to the trade offer recipient.
+     */
+    private void transferTradeTo() {
+        
+        TradeOffer transfer = data.getActiveTrade();
+        if(transfer.containsOfferLocations()) {
+            
+            transfer.getOfferList().forEach(e -> {
+                if(e instanceof PropertyLocation) {
+                    ((PropertyLocation) e).transferOwnership(transfer.getPlayerTo());
+                    transfer.getPlayerTo().addLocation(e);
+                    transfer.getPlayerFrom().removeLocation(e);
+                }
+                else if(e instanceof UtilityLocation) {
+                    ((UtilityLocation) e).setOwner(transfer.getPlayerTo());
+                    transfer.getPlayerTo().addLocation(e);
+                    transfer.getPlayerFrom().removeLocation(e);
+                }
+                else if(e instanceof RailwayLocation) {
+                    ((RailwayLocation) e).setOwner(transfer.getPlayerTo());
+                    transfer.getPlayerTo().addLocation(e);
+                    transfer.getPlayerFrom().removeLocation(e);
+                }
+            });
+        }
+        
+        if(transfer.containsGOJFCard()) {
+            
+            transfer.getGOJFListTo().forEach(e -> {
+                transfer.getPlayerTo().addGOJFCard(e);
+                transfer.getPlayerFrom().removeGOJFCard();
+            });
+        }
+        
+        if(transfer.containsCash()) {
+            transfer.getPlayerTo().addCash(transfer.getCashTo());
+        }
+        
+    }
+    
+    /**
+     * Transfers all items specified to the trade offer initiator.
+     */
+    private void transferTradeFrom() {
+        
+        TradeOffer transfer = data.getActiveTrade();
+        if(transfer.containsForLocations()) {
+            
+            transfer.getForList().forEach(e -> {
+                if(e instanceof PropertyLocation) {
+                    ((PropertyLocation) e).transferOwnership(transfer.getPlayerFrom());
+                    transfer.getPlayerFrom().addLocation(e);
+                    transfer.getPlayerTo().removeLocation(e);
+                }
+                else if(e instanceof UtilityLocation) {
+                    ((UtilityLocation) e).setOwner(transfer.getPlayerFrom());
+                    transfer.getPlayerFrom().addLocation(e);
+                    transfer.getPlayerTo().removeLocation(e);
+                }
+                else if(e instanceof RailwayLocation) {
+                    ((RailwayLocation) e).setOwner(transfer.getPlayerFrom());
+                    transfer.getPlayerFrom().addLocation(e);
+                    transfer.getPlayerTo().removeLocation(e);
+                }
+            });
+        }
+        
+        if(transfer.containsGOJFCard()) {
+            
+            transfer.getGOJFListFrom().forEach(e -> {
+                transfer.getPlayerFrom().addGOJFCard(e);
+                transfer.getPlayerTo().removeGOJFCard();
+            });
+        }
+        
+        if(transfer.containsCash()) {
+            transfer.getPlayerFrom().addCash(transfer.getCashFrom());
+        }
+    }
+    
+    /**
+     * Creates a new active bid instance.
+     */
+    public void startBid() {
+        data.newBid();
+    }
+    
+    /**
+     * Retrieves the active bid instance.
+     * @return 
+     */
+    public Bid getActiveBid() {
+        return data.getActiveBid();
+    }
+    
+    public void resolveBid() {
+        
+        
+        if(data.getActiveBid().getHighestBidder().size() == 1) {
+            data.getActiveBid().getHighestBidder().get(0).addCash(-data.getActiveBid().getHighestBid());
+            
+            processBidTransfer(data.getActiveBid().getHighestBidder().get(0));
+        }
+        else if(data.getActiveBid().getHighestBidder().size() > 1) {
+            
+            
+            Player highestBidder = null;
+            
+            for(Player player : data.getActiveBid().getHighestBidder()) {
+                if(player instanceof UserPlayer) {
+                    highestBidder = player;
+                    break;
+                }
+            }
+            
+            if(highestBidder == null) {
+                highestBidder = data.getActiveBid().getHighestBidder().get(0);
+            }
+            
+     
+            highestBidder.addCash(-data.getActiveBid().getHighestBid());
+            
+            processBidTransfer(highestBidder);
+        }    
+        
+    }
+    
+    private void processBidTransfer(Player player) {
+        
+        if(data.getActiveBid().containsGOJFCard()) {
+            for(Player temp : data.getPlayerList()) {
+                if(temp.getGOJFCard() == data.getActiveBid().getGOJFCard()) {
+                    temp.removeGOJFCard();
+                }
+            }
+            
+            player.addGOJFCard(data.getActiveBid().getGOJFCard());
+        }
+        else if(data.getActiveBid().containsLocation()) {
+            Location location = data.getActiveBid().getLocation();
+            
+            if(location instanceof PropertyLocation) {
+                PropertyLocation temp = ((PropertyLocation) location);
+                
+                if(temp.getOwner() != null)
+                    temp.getOwner().removeLocation(location);
+                
+                temp.transferOwnership(player);
+                player.addLocation(location);
+            }
+            else if(location instanceof UtilityLocation) {
+                UtilityLocation temp = ((UtilityLocation) location);
+                
+                if(temp.getOwner() != null) 
+                    temp.getOwner().removeLocation(location);
+                
+                
+                temp.getOwner().removeLocation(location);
+                temp.setOwner(player);
+                player.addLocation(location);
+            }
+            else if(location instanceof RailwayLocation) {
+                RailwayLocation temp = ((RailwayLocation) location);
+                
+                if(temp.getOwner() != null)
+                    temp.getOwner().removeLocation(location);
+                
+                temp.getOwner().removeLocation(location);
+                ((RailwayLocation) location).setOwner(player);
+                player.addLocation(location);
+            }
+        }
+    }
+    
+    public void processCardActions() {
+        
+        Card card = data.getActiveCard();
+        
+        if(card instanceof DoublePayableCard) {
+            int balance = 0;
+            DoublePayableCard temp = ((DoublePayableCard) card);
+            
+            for(PropertyLocation location : data.getActivePlayer().getOwnedProperty()) {
+                if(location.getIsHotel()) {
+                    balance += temp.getSecondValue();
+                }
+                else {
+                    balance += (temp.getFirstValue() * location.getNumberOfHouses());
+                }
+            }
+            
+            data.getActivePlayer().addCash(-balance);
+        }
+        else if(card instanceof GOJFCard) {
+            data.getActivePlayer().addGOJFCard((GOJFCard)card);
+        }
+        else if(card instanceof MoveByCard) {
+            data.getActivePlayer().moveBy(((MoveByCard) card).getDistance());
+        }
+        else if(card instanceof MoveToCard) {
+            if(card.getDescription().contains("Go to Jail")) {
+                data.getActivePlayer().moveTo(((MoveToCard) card).getMoveLocation());
+                data.getActivePlayer().enterJail();
+            }
+            data.getActivePlayer().moveTo(((MoveToCard) card).getMoveLocation());
+        }
+        else if(card instanceof NearestRailwayCard) {
+            while(!(data.getBoard().getLocation(data.getActivePlayer().getPosition()) instanceof RailwayLocation)) {
+                data.getActivePlayer().moveBy(1);
+            }
+            
+            
+        }
+        else if(card instanceof NearestUtilityCard) {
+            while(!(data.getBoard().getLocation(data.getActivePlayer().getPosition()) instanceof UtilityLocation)) {
+                data.getActivePlayer().moveBy(1);
+            }
+            
+            
+        }
+        else if(card instanceof PayableCard) {
+            PayableCard temp = (PayableCard) card;
+            
+            if(temp.getPerPlayer()) {
+                
+                data.getPlayerList().forEach(e -> {
+                    if(!(e == data.getActivePlayer())) {
+                        e.addCash(-temp.getValue());
+                        data.getActivePlayer().addCash(temp.getValue());
+                    }
+                });
+                
+            }
+            else {
+                data.getActivePlayer().addCash(temp.getValue());
+            }
+        }
+        
+    }
+    
+    public void processRequiredPositionAction() {
+        
+        Location location = data.getBoard().getLocation(data.getActivePlayer().getPosition());
+        
+        if(location instanceof ChanceLocation) {
+            data.drawNextChanceCard();
+        }
+        else if(location instanceof CommunityChestLocation) {
+            data.drawNextCommunityChestCard();
+        }
+        else if(location instanceof FreeParkingLocation) {
+            
+        }
+        else if(location instanceof GoLocation) {
+            data.getActivePlayer().addCash(200);
+        }
+        else if(location instanceof GoToJailLocation) {
+            data.getActivePlayer().moveTo(((GoToJailLocation) location).getJailPosition());
+            data.getActivePlayer().enterJail();
+        }
+        else if(location instanceof JailLocation) {
+            
+        }
+        else if(location instanceof PropertyLocation) {
+            
+            PropertyLocation temp = (PropertyLocation) location;
+            
+            if(temp.getIsOwned() && !(temp.getMortgagedStatus()) && temp.getOwner() != data.getActivePlayer()) {
+                data.getActivePlayer().addCash(-temp.getRent());
+                temp.getOwner().addCash(temp.getRent());
+            }
+            
+        }
+        else if(location instanceof RailwayLocation) {
+            
+            RailwayLocation temp = (RailwayLocation) location;
+            
+            if(temp.getIsOwned() && !(temp.getIsMortgaged())) {
+                if(data.getActiveCard() instanceof NearestRailwayCard) {
+                    int rent = (temp.getRentMultiplier(temp.getOwner().getOwnedRailways().size())) * 2;
+                    data.getActivePlayer().addCash(-rent);
+                    temp.getOwner().addCash(rent);
+                }
+                else {
+                    int rent = (temp.getRentMultiplier(temp.getOwner().getOwnedRailways().size()));
+                    data.getActivePlayer().addCash(-rent);
+                    temp.getOwner().addCash(rent);
+                }
+            }
+        }
+        else if(location instanceof TaxLocation) {
+            data.getActivePlayer().addCash(-((TaxLocation) location).getValue());
+        }
+        else if(location instanceof UtilityLocation) {
+            
+            UtilityLocation temp = (UtilityLocation) location;
+            
+            int multiplier = 0;
+            
+            if(temp.getIsOwned() && !(temp.getIsMortgaged())) {
+                if(temp.getOwner().getOwnedUtilities().size() == 1 && !(data.getActiveCard() instanceof NearestUtilityCard)) {
+                    multiplier = temp.getSingleMultiplier();
+                }
+                else {
+                    multiplier = temp.getDoubleMultiplier();
+                }
+            }
+            
+            int rent = (multiplier * data.getDie().dieRollTotal());
+            data.getActivePlayer().addCash(-rent);
+            temp.getOwner().addCash(rent);
+        } 
     }
 }

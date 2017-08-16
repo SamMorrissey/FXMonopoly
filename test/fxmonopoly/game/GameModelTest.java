@@ -5,10 +5,7 @@
  */
 package fxmonopoly.game;
 
-import fxmonopoly.gamedata.board.locations.GoLocation;
-import fxmonopoly.gamedata.board.locations.PropertyLocation;
-import fxmonopoly.gamedata.board.locations.RailwayLocation;
-import fxmonopoly.gamedata.board.locations.UtilityLocation;
+import fxmonopoly.gamedata.board.locations.*;
 import fxmonopoly.gamedata.decks.cards.Card;
 import fxmonopoly.gamedata.decks.cards.GOJFCard;
 import fxmonopoly.gamedata.players.CPUPlayer;
@@ -19,7 +16,7 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -278,7 +275,6 @@ public class GameModelTest {
     @Test
     public void testActivePlayerBuyLocation() {
         model.reorderingList(12);
-        assertTrue(model.getActivePlayerDieRollStatus());
         
         while(!(model.getLocationByPosition(model.getActivePlayerPosition()) instanceof PropertyLocation) &&
               !(model.getLocationByPosition(model.getActivePlayerPosition()) instanceof UtilityLocation) &&
@@ -301,5 +297,222 @@ public class GameModelTest {
             }
         }
         
+    }
+    
+    /**
+     * Tests that the user owns location boolean functions as expected.
+     */
+    @Test
+    public void testUserOwnsLocation() {
+        model.reorderingList(10);
+        
+        while(!(model.getLocationByPosition(model.getUserPosition()) instanceof PropertyLocation) &&
+              !(model.getLocationByPosition(model.getUserPosition()) instanceof UtilityLocation) &&
+              !(model.getLocationByPosition(model.getUserPosition()) instanceof RailwayLocation)) {
+            
+            model.rollDieAndMove();
+            model.nextPlayer();
+        }
+        
+        Location location = model.getLocationByPosition(model.getUserPosition());
+        
+        if(location instanceof PropertyLocation) {
+            assertFalse(model.userOwnsSpecificLocation(location));
+            ((PropertyLocation) location).transferOwnership(model.getUser());
+            assertTrue(model.userOwnsSpecificLocation(location));
+        }
+        else if(location instanceof UtilityLocation) {
+            assertFalse(model.userOwnsSpecificLocation(location));
+            ((UtilityLocation) location).setOwner(model.getUser());
+            assertTrue(model.userOwnsSpecificLocation(location));
+        }
+        else if(location instanceof RailwayLocation) {
+            assertFalse(model.userOwnsSpecificLocation(location));
+            ((RailwayLocation) location).setOwner(model.getUser());
+            assertTrue(model.userOwnsSpecificLocation(location));
+        }
+    }
+    
+    /**
+     * Tests that the locations are retrieved as expected in terms of type and
+     * position.
+     */
+    @Test
+    public void testRetrieveLocation() {
+        assertTrue(model.retrieveLocation(0) instanceof GoLocation);
+        assertTrue(model.retrieveLocation(1) instanceof PropertyLocation);
+        assertTrue(model.retrieveLocation(2) instanceof CommunityChestLocation);
+        assertTrue(model.retrieveLocation(4) instanceof TaxLocation);
+        assertTrue(model.retrieveLocation(5) instanceof RailwayLocation);
+        assertTrue(model.retrieveLocation(7) instanceof ChanceLocation);
+        assertTrue(model.retrieveLocation(10) instanceof JailLocation);
+        assertTrue(model.retrieveLocation(12) instanceof UtilityLocation);
+        assertTrue(model.retrieveLocation(20) instanceof FreeParkingLocation);
+        assertTrue(model.retrieveLocation(30) instanceof GoToJailLocation);
+    }
+    
+    /**
+     * Tests that the user instance is retrieved as expected.
+     */
+    @Test
+    public void testGetUser() {
+        assertTrue(model.containsUser());
+        assertTrue(model.getUser() instanceof UserPlayer);
+    }
+    
+    /**
+     * Tests that the active player is retrieved as expected.
+     */
+    @Test
+    public void testGetActivePlayer() {
+        model.reorderingList(10);
+        
+        assertEquals(model.getActivePlayer(), model.getReorderedList().get(0));
+        
+        model.nextPlayer();
+        
+        assertEquals(model.getActivePlayer(), model.getReorderedList().get(1));
+    }
+    
+    /**
+     * Tests that the active player bankruptcy boolean is retrieved as expected.
+     */
+    @Test
+    public void testIsActivePlayerBankrupt() {
+        model.reorderingList(10);
+        
+        assertFalse(model.isActivePlayerBankrupt());
+        
+        model.getActivePlayer().addCash(-1600);
+        
+        assertTrue(model.isActivePlayerBankrupt());
+        
+        Location location = mock(Location.class);
+        
+        model.getActivePlayer().getOwnedLocations().add(location);
+        
+        assertFalse(model.isActivePlayerBankrupt());
+    }
+    
+    /**
+     * Tests that the extra balance left after a bankruptcy is equalised as expected.
+     */
+    @Test
+    public void testResolveExtraBalance() {
+        model.reorderingList(12);
+        
+        if(model.userIsActive()) {
+            model.nextPlayer();
+        }
+        
+        model.getUser().addCash(-1500);
+        PropertyLocation location = (PropertyLocation) model.getLocationByPosition(1);
+        location.transferOwnership(model.getActivePlayer());
+        model.getUser().moveTo(1);
+        model.getUser().addCash(-location.getRent());
+        
+        model.nextPlayer();
+        model.resolveExtraBalance();
+        
+        assertEquals(1500 - location.getRent(), location.getOwner().getCash());
+    }
+    
+    /**
+     * Tests that the remove active player from game method functions as expected.
+     */
+    @Test
+    public void testRemoveActivePlayerFromGame() {
+        model.reorderingList(12);
+        
+        if(!model.userIsActive()) {
+            model.nextPlayer();
+        }
+        
+        model.getUser().addCash(-1500);
+        assertFalse(model.isActivePlayerBankrupt());
+        model.removeActivePlayerFromGame();
+        assertTrue(model.userIsActive());
+        
+        model.getUser().addCash(-1);
+        assertTrue(model.isActivePlayerBankrupt());
+        model.removeActivePlayerFromGame();
+        assertTrue(model.userIsActive());
+    }
+    
+    @Test
+    public void testStartTrade() {
+        assertNull(model.getActiveTrade());
+        
+        Player playerFrom = model.getInitialList().get(0);
+        model.startTrade(playerFrom);
+                
+        assertNotNull(model.getActiveTrade());
+    }
+    
+    @Test
+    public void testResolveTrade() {
+        model.startTrade(model.getInitialList().get(0));
+        model.getActiveTrade().setPlayerTo(model.getInitialList().get(1));
+        
+        assertNotNull(model.getActiveTrade());
+        
+        PropertyLocation property = (PropertyLocation) model.getLocationByPosition(1);
+        model.getActiveTrade().getOfferList().add(property);
+        
+        PropertyLocation property2 = (PropertyLocation) model.getLocationByPosition(3);
+        model.getActiveTrade().getForList().add(property2);
+        
+        GOJFCard card = mock(GOJFCard.class);
+        model.getActiveTrade().getGOJFListTo().add(card);
+        
+        assertTrue(model.getActiveTrade().containsGOJFCard());
+        
+        model.resolveActiveTrade();
+        
+        assertEquals(model.getInitialList().get(1).getOwnedLocations().get(0), property);
+        assertEquals(model.getInitialList().get(1).removeGOJFCard(), card);
+        assertEquals(model.getInitialList().get(0).getOwnedLocations().get(0), property2);
+        
+        assertNull(model.getActiveTrade());
+    }
+    
+    @Test
+    public void testStartBid() {
+        assertNull(model.getActiveBid());
+        
+        model.startBid();
+        
+        assertNotNull(model.getActiveBid());
+    }
+    
+    @Test
+    public void testResolveBid() {
+        model.startBid();
+        
+        
+        
+        model.getActiveBid().addBid(model.getInitialList().get(0), 1);
+        model.getActiveBid().addBid(model.getInitialList().get(1), 2);
+        
+        Location location = model.getLocationByPosition(1);
+        
+        
+        
+        model.getActiveBid().setLocation(location);
+        assertTrue(model.getActiveBid().containsLocation());
+        
+        model.resolveBid();
+        
+        System.out.println(model.getInitialList().get(1).getOwnedProperty().size());
+        
+        ((PropertyLocation) location).transferOwnership(model.getInitialList().get(1));
+        model.getInitialList().get(1).addLocation(location);
+        
+        
+        
+        assertEquals(1498, model.getInitialList().get(1).getCash());
+        assertEquals(location, model.getInitialList().get(1).getOwnedLocations().get(0));
+        assertEquals(((PropertyLocation) location).getOwner(), model.getInitialList().get(1));
+        assertEquals(1500, model.getInitialList().get(0).getCash());
     }
 }
