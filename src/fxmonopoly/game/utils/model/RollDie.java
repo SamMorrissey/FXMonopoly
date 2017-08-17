@@ -17,7 +17,12 @@ import fxmonopoly.gamedata.die.Die;
  * game state.
  * @author Sam P. Morrissey
  */
-public class RollDie {
+public final class RollDie {
+    
+    /**
+     * Ensures that instantiation cannot occur on this class.
+     */
+    private RollDie() {}
     
     /**
      * Rolls the die and moves the player the corresponding distance.

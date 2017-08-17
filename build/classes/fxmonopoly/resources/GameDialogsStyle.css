@@ -1,0 +1,99 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    The style document for all game dialogs.
+    Created on : 17-Aug-2017, 21:33:29
+    Author     : Slipshod
+*/
+
+.root {
+    -fx-background-color: rgba(255, 255, 255, 1);
+    -fx-border-color: rgba(0, 0, 0, 0.8);
+    -fx-border-width: 2;
+}
+
+.root:no-header .graphic-container {
+    -fx-padding: 0;
+}
+
+.button {
+    -fx-background-color: rgba(255, 255, 255, 1);
+    -fx-border-color: rgba(0, 0, 0, 0.8);
+    -fx-border-width: 2;
+}
+
+.button:hover {
+    -fx-background-color: rgba(0, 200, 0, 1);
+    -fx-border-color: rgba(0, 200, 0, 1);
+    -fx-text-fill: rgba(255, 255, 255, 1);
+}
+
+
+.text-field {
+    -fx-background-color: rgba(255, 255, 255, 1);
+    -fx-border-color: rgba(0, 0, 0, 0.8);
+    -fx-border-width: 2;
+    -fx-text-fill: black;
+}
+
+.text-field:focused {
+    -fx-background-color: rgba(0, 200, 0, 1);
+    -fx-border-color: rgba(0, 200, 0, 1);
+    -fx-text-fill: rgba(255, 255, 255, 1);
+}
+
+.list-view {
+    -fx-border-color: rgba(0, 0, 0, 0.8);
+    -fx-border-width: 2;
+    -fx-background-color: rgba(255, 255, 255, 1);
+    -fx-selection-bar-color: rgba(0, 200, 0, 1);
+}
+
+.list-cell:filled:selected:focused, .list-cell:selected:focused {
+    -fx-background-color: rgba(0, 200, 0, 1);
+}
+
+.list-cell {
+    -fx-alignment:CENTER;
+    -fx-padding: 2;
+}
+
+.list-cell:hover {
+    -fx-border-color: rgba(0, 200, 0, 1);
+    -fx-border-width: 2;  
+    -fx-border-style: solid inside;
+    -fx-padding: 0;
+}
+
+.scroll-bar:vertical, scroll-bar:horizontal {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar:vertical .increment-button , .scroll-bar:vertical .decrement-button, 
+.scroll-bar:horizontal .increment-button , .scroll-bar:horizontal .decrement-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0em;
+    -fx-padding: 0 10 0 0;
+}
+
+.scroll-bar:vertical .increment-arrow, .scroll-bar:vertical .decrement-arrow,
+.scroll-bar:horizontal .increment-arrow, .scroll-bar:horizontal .decrement-arrow {
+    -fx-shape: " ";
+    -fx-padding: 0;
+}
+
+.scroll-bar:vertical .track, .scroll-bar:vertical .track-background,
+.scroll-bar:horizontal .track, .scroll-bar:horizontal .track-background {
+    visibility: hidden;
+}
+
+.scroll-bar:vertical .thumb,
+.scroll-bar:horizontal .thumb{
+    -fx-background-color: rgba(0, 0, 0, 0.6);
+    -fx-background-insets: 2, 0, 0;
+    -fx-background-radius: 2em;
+}
+

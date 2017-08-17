@@ -6,9 +6,9 @@
 package fxmonopoly.gameinitsettings;
 
 import fxmonopoly.utils.Dialogs;
-import fxmonopoly.utils.interfacing.Manageable;
 import fxmonopoly.utils.StageManager;
 import fxmonopoly.utils.View;
+import fxmonopoly.utils.interfacing.Manageable;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
@@ -67,12 +67,24 @@ public class GameInitSettingsController implements Initializable, Manageable {
                 
                 manager.getDialog(Dialogs.GAME_INIT_BAD_SEL);
             }
+            else if(nameField.getText().contains("Rick") || nameField.getText().contains("rick") || nameField.getText().contains("Astley") || nameField.getText().contains("astley")) {
+                manager.getDialog(Dialogs.RROLLED);
+                
+            }
             else {
                 manager.changeScene(View.GAME);
             }
             
         }); 
     }    
+    
+    /**Sets the StageManager utilised within this controller.
+     * @param manager The StageManager to be utilised by this controller.
+     */
+    @Override
+    public void setStageManager(StageManager manager) {
+        this.manager = manager;
+    }
     
     /**
      * Populates the CellFactory of the colour selection ListView, with rectangles
@@ -190,11 +202,4 @@ public class GameInitSettingsController implements Initializable, Manageable {
         });
     }
     
-    /**Sets the StageManager utilised within this controller.
-     * @param manager The StageManager to be utilised by this controller.
-     */
-    @Override
-    public void setStageManager(StageManager manager) {
-        this.manager = manager;
-    }
 }

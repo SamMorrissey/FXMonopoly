@@ -19,7 +19,12 @@ import java.util.Iterator;
  * state as it is a function, not a part of the game.
  * @author Sam P. Morrissey
  */
-public class ReorderPlayers {
+public final class ReorderPlayers {
+    
+    /**
+     * Ensures that instantiation cannot occur on this class.
+     */
+    private ReorderPlayers() {}
     
     /**
      * Automatically rolls the die for all CPUPlayers in the player list, and maps

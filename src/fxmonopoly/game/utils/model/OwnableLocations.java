@@ -15,7 +15,12 @@ import fxmonopoly.gamedata.board.locations.*;
  * All methods are static based on this being a utility function, not 
  * @author Sam P. Morrissey.
  */
-public class OwnableLocations {
+public final class OwnableLocations {
+    
+    /**
+     * Ensures that instantiation cannot occur on this class.
+     */
+    private OwnableLocations() {}
     
     /**
      * Transfers the ownership of the current location to the active player, must
@@ -136,5 +141,84 @@ public class OwnableLocations {
         }
         
         return 0;
+    }
+    
+    /**
+     * Provides checks on mortgaging locations, as well as enact the mortgage if
+     * it is possible.
+     * @param location The location to mortgage.
+     */
+    public static void mortgageLocation(Location location) {
+        if(location instanceof PropertyLocation) {
+            PropertyLocation temp = (PropertyLocation) location;
+            
+            if(temp.getNumberOfHouses() == 0 && !temp.getIsHotel() && !temp.getMortgagedStatus() && temp.getIsOwned()) {
+                temp.setMortgaged(true);
+                temp.getOwner().addCash(temp.getPrice() / 2);
+            }
+        }
+        else if(location instanceof RailwayLocation) {
+            RailwayLocation temp = (RailwayLocation) location;
+            
+            if(!temp.getIsMortgaged() && temp.getIsOwned()) {
+                temp.setIsMortgaged(true);
+                temp.getOwner().addCash(temp.getPrice() / 2);
+            }
+        }
+        else if(location instanceof UtilityLocation) {
+            UtilityLocation temp = (UtilityLocation) location;
+            
+            if(!temp.getIsMortgaged() && temp.getIsOwned()) {
+                temp.setIsMortgaged(true);
+                temp.getOwner().addCash(temp.getPrice() / 2);
+            }
+        }
+    }
+    
+    /**
+     * Provides checks on demortgaging locations, as well as enact the action if
+     * it is possible.
+     * @param location The location to demortgage.
+     */
+    public static void demortgageLocation(Location location) {
+        if(location instanceof PropertyLocation) {
+            PropertyLocation temp = (PropertyLocation) location;
+            
+            if(temp.getMortgagedStatus() && temp.getIsOwned()) {
+                if(temp.getOwner().getCash() < (temp.getPrice() / 2) + (temp.getPrice() / 10)) {
+                    
+                }
+                else {
+                    temp.setMortgaged(false);
+                    temp.getOwner().addCash(- ((temp.getPrice() / 2) + (temp.getPrice() / 10)));
+                }
+            }
+        }
+        else if(location instanceof RailwayLocation) {
+            RailwayLocation temp = (RailwayLocation) location;
+            
+            if(temp.getIsMortgaged() && temp.getIsOwned()) {
+                if(temp.getOwner().getCash() < (temp.getPrice() / 2) + (temp.getPrice() / 10)) {
+                    
+                }
+                else {
+                    temp.setIsMortgaged(false);
+                    temp.getOwner().addCash(- ((temp.getPrice() / 2) + (temp.getPrice() / 10)));
+                }
+            }
+        }
+        else if(location instanceof UtilityLocation) {
+            UtilityLocation temp = (UtilityLocation) location;
+            
+            if(temp.getIsMortgaged() && temp.getIsOwned()) {
+                if(temp.getOwner().getCash() < (temp.getPrice() / 2) + (temp.getPrice() / 10)) {
+                    
+                }
+                else {
+                    temp.setIsMortgaged(false);
+                    temp.getOwner().addCash(- ((temp.getPrice() / 2) + (temp.getPrice() / 10)));
+                }
+            }
+        }
     }
 }

@@ -5,6 +5,9 @@
  */
 package fxmonopoly.utils.interfacing;
 
+import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
+
 /**
  * This interface is aimed at enforcing a late data passing potential within
  * any implementing class. By this it refers to data that cannot be passed via
@@ -18,5 +21,5 @@ package fxmonopoly.utils.interfacing;
  * @author Sam P. Morrissey
  */
 public interface LateData {
-    abstract void lateDataPass();
+    abstract void lateDataPass(ImageView sprite, Color colour, String name);
 }

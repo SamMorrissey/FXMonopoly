@@ -17,8 +17,12 @@ import fxmonopoly.gamedata.trade.TradeOffer;
  * participant in game state.
  * @author Sam P. Morrissey
  */
-public class ProcessTrade {
+public final class ProcessTrade {
     
+    /**
+     * Ensures that instantiation cannot occur on this class.
+     */
+    private ProcessTrade() {}
     
     /**
      * Fully resolves the active trade instance between two players.

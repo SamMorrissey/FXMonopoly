@@ -21,7 +21,12 @@ import java.util.ArrayList;
  * participant in game state.
  * @author Sam P. Morrissey
  */
-public class ProcessBid {
+public final class ProcessBid {
+    
+    /**
+     * Ensures that instantiation cannot occur on this class.
+     */
+    private ProcessBid() {}
     
     /**
      * Determines the winning bidder and then calls processBidTransfer

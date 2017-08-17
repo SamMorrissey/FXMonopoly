@@ -17,7 +17,12 @@ import fxmonopoly.gamedata.decks.cards.NearestUtilityCard;
  * active participant in game state.
  * @author Sam P. Morrissey.
  */
-public class ProcessPositionAction {
+public final class ProcessPositionAction {
+    
+    /**
+     * Ensures that instantiation cannot occur on this class.
+     */
+    private ProcessPositionAction() {}
     
     /**
      * Determines the location type then calls the specific manipulation.

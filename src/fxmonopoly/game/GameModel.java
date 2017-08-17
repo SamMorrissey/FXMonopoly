@@ -260,6 +260,15 @@ public class GameModel {
     public Location retrieveLocation(int position) {
         return data.getBoard().getLocation(position);
     }
+    
+    /**
+     * Retrieves the position of the specified location.
+     * @param location The location to determine the position of.
+     * @return The board position of the specified location.
+     */
+    public int retrieveLocationPosition(Location location) {
+        return data.getBoard().getLocationPosition(location);
+    }
  
     /**
      * Retrieves the colour group containing the specified property.
@@ -270,6 +279,21 @@ public class GameModel {
         return data.getBoard().getGroup(property);
     }
     
+    /**
+     * Mortgages the specified location if possible to do so.
+     * @param location The location to mortgage.
+     */
+    public void mortgageLocation(Location location) {
+        OwnableLocations.mortgageLocation(location);
+    }
+    
+    /**
+     * Demortgages the specified location if possible to do so.
+     * @param location The location to demortgage.
+     */
+    public void deMortgageLocation(Location location) {
+        OwnableLocations.demortgageLocation(location);
+    }
     
     /**
      * Retrieves the active player bankruptcy status.
@@ -413,4 +437,5 @@ public class GameModel {
     public void processRequiredPositionAction() {
         ProcessPositionAction.processRequiredPositionAction(data);
     }
+    
 }

@@ -124,7 +124,7 @@ public class Board {
                                                 240,
                                                 new int[]{20, 100, 300, 750, 925, 1100},
                                                 150));
-        boardLocations.add(new RailwayLocation("Fenchurch Street Station"));
+        boardLocations.add(new RailwayLocation("Fenchurch St. Station"));
         boardLocations.add(new PropertyLocation("Leicester Square",
                                                 260,
                                                 new int[]{22, 110, 330, 800, 975, 1150},
@@ -152,7 +152,7 @@ public class Board {
                                                 320,
                                                 new int[]{28, 150, 450, 1000, 1200, 1400},
                                                 200));
-        boardLocations.add(new RailwayLocation("Liverpool Street Station"));
+        boardLocations.add(new RailwayLocation("Liverpool St. Station"));
         boardLocations.add(new ChanceLocation("Chance"));
         boardLocations.add(new PropertyLocation("Park Lane",
                                                 350,
@@ -234,7 +234,6 @@ public class Board {
     }
     
     /**
-     * when false. This is because when set to false, each property automatically
      * Assimilates the status of the specified colour group.
      * @param group The group to be operated on.
      */
@@ -281,6 +280,17 @@ public class Board {
         else
             return null;
         
+    }
+    
+    /**
+     * Retrieves the board position of the specified location. Exactly equivalent
+     * to an ArrayList.indexOf() method call. Can only provide a return value of
+     * 0 to 39 inclusive.
+     * @param location The location to determine the position of.
+     * @return The position of the input location.
+     */
+    public int getLocationPosition(Location location) {
+        return boardLocations.indexOf(location);
     }
     
     /**

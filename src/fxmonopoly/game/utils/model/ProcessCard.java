@@ -22,7 +22,12 @@ import fxmonopoly.gamedata.decks.cards.*;
  * participant in game state.
  * @author Sam P. Morrissey
  */
-public class ProcessCard {
+public final class ProcessCard {
+    
+    /**
+     * Ensures that instantiation cannot occur on this class.
+     */
+    private ProcessCard() {}
     
     /**
      * Checks the type of the active card and then calls the necessary action to

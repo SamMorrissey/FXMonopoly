@@ -20,7 +20,12 @@ import java.util.ArrayList;
  * 
  * @author Sam P. Morrissey
  */
-public class AssimilateColourGroup {
+public final class AssimilateColourGroup {
+    
+    /**
+     * Ensures that instantiation cannot occur on this class.
+     */
+    private AssimilateColourGroup() {}
     
     /**
      * Assimilates the state of all properties within a colour group.

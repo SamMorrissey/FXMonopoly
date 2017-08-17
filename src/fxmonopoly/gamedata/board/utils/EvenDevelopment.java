@@ -18,7 +18,12 @@ import java.util.ArrayList;
  * this class forms part of the BoardTest file.
  * @author Sam P. Morrissey.
  */
-public class EvenDevelopment {
+public final class EvenDevelopment {
+    
+    /**
+     * Ensures that instantiation cannot occur on this class.
+     */
+    private EvenDevelopment() {}
     
     /**
      * Evenly distributes developments among the properties of the colour group
