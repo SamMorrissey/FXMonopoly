@@ -5,6 +5,8 @@
  */
 package fxmonopoly.utils.interfacing;
 
+import java.util.ArrayList;
+import javafx.collections.ObservableList;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 
@@ -21,5 +23,5 @@ import javafx.scene.paint.Color;
  * @author Sam P. Morrissey
  */
 public interface LateData {
-    abstract void lateDataPass(ImageView sprite, Color colour, String name);
+    abstract void lateDataPass(ImageView sprite, Color colour, String name, ArrayList<ObservableList<String>> array);
 }

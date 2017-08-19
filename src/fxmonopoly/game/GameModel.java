@@ -13,6 +13,9 @@ import fxmonopoly.gamedata.decks.cards.Card;
 import fxmonopoly.gamedata.players.*;
 import fxmonopoly.gamedata.trade.TradeOffer;
 import java.util.ArrayList;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 
 /**
  * Defines the GameModel class, which provides all methods necessary for the 
@@ -28,6 +31,10 @@ public class GameModel {
     private final ArrayList<Player> reorderedList;
     
     private final GameData data;
+    
+    private SimpleStringProperty activePlayerName;
+    private SimpleIntegerProperty activePlayerCash;
+    private SimpleStringProperty activePlayerLocationName;
     
     /**
      * Provides the necessary methods for the GameController to operate on the
@@ -132,13 +139,21 @@ public class GameModel {
         
         ReorderPlayers.reorderList(this, userRoll);
         data.setPlayerList(reorderedList);
+        
+        activePlayerName = new SimpleStringProperty(this, "activePlayerName", data.getActivePlayer().getName());
+        activePlayerCash = new SimpleIntegerProperty(this, "activePlayerCash", data.getActivePlayer().getCash());
+        activePlayerLocationName = new SimpleStringProperty(this, "activePlayerLocation", retrieveLocation(getActivePlayer().getPosition()).getName());
+        
+        PlayerBindings.generateBindings(this);
     }
     
     /**
      * Shifts to the next player, and resets the doubles in a row value.
      */
     public void nextPlayer() {
+        PlayerBindings.clearBindings(this);
         data.nextPlayer();
+        PlayerBindings.generateBindings(this);
     }
     
     /**
@@ -155,6 +170,38 @@ public class GameModel {
      */
     public Player getActivePlayer() {
         return data.getActivePlayer();
+    }
+    
+    /**
+     * Retrieves the active player Property.
+     * @return The active player Property.
+     */
+    public SimpleObjectProperty<Player> getActivePlayerProperty() {
+        return data.getActivePlayerProperty();
+    }
+    
+    /**
+     * Retrieves the active player cash Property.
+     * @return The cash Property.
+     */
+    public SimpleIntegerProperty getActivePlayerCashProperty() {
+        return activePlayerCash;
+    }
+    
+    /**
+     * Retrieves the active player name Property.
+     * @return The name Property.
+     */
+    public SimpleStringProperty getActivePlayerNameProperty() {
+        return activePlayerName;
+    }
+    
+    /**
+     * Retrieves the active player location name Property.
+     * @return The location name Property.
+     */
+    public SimpleStringProperty getActivePlayerLocationNameProperty() {
+        return activePlayerLocationName;
     }
     
     /**
@@ -273,10 +320,21 @@ public class GameModel {
     /**
      * Retrieves the colour group containing the specified property.
      * @param property The property in the group.
-     * @return The group of properties containing the property.
+     * @return         The group of properties containing the property.
      */
     public ArrayList<PropertyLocation> getColourGroup(PropertyLocation property) {
         return data.getBoard().getGroup(property);
+    }
+    
+    /**
+     * Determines whether the location provided is an ownable location or not.
+     * @param location The location to check.
+     * @return         True if ownable, false otherwise.
+     */
+    public boolean locationIsOwnable(Location location) {
+        return (location instanceof PropertyLocation || 
+                location instanceof RailwayLocation || 
+                location instanceof UtilityLocation);   
     }
     
     /**

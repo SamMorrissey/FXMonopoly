@@ -122,16 +122,16 @@ class StageTransition {
         }
         
         if(use < 50) {
-            period = Duration.millis(150.0);
+            period = Duration.millis(200.0);
         }
         else if(use < 150) {
-            period = Duration.millis(300.0);
+            period = Duration.millis(400.0);
         }
         else if(use < 300) {
             period = Duration.millis(800.0);
         }
         else {
-            period = Duration.millis(1600.0);
+            period = Duration.millis(1800.0);
         }
         return period;
     }

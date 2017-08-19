@@ -6,6 +6,7 @@
 package fxmonopoly.gamedata.board.locations;
 
 import fxmonopoly.gamedata.players.Player;
+import javafx.beans.property.SimpleObjectProperty;
 
 /**
  * Defines the Utility location class. Contains multipliers for the rent values,
@@ -22,7 +23,7 @@ public class UtilityLocation extends Location {
     
     private boolean isOwned;
     private boolean isMortgaged;
-    private Player owner;
+    private final SimpleObjectProperty<Player> owner;
     
     /**
      * Creates a Utility location object, with the specified name. Instantiates
@@ -35,6 +36,8 @@ public class UtilityLocation extends Location {
         price = 150;
         singleMultiplier = 4;
         doubleMultiplier = 10;
+        
+        owner = new SimpleObjectProperty(this, "owner", null);
     }
     
     /**
@@ -82,6 +85,14 @@ public class UtilityLocation extends Location {
      * @return The location owner.
      */
     public Player getOwner() {
+        return owner.getValue();
+    }
+    
+    /**
+     * Retrieves the owner (JavaBeans) property of this utility.
+     * @return The owner property.
+     */
+    public SimpleObjectProperty getOwnerProperty() {
         return owner;
     }
     
@@ -90,15 +101,18 @@ public class UtilityLocation extends Location {
      * @param player The player to own this location.
      */
     public void setOwner(Player player) {
-        owner = player;
-        setIsOwned(true);
+        owner.setValue(player);
+        if(player != null) 
+            setIsOwned(true);
+        else
+            setIsOwned(false);
     }
     
     /**
      * Removes the current ownership (both the owner and the isOwned boolean).
      */
     public void removeOwner() {
-        owner = null;
+        owner.setValue(null);
         setIsOwned(false);
     }
     

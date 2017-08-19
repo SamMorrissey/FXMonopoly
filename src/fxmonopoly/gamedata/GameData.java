@@ -13,6 +13,7 @@ import fxmonopoly.gamedata.die.Die;
 import fxmonopoly.gamedata.players.*;
 import fxmonopoly.gamedata.trade.TradeOffer;
 import java.util.ArrayList;
+import javafx.beans.property.SimpleObjectProperty;
 
 /**
  * Specifies the data necessary for a game. Provides some utility methods to 
@@ -29,7 +30,8 @@ public class GameData {
     
     private ArrayList<Player> playerList;
     
-    private Player activePlayer;
+    private final SimpleObjectProperty<Player> activePlayers;
+    
     private TradeOffer activeTrade;
     private Bid activeBid;
     private Card activeCard;
@@ -48,6 +50,7 @@ public class GameData {
         chance = new ChanceDeck();
         community = new CommunityChestDeck();
         
+        activePlayers = new SimpleObjectProperty(this, "activePlayer", null);
     }
     
     /**
@@ -101,7 +104,11 @@ public class GameData {
      * @return The active player.
      */
     public Player getActivePlayer() {
-        return activePlayer;
+        return activePlayers.getValue();
+    }
+    
+    public SimpleObjectProperty<Player> getActivePlayerProperty() {
+        return activePlayers;
     }
     
     /**
@@ -110,8 +117,9 @@ public class GameData {
      */
     private void setActivePlayer() {
         if(playerList != null) {
-            activePlayer = playerList.get(0);
-            activePlayer.setCanRoll(true);
+            activePlayers.setValue(playerList.get(0));
+            //activePlayer = playerList.get(0);
+            activePlayers.getValue().setCanRoll(true);
         }
     }
     
@@ -136,15 +144,15 @@ public class GameData {
      * to the first player in the list from the last player in the list.
      */
     public void nextPlayer() {
-        if(playerList.indexOf(activePlayer) + 1 < playerList.size()) {
-            activePlayer = playerList.get(playerList.indexOf(activePlayer) + 1);
+        if(playerList.indexOf(activePlayers.getValue()) + 1 < playerList.size()) {
+            activePlayers.setValue(playerList.get(playerList.indexOf(activePlayers.getValue()) + 1));
             doublesInARow = 0;
-            activePlayer.setCanRoll(true);
+            activePlayers.getValue().setCanRoll(true);
         }
-        else if(playerList.indexOf(activePlayer) + 1 == playerList.size()) {
-            activePlayer = playerList.get(0);
+        else if(playerList.indexOf(activePlayers.getValue()) + 1 == playerList.size()) {
+            activePlayers.setValue(playerList.get(0));
             doublesInARow = 0;
-            activePlayer.setCanRoll(true);
+            activePlayers.getValue().setCanRoll(true);
         }
     }
     

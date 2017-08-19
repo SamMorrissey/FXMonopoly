@@ -21,8 +21,6 @@ public class SpriteManipulation {
      */
     private SpriteManipulation() {}
     
-    
-    
     /**
      * Retrieves the insets for when a single player is at a specified location.
      * @param boardPosition The board position of the location.

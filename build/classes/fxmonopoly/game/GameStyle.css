@@ -43,6 +43,13 @@
     -fx-background-insets: 0, 0, 0, 0;
 }
 
+.board-button:hover {
+    -fx-border-color: rgba(0, 200, 0, 1);
+    -fx-border-width: 4;
+    -fx-border-style: solid inside; 
+    -fx-background-color: transparent;
+}
+
 .scroll-bar:vertical, scroll-bar:horizontal {
     -fx-background-color: transparent;
 }

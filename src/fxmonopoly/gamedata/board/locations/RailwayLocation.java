@@ -6,6 +6,7 @@
 package fxmonopoly.gamedata.board.locations;
 
 import fxmonopoly.gamedata.players.Player;
+import javafx.beans.property.SimpleObjectProperty;
 
 
 /**
@@ -21,7 +22,7 @@ public class RailwayLocation extends Location {
     
     private boolean isOwned;
     private boolean isMortgaged;
-    private Player owner;
+    private final SimpleObjectProperty<Player> owner;
     
     /**
      * Creates a new Railway location object with the specified name, and 
@@ -33,6 +34,8 @@ public class RailwayLocation extends Location {
         
         price = 200;
         baseRent = 25;
+        
+        owner = new SimpleObjectProperty(this, "owner", null);
     }
     
     /**
@@ -102,6 +105,14 @@ public class RailwayLocation extends Location {
      * @return The location owner.
      */
     public Player getOwner() {
+        return owner.getValue();
+    }
+    
+    /**
+     * Retrieves the owner (JavaBeans) property of this railway.
+     * @return The owner property.
+     */
+    public SimpleObjectProperty getOwnerProperty() {
         return owner;
     }
     
@@ -110,15 +121,18 @@ public class RailwayLocation extends Location {
      * @param player The player to own this location.
      */
     public void setOwner(Player player) {
-        owner = player;
-        setIsOwned(true);
+        owner.setValue(player);
+        if(owner.getValue() != null)
+            setIsOwned(true);
+        else
+            setIsOwned(false);
     }
     
     /**
      * Removes the current ownership (both the owner and the isOwned boolean).
      */
     public void removeOwner() {
-        owner = null;
+        owner.setValue(null);
         setIsOwned(false);
     }
     

@@ -11,6 +11,8 @@ import fxmonopoly.gamedata.board.locations.RailwayLocation;
 import fxmonopoly.gamedata.board.locations.UtilityLocation;
 import fxmonopoly.gamedata.decks.cards.GOJFCard;
 import java.util.ArrayList;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 
 /**
  * Defines the Player class almost entirely, with the separate concrete extensions
@@ -25,12 +27,14 @@ public abstract class Player {
     
     private final ArrayList<GOJFCard> ownedGOJFCards;
     
-    private int boardPosition;
+    private final SimpleBooleanProperty inJail;
+    private final SimpleBooleanProperty hasGOJFCard;
+    private final SimpleBooleanProperty canRoll;
+  
+    private final SimpleIntegerProperty cash;
+    private final SimpleIntegerProperty boardPosition;
     
-    private boolean inJail;
-    private boolean canRoll;
     
-    private int cash;
     
     /**
      * Creates a Player object with the specified name. ArrayLists instantiated,
@@ -43,9 +47,12 @@ public abstract class Player {
         ownedLocations = new ArrayList<>();
         ownedGOJFCards = new ArrayList<>();
         
-        boardPosition = 0;
-        inJail = false;
-        cash = 1500;
+        inJail = new SimpleBooleanProperty(this, "inJail", false);
+        hasGOJFCard = new SimpleBooleanProperty(this, "hasGOJFCard", false);
+        canRoll = new SimpleBooleanProperty(this, "canRoll", false);
+        cash = new SimpleIntegerProperty(this, "cash", 1500);
+        boardPosition = new SimpleIntegerProperty(this, "position", 0);
+        
     }
     
     /**
@@ -145,6 +152,14 @@ public abstract class Player {
     }
     
     /**
+     * Retrieves the has GOJFCard property.
+     * @return The has GOJFCard property
+     */
+    public SimpleBooleanProperty getHasGOJFCardProperty() {
+        return hasGOJFCard;
+    }
+    
+    /**
      * Retrieves the first GOJFCard in the list, if one is available. Else returns
      * null.
      * @return The Get Out Of Jail Free card.
@@ -164,6 +179,7 @@ public abstract class Player {
      */
     public void addGOJFCard(GOJFCard card) {
         ownedGOJFCards.add(card);
+        hasGOJFCard.setValue(true);
     }
     
     /**
@@ -178,6 +194,10 @@ public abstract class Player {
         else {
             GOJFCard card = ownedGOJFCards.get(0);
             ownedGOJFCards.remove(0);
+            
+            if(ownedGOJFCards.isEmpty())
+                hasGOJFCard.setValue(false);
+            
             return card;
         }
     }
@@ -187,6 +207,14 @@ public abstract class Player {
      * @return The player's location.
      */
     public int getPosition() {
+        return boardPosition.getValue();
+    }
+    
+    /**
+     * Retrieves the player position property.
+     * @return The position property.
+     */
+    public SimpleIntegerProperty getPositionProperty() {
         return boardPosition;
     }
     
@@ -200,15 +228,15 @@ public abstract class Player {
      * @param distance The distance to move by.
      */
     public void moveBy(int distance) {
-        if((boardPosition + distance) > 39) {
-            boardPosition = ((boardPosition + distance) - 40);
+        if((boardPosition.getValue() + distance) > 39) {
+            boardPosition.setValue((boardPosition.getValue() + distance) - 40);
         }
-        else if((boardPosition + distance) < 0) {
+        else if((boardPosition.getValue() + distance) < 0) {
             // Adding 39 only moves to the location before the intended one
-            boardPosition = ((boardPosition + distance) + 40);
+            boardPosition.setValue((boardPosition.getValue() + distance) + 40);
         }
         else {
-            boardPosition += distance;
+            boardPosition.setValue(boardPosition.getValue() + distance);
         }
     }
     
@@ -219,7 +247,7 @@ public abstract class Player {
      */
     public void moveTo(int location) {
         if(location >= 0 && location <= 39) {
-            boardPosition = location;
+            boardPosition.setValue(location);
         }
     }
     
@@ -228,14 +256,23 @@ public abstract class Player {
      * @return True if in jail, false otherwise.
      */
     public boolean isInJail() {
+        return inJail.getValue();
+    }
+    
+    /**
+     * Retrieves the in jail property.
+     * @return The in jail property.
+     */
+    public SimpleBooleanProperty getIsInJailProperty() {
         return inJail;
     }
+    
     /**
      * Sets the inJail boolean to true.
      */
     public void enterJail() {
-        if(!inJail) {
-            inJail = true;
+        if(!inJail.getValue()) {
+            inJail.setValue(true);
         }
     }
     
@@ -243,8 +280,8 @@ public abstract class Player {
      * Sets the inJail boolean to false.
      */
     public void exitJail() {
-        if(inJail) {
-            inJail = false;
+        if(inJail.getValue()) {
+            inJail.setValue(false);
         }
     }
     
@@ -253,7 +290,7 @@ public abstract class Player {
      * @param amount The amount to be added.
      */
     public void addCash(int amount) {
-        cash += amount;
+        cash.setValue(cash.getValue() + amount);
     }
     
     /**
@@ -261,6 +298,14 @@ public abstract class Player {
      * @return The cash this player has.
      */
     public int getCash() {
+        return cash.getValue();
+    }
+    
+    /**
+     * Retrieves the cash property.
+     * @return The cash property.
+     */
+    public SimpleIntegerProperty getCashProperty() {
         return cash;
     }
     
@@ -269,7 +314,7 @@ public abstract class Player {
      * @param status Whether the player can roll the die or not.
      */
     public void setCanRoll(boolean status) {
-        canRoll = status;
+        canRoll.setValue(status);
     }
     
     /**
@@ -277,7 +322,14 @@ public abstract class Player {
      * @return True if the player can roll, false otherwise.
      */
     public boolean getCanRoll() {
-        return canRoll;
+        return canRoll.getValue();
     }
     
+    /**
+     * Retrieves the can roll property.
+     * @return The can roll property.
+     */
+    public SimpleBooleanProperty getCanRollProperty() {
+        return canRoll;
+    }
 }

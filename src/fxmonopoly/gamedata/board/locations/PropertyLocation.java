@@ -6,6 +6,8 @@
 package fxmonopoly.gamedata.board.locations;
 
 import fxmonopoly.gamedata.players.Player;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 
 /**
  * Defines the Property location class.
@@ -32,6 +34,7 @@ public class PropertyLocation extends Location{
     private final int fourHouseRent;
     private final int hotelRent;
     
+    private final SimpleIntegerProperty houses;
     private int numberOfHouses;
     private boolean upgradeableToHotel;
     private boolean isHotel;
@@ -41,7 +44,7 @@ public class PropertyLocation extends Location{
     private boolean isMortgaged;
     private boolean inColourMonopoly;
     
-    private Player owner;
+    private final SimpleObjectProperty<Player> owner;
     
     /**
      * Creates a Property location utilising the name, price, rent value array and
@@ -65,7 +68,7 @@ public class PropertyLocation extends Location{
         fourHouseRent = rents[4];
         hotelRent = rents[5];
         
-        numberOfHouses = 0;
+        houses = new SimpleIntegerProperty(this, "houses", 0);
         upgradeableToHotel = false;
         isHotel = false;
         
@@ -73,6 +76,8 @@ public class PropertyLocation extends Location{
         isOwned = false;
         isMortgaged = false;
         inColourMonopoly = false;
+        
+        owner = new SimpleObjectProperty(this, "owner", null);
         
         this.housePrice = housePrice;
     }
@@ -115,6 +120,7 @@ public class PropertyLocation extends Location{
     public boolean getMortgagedStatus() {
         return isMortgaged;
     }
+    
     /**
      * Gets the applicable rent value, including double rent on any undeveloped
      * property that is part of a colour group monopoly. Naturally this requires
@@ -124,22 +130,22 @@ public class PropertyLocation extends Location{
     public int getRent() {
         int i = 0;
         
-        if(numberOfHouses == 0 && inColourMonopoly == false) {
+        if(houses.getValue() == 0 && inColourMonopoly == false) {
             i = baseRent;
         }
-        else if(numberOfHouses == 0 && inColourMonopoly == true && !isHotel) {
+        else if(houses.getValue() == 0 && inColourMonopoly == true && !isHotel) {
             i = baseRent * 2;
         }
-        else if(numberOfHouses == 1) {
+        else if(houses.getValue() == 1) {
             i = oneHouseRent;
         }
-        else if(numberOfHouses == 2) {
+        else if(houses.getValue() == 2) {
             i = twoHouseRent;
         }
-        else if(numberOfHouses == 3) {
+        else if(houses.getValue() == 3) {
             i = threeHouseRent;
         }
-        else if(numberOfHouses == 4) {
+        else if(houses.getValue() == 4) {
             i = fourHouseRent;
         }
         else if(isHotel){
@@ -155,9 +161,9 @@ public class PropertyLocation extends Location{
      * upgradeable to a hotel then it will be converted to a hotel.
      */
     public void addHouse() {
-        if(numberOfHouses < 4 && isDevelopable)
-            numberOfHouses++;
-        else if(numberOfHouses == 4 && upgradeableToHotel) 
+        if(houses.getValue() < 4 && isDevelopable) 
+            houses.setValue(houses.getValue() + 1);
+        else if(houses.getValue() == 4 && upgradeableToHotel)
             upgradeToHotel();
     }
     
@@ -166,12 +172,11 @@ public class PropertyLocation extends Location{
      * is a hotel or has any houses on it. 
      */
     public void removeHouse() {
-        if(numberOfHouses == 0 && isHotel) {
-            numberOfHouses = 4;
+        if(houses.getValue() == 0 && isHotel) {
             downgradeFromHotel();
         }
-        else if(numberOfHouses > 0)
-            numberOfHouses--;
+        else if(houses.getValue() > 0)
+            houses.setValue(houses.getValue() - 1);
     }
     
     /**
@@ -179,7 +184,15 @@ public class PropertyLocation extends Location{
      * @return The number of houses on this property.
      */
     public int getNumberOfHouses() {
-        return numberOfHouses;
+        return houses.getValue();
+    }
+    
+    /**
+     * Retrieves the number of houses (JavaBeans) property utilised by this PropertyLocation
+     * @return The number of houses property.
+     */
+    public SimpleIntegerProperty getHousesProperty() {
+        return houses;
     }
     
     /**
@@ -205,7 +218,7 @@ public class PropertyLocation extends Location{
      * @param upgradeable The upgradeableToHotel status of this property.
      */
     public void setUpgradeableToHotel(boolean upgradeable) {
-        if(numberOfHouses == 4 && upgradeable) {
+        if(houses.getValue() == 4 && upgradeable) {
             upgradeableToHotel = upgradeable;
         }
         else if(!upgradeable) {
@@ -218,9 +231,9 @@ public class PropertyLocation extends Location{
      * and numberOfHouses is 4, otherwise does nothing.
      */
     private void upgradeToHotel() {
-        if(upgradeableToHotel && numberOfHouses == 4) {
+        if(upgradeableToHotel && houses.getValue() == 4) {
             isHotel = true;
-            numberOfHouses = 0;
+            houses.setValue(0);
             upgradeableToHotel = false;
         }
     }
@@ -232,7 +245,7 @@ public class PropertyLocation extends Location{
     private void downgradeFromHotel() {
         if(isHotel) {
             isHotel = false;
-            numberOfHouses = 4;
+            houses.setValue(4);
         }
     }
     
@@ -241,7 +254,7 @@ public class PropertyLocation extends Location{
      * @param player The player to transfer ownership to.
      */
     public void transferOwnership(Player player) {
-        owner = player;
+        owner.setValue(player);
         isOwned = true;
     }
     
@@ -254,15 +267,15 @@ public class PropertyLocation extends Location{
      * but this is to guarantee the reset in full.
      */
     public void removeOwnership() {
-        owner = null;
+        owner.setValue(null);
         isOwned = false;
         isDevelopable = false;
         upgradeableToHotel = false;
         isHotel = false;
         isMortgaged = false;
         inColourMonopoly = false;
-        if(numberOfHouses != 0) {
-            numberOfHouses = 0;
+        if(houses.getValue() != 0) {
+            houses.setValue(0);
         }
     }
     
@@ -271,6 +284,14 @@ public class PropertyLocation extends Location{
      * @return The property owner.
      */
     public Player getOwner() {
+        return owner.getValue();
+    }
+    
+    /**
+     * Retrieves the owner (JavaBeans) property of this property.
+     * @return The owner property.
+     */
+    public SimpleObjectProperty<Player> getOwnerProperty() {
         return owner;
     }
     

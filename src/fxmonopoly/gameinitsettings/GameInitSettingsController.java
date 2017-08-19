@@ -10,6 +10,7 @@ import fxmonopoly.utils.StageManager;
 import fxmonopoly.utils.View;
 import fxmonopoly.utils.interfacing.Manageable;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -70,6 +71,7 @@ public class GameInitSettingsController implements Initializable, Manageable {
             else if(nameField.getText().contains("Rick") || nameField.getText().contains("rick") || nameField.getText().contains("Astley") || nameField.getText().contains("astley")) {
                 manager.getDialog(Dialogs.RROLLED);
                 
+                
             }
             else {
                 manager.changeScene(View.GAME);
@@ -91,8 +93,8 @@ public class GameInitSettingsController implements Initializable, Manageable {
      * filled on the basis of an Observable collection of Strings.
      */
     private void populateColours() {
-        colourData = FXCollections.observableArrayList("blue", "cyan","aquamarine", "lawngreen", "green", "purple", 
-                                                       "salmon", "red", "maroon", "burlywood", "orange", "yellow");
+        colourData = FXCollections.observableArrayList("BLUE", "CYAN","AQUAMARINE", "LAWNGREEN", "GREEN", "PURPLE", 
+                                                       "SALMON", "RED", "MAROON", "BURLYWOOD", "ORANGE", "YELLOW");
         colourSelection.setItems(colourData);
         
         colourSelection.setCellFactory(e -> new ListCell<String>() {
@@ -104,14 +106,16 @@ public class GameInitSettingsController implements Initializable, Manageable {
                     setGraphic(null);
                 }
                 else {
+                    
+                    /*
                     switch (name) {
-                        case "blue":
+                        case "BLUE":
                             rect.setFill(Color.BLUE);
                             break;
-                        case "aquamarine":
+                        case "AQUAMARINE":
                             rect.setFill(Color.AQUAMARINE);
                             break;
-                        case "cyan":
+                        case "CYAN":
                             rect.setFill(Color.CYAN);
                             break;
                         case "green":
@@ -144,6 +148,9 @@ public class GameInitSettingsController implements Initializable, Manageable {
                         default:
                             break;
                     }
+                    */
+                    
+                rect.setFill(Color.valueOf(name));
                 setGraphic(rect);
                 }
             }
@@ -155,8 +162,8 @@ public class GameInitSettingsController implements Initializable, Manageable {
      * sprites based on an Observable collection of Strings.
      */
     private void populateSprites() {
-        pieceData = FXCollections.observableArrayList("boot", "car", "dog", "hat", "iron",
-                                                      "ship", "thimble", "barrow");
+        pieceData = FXCollections.observableArrayList("Boot", "Car", "Dog", "Hat", "Iron",
+                                                      "Ship", "Thimble", "Barrow");
         pieceSelection.setItems(pieceData);
         
         pieceSelection.setCellFactory(e -> new ListCell<String>() {
@@ -168,6 +175,8 @@ public class GameInitSettingsController implements Initializable, Manageable {
                     setGraphic(null);
                 }
                 else {
+                    
+                    /*
                     switch (name) {
                         case "boot":
                             view.setImage(new Image("fxmonopoly/resources/images/sprites/Boot.png"));
@@ -196,10 +205,37 @@ public class GameInitSettingsController implements Initializable, Manageable {
                         default:
                             break;
                     }
+                    */
+                view.setImage(new Image("fxmonopoly/resources/images/sprites/" + name + ".png"));
                 setGraphic(view);
                 }
             }
         });
+    }
+    
+    private void passLateData() {
+        
+        
+        /*
+        ImageView sprite = new ImageView(new Image("fxmonopoly/resources/images/sprites/" + pieceSelection.getSelectionModel().toString()));
+        Color color = Color.valueOf(colourSelection.getSelectionModel().getSelectedItem());
+        String name = nameField.getText();
+        */
+        
+        ArrayList<ObservableList<String>> array = new ArrayList<>();
+        array.add(pieceData);
+        array.add(colourData);
+        
+        ImageView view = new ImageView(new Image("fxmonopoly/resources/image/sprites/" + pieceSelection.getSelectionModel().getSelectedItem() + ".png"));
+        Color colour = Color.valueOf(colourSelection.getSelectionModel().getSelectedItem());
+        
+        array.get(0).remove(pieceSelection.getSelectionModel().getSelectedItem());
+        array.get(1).remove(colourSelection.getSelectionModel().getSelectedItem());
+        
+        manager.getLateData().lateDataPass(view,
+                                           colour, 
+                                           nameField.getText(),
+                                           array);
     }
     
 }
