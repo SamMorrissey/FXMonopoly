@@ -82,22 +82,6 @@ public class DieTest {
         
         assertEquals(i, die.dieRollTotal());
     }
-
-    /**
-     * Tests that the expected and retrieved strings are equivalent.
-     */
-    @Test
-    public void testSpecificImageString() {
-        assertEquals("fxmonopoly/resources/images/die/1.png", die.specificImageString(1));
-    }
-
-    /**
-     * Tests that the blank image string is retrieved correctly.
-     */
-    @Test
-    public void testBlankImageString() {
-        assertEquals("fxmonopoly/resources/images/die/Blank.png", die.blankImageString());
-    }
     
     /**
      * Tests that the isDoubles method performs as expected over 50 iterations.
@@ -114,12 +98,6 @@ public class DieTest {
             die.rollSecondDie();
             
             if(die.getDieOneLastValue() == die.getDieTwoLastValue()) {
-                
-                // This method utilises the first die to generate the random integer
-                // used in the string, performed before the assert to ensure that it
-                // does not affect the results, as intended.
-                die.randomImageString();
-                
                 assertTrue(die.isDoubles());
             }
             else {

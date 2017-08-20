@@ -37,6 +37,9 @@ public class PlayerBindings {
         model.getActivePlayerNameProperty()
              .setValue(model.getActivePlayer().getName());
         
+        model.getUserIsActiveProperty()
+             .setValue(model.userIsActive());
+        
     } 
     
     /**

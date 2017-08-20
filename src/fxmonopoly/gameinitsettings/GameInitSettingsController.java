@@ -75,6 +75,7 @@ public class GameInitSettingsController implements Initializable, Manageable {
             }
             else {
                 manager.changeScene(View.GAME);
+                passLateData();
             }
             
         }); 
@@ -106,52 +107,8 @@ public class GameInitSettingsController implements Initializable, Manageable {
                     setGraphic(null);
                 }
                 else {
-                    
-                    /*
-                    switch (name) {
-                        case "BLUE":
-                            rect.setFill(Color.BLUE);
-                            break;
-                        case "AQUAMARINE":
-                            rect.setFill(Color.AQUAMARINE);
-                            break;
-                        case "CYAN":
-                            rect.setFill(Color.CYAN);
-                            break;
-                        case "green":
-                            rect.setFill(Color.GREEN);
-                            break;
-                        case "lawngreen":
-                            rect.setFill(Color.LAWNGREEN);
-                            break;
-                        case "purple":
-                            rect.setFill(Color.PURPLE);
-                            break;
-                        case "salmon":
-                            rect.setFill(Color.SALMON);
-                            break;
-                        case "red":
-                            rect.setFill(Color.RED);
-                            break;
-                        case "maroon":
-                            rect.setFill(Color.MAROON);
-                            break;
-                        case "burlywood":
-                            rect.setFill(Color.BURLYWOOD);
-                            break;
-                        case "orange":
-                            rect.setFill(Color.ORANGE);
-                            break;
-                        case "yellow":
-                            rect.setFill(Color.YELLOW);
-                            break;
-                        default:
-                            break;
-                    }
-                    */
-                    
-                rect.setFill(Color.valueOf(name));
-                setGraphic(rect);
+                    rect.setFill(Color.valueOf(name));
+                    setGraphic(rect);
                 }
             }
         });
@@ -163,7 +120,7 @@ public class GameInitSettingsController implements Initializable, Manageable {
      */
     private void populateSprites() {
         pieceData = FXCollections.observableArrayList("Boot", "Car", "Dog", "Hat", "Iron",
-                                                      "Ship", "Thimble", "Barrow");
+                                                      "Ship", "Thimble", "Wheelbarrow");
         pieceSelection.setItems(pieceData);
         
         pieceSelection.setCellFactory(e -> new ListCell<String>() {
@@ -175,65 +132,23 @@ public class GameInitSettingsController implements Initializable, Manageable {
                     setGraphic(null);
                 }
                 else {
-                    
-                    /*
-                    switch (name) {
-                        case "boot":
-                            view.setImage(new Image("fxmonopoly/resources/images/sprites/Boot.png"));
-                            break;
-                        case "car":
-                            view.setImage(new Image("fxmonopoly/resources/images/sprites/Car.png"));
-                            break;
-                        case "dog":
-                            view.setImage(new Image("fxmonopoly/resources/images/sprites/Dog.png"));
-                            break;
-                        case "hat":
-                            view.setImage(new Image("fxmonopoly/resources/images/sprites/Hat.png"));
-                            break;
-                        case "iron":
-                            view.setImage(new Image("fxmonopoly/resources/images/sprites/Iron.png"));
-                            break;
-                        case "ship":
-                            view.setImage(new Image("fxmonopoly/resources/images/sprites/Ship.png"));
-                            break;
-                        case "thimble":
-                            view.setImage(new Image("fxmonopoly/resources/images/sprites/Thimble.png"));
-                            break;
-                        case "barrow":
-                            view.setImage(new Image("fxmonopoly/resources/images/sprites/Wheelbarrow.png"));
-                            break;
-                        default:
-                            break;
-                    }
-                    */
-                view.setImage(new Image("fxmonopoly/resources/images/sprites/" + name + ".png"));
-                setGraphic(view);
+                    view.setImage(new Image("fxmonopoly/resources/images/sprites/" + name + ".png"));
+                    setGraphic(view);
                 }
             }
         });
     }
     
+    /**
+     * Passes the late data on to the late data object.
+     */
     private void passLateData() {
-        
-        
-        /*
-        ImageView sprite = new ImageView(new Image("fxmonopoly/resources/images/sprites/" + pieceSelection.getSelectionModel().toString()));
-        Color color = Color.valueOf(colourSelection.getSelectionModel().getSelectedItem());
-        String name = nameField.getText();
-        */
-        
         ArrayList<ObservableList<String>> array = new ArrayList<>();
         array.add(pieceData);
         array.add(colourData);
         
-        ImageView view = new ImageView(new Image("fxmonopoly/resources/image/sprites/" + pieceSelection.getSelectionModel().getSelectedItem() + ".png"));
-        Color colour = Color.valueOf(colourSelection.getSelectionModel().getSelectedItem());
-        
-        array.get(0).remove(pieceSelection.getSelectionModel().getSelectedItem());
-        array.get(1).remove(colourSelection.getSelectionModel().getSelectedItem());
-        
-        manager.getLateData().lateDataPass(view,
-                                           colour, 
+        manager.getLateData().lateDataPass(pieceSelection.getSelectionModel().getSelectedItem(),
+                                           colourSelection.getSelectionModel().getSelectedItem(), 
                                            nameField.getText(),
                                            array);
     }

@@ -37,10 +37,28 @@ public enum GameDialogs {
             exitAlert.getDialogPane().lookupButton(ButtonType.OK).addEventHandler(ActionEvent.ACTION, e -> stage.close());
             
             exitAlert.getButtonTypes().add(ButtonType.CANCEL);
+            
+            //exitAlert.
 
             return exitAlert;
         }
+    },
+    BLANK {
+        @Override
+        Alert getDialog(Stage stage) {
+            Alert blank = new Alert(Alert.AlertType.NONE);
+            blank.initStyle(StageStyle.TRANSPARENT);
+        
+            blank.getDialogPane().getStylesheets().add(getClass().getClassLoader().getResource("fxmonopoly/resources/GameDialogsStyle.css").toExternalForm());
+            blank.getDialogPane().getStyleClass().add("dialog-pane");
+        
+            blank.initModality(Modality.APPLICATION_MODAL);
+            blank.initOwner(stage);
+            
+            return blank;
+        }
     };
+    
     
     abstract Alert getDialog(Stage stage);
 }

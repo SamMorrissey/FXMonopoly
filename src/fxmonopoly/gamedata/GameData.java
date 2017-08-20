@@ -30,7 +30,7 @@ public class GameData {
     
     private ArrayList<Player> playerList;
     
-    private final SimpleObjectProperty<Player> activePlayers;
+    private final SimpleObjectProperty<Player> activePlayer;
     
     private TradeOffer activeTrade;
     private Bid activeBid;
@@ -50,7 +50,7 @@ public class GameData {
         chance = new ChanceDeck();
         community = new CommunityChestDeck();
         
-        activePlayers = new SimpleObjectProperty(this, "activePlayer", null);
+        activePlayer = new SimpleObjectProperty(this, "activePlayer", null);
     }
     
     /**
@@ -104,11 +104,11 @@ public class GameData {
      * @return The active player.
      */
     public Player getActivePlayer() {
-        return activePlayers.getValue();
+        return activePlayer.getValue();
     }
     
     public SimpleObjectProperty<Player> getActivePlayerProperty() {
-        return activePlayers;
+        return activePlayer;
     }
     
     /**
@@ -117,9 +117,9 @@ public class GameData {
      */
     private void setActivePlayer() {
         if(playerList != null) {
-            activePlayers.setValue(playerList.get(0));
+            activePlayer.setValue(playerList.get(0));
             //activePlayer = playerList.get(0);
-            activePlayers.getValue().setCanRoll(true);
+            activePlayer.getValue().setCanRoll(true);
         }
     }
     
@@ -144,15 +144,15 @@ public class GameData {
      * to the first player in the list from the last player in the list.
      */
     public void nextPlayer() {
-        if(playerList.indexOf(activePlayers.getValue()) + 1 < playerList.size()) {
-            activePlayers.setValue(playerList.get(playerList.indexOf(activePlayers.getValue()) + 1));
+        if(playerList.indexOf(activePlayer.getValue()) + 1 < playerList.size()) {
+            activePlayer.setValue(playerList.get(playerList.indexOf(activePlayer.getValue()) + 1));
             doublesInARow = 0;
-            activePlayers.getValue().setCanRoll(true);
+            activePlayer.getValue().setCanRoll(true);
         }
-        else if(playerList.indexOf(activePlayers.getValue()) + 1 == playerList.size()) {
-            activePlayers.setValue(playerList.get(0));
+        else if(playerList.indexOf(activePlayer.getValue()) + 1 == playerList.size()) {
+            activePlayer.setValue(playerList.get(0));
             doublesInARow = 0;
-            activePlayers.getValue().setCanRoll(true);
+            activePlayer.getValue().setCanRoll(true);
         }
     }
     

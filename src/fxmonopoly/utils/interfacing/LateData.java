@@ -7,8 +7,6 @@ package fxmonopoly.utils.interfacing;
 
 import java.util.ArrayList;
 import javafx.collections.ObservableList;
-import javafx.scene.image.ImageView;
-import javafx.scene.paint.Color;
 
 /**
  * This interface is aimed at enforcing a late data passing potential within
@@ -23,5 +21,5 @@ import javafx.scene.paint.Color;
  * @author Sam P. Morrissey
  */
 public interface LateData {
-    abstract void lateDataPass(ImageView sprite, Color colour, String name, ArrayList<ObservableList<String>> array);
+    abstract void lateDataPass(String sprite, String colourName, String name, ArrayList<ObservableList<String>> array);
 }

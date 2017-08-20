@@ -13,6 +13,7 @@ import fxmonopoly.gamedata.decks.cards.Card;
 import fxmonopoly.gamedata.players.*;
 import fxmonopoly.gamedata.trade.TradeOffer;
 import java.util.ArrayList;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -35,6 +36,8 @@ public class GameModel {
     private SimpleStringProperty activePlayerName;
     private SimpleIntegerProperty activePlayerCash;
     private SimpleStringProperty activePlayerLocationName;
+    
+    private SimpleBooleanProperty userIsActive;
     
     /**
      * Provides the necessary methods for the GameController to operate on the
@@ -144,6 +147,8 @@ public class GameModel {
         activePlayerCash = new SimpleIntegerProperty(this, "activePlayerCash", data.getActivePlayer().getCash());
         activePlayerLocationName = new SimpleStringProperty(this, "activePlayerLocation", retrieveLocation(getActivePlayer().getPosition()).getName());
         
+        userIsActive = new SimpleBooleanProperty(this, "userIsActive", data.getUserPlayer() == data.getActivePlayer());
+        
         PlayerBindings.generateBindings(this);
     }
     
@@ -162,6 +167,14 @@ public class GameModel {
      */
     public UserPlayer getUser() {
         return data.getUserPlayer();
+    }
+    
+    /**
+     * Retrieves the user player is active property.
+     * @return The user player is active property.
+     */
+    public SimpleBooleanProperty getUserIsActiveProperty() {
+        return userIsActive;
     }
     
     /**
@@ -495,5 +508,4 @@ public class GameModel {
     public void processRequiredPositionAction() {
         ProcessPositionAction.processRequiredPositionAction(data);
     }
-    
 }

@@ -71,37 +71,6 @@ public class Die {
     public int dieRollTotal() {
         return dieOneRoll + dieTwoRoll;
     }
-  
-    /**
-     * Retrieves a String value pertaining to the location of the image that
-     * matches the randomly generated number.
-     * @return 
-     */
-    public String randomImageString() {
-        return "fxmonopoly/resources/images/die/" + (die1.nextInt(6) + 1) + ".png";
-    }
-    
-    /**
-     * Retrieves the String value which pertains to the location of the image
-     * that matches the specified input. Returns null if the input parameter is
-     * less than one, or more than six.
-     * @param number The value of the image to retrieve.
-     * @return       The URL string matching the image value specified.
-     */
-    public String specificImageString(int number) {
-        if(number > 0 && number <= 6)
-            return "fxmonopoly/resources/images/die/" + number + ".png";
-        else 
-            return null;
-    }
-    
-    /**
-     * Retrieves the String value pertaining to a blank die face.
-     * @return The blank die face URL string.
-     */
-    public String blankImageString() {
-        return "fxmonopoly/resources/images/die/Blank.png";
-    }
     
     /**
      * Checks the previous die roll values to check whether the result was a 
