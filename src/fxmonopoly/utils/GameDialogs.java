@@ -8,6 +8,7 @@ package fxmonopoly.utils;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -20,7 +21,7 @@ public enum GameDialogs {
     
     EXIT {
         @Override
-        Alert getDialog(Stage stage) {
+        Dialog getDialog(Stage stage) {
             Alert exitAlert = new Alert(Alert.AlertType.NONE);
             exitAlert.initStyle(StageStyle.TRANSPARENT);
         
@@ -45,8 +46,8 @@ public enum GameDialogs {
     },
     BLANK {
         @Override
-        Alert getDialog(Stage stage) {
-            Alert blank = new Alert(Alert.AlertType.NONE);
+        Dialog getDialog(Stage stage) {
+            Dialog blank = new Alert(Alert.AlertType.NONE);
             blank.initStyle(StageStyle.TRANSPARENT);
         
             blank.getDialogPane().getStylesheets().add(getClass().getClassLoader().getResource("fxmonopoly/resources/GameDialogsStyle.css").toExternalForm());
@@ -60,5 +61,5 @@ public enum GameDialogs {
     };
     
     
-    abstract Alert getDialog(Stage stage);
+    abstract Dialog getDialog(Stage stage);
 }

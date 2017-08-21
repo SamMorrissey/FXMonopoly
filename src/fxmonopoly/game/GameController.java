@@ -115,7 +115,10 @@ public class GameController implements Initializable, Manageable, LateData {
         
         exitButton.setOnAction(e ->  manager.getGameDialog(GameDialogs.EXIT).showAndWait() );
         
-        rollDiceButton.setOnAction(e -> DialogContent.diceRollAndMovePane(manager.getGameDialog(GameDialogs.BLANK), model));
+        rollDiceButton.setOnAction(e -> DialogContent.diceRollAndMovePane(manager.getGameDialog(GameDialogs.BLANK), 
+                                                                          manager.getGameDialog(GameDialogs.BLANK), 
+                                                                          model,
+                                                                          board));
         
         jailEscapeButton.setOnAction(e -> {
             if(model.getActivePlayer().hasGOJFCard()) {
@@ -207,6 +210,7 @@ public class GameController implements Initializable, Manageable, LateData {
         activePlayerLocationName.textProperty().setValue(model.retrieveLocation(model.getActivePlayer().getPosition()).getName());
         
         activePlayerName.textProperty().bind(model.getActivePlayerNameProperty());
+        activePlayerName.setStyle("-fx-text-fill: #" + colours.get(model.getActivePlayer()).toString().substring(2) + ";");
         
         userSprite.imageProperty().setValue(sprites.get(model.getUser()).getImage());
         
@@ -220,14 +224,14 @@ public class GameController implements Initializable, Manageable, LateData {
     private void uiListeners() {
         model.getActivePlayerProperty().addListener(e -> {
             activePlayerSprite.imageProperty().setValue(sprites.get(model.getActivePlayer()).getImage());
+            activePlayerName.setStyle("-fx-text-fill: #" + colours.get(model.getActivePlayer()).toString().substring(2) + ";");
+            activePlayerCash.textProperty().setValue(String.valueOf("£" + model.getActivePlayerCashProperty().getValue()));
+            activePlayerLocationName.textProperty().setValue(model.retrieveLocation(model.getActivePlayer().getPosition()).getName());
+            
         });
         
         model.getActivePlayerCashProperty().addListener(e -> {
             activePlayerCash.textProperty().setValue(String.valueOf("£" + model.getActivePlayerCashProperty().getValue()));
-        });
-        
-        model.getActivePlayerLocationNameProperty().addListener(e -> {
-            activePlayerLocationName.textProperty().setValue(model.retrieveLocation(model.getActivePlayer().getPosition()).getName());
         });
         
         model.getUser().getCashProperty().addListener(e -> {
@@ -235,7 +239,8 @@ public class GameController implements Initializable, Manageable, LateData {
         });
         
         model.getActivePlayer().getPositionProperty().addListener(e -> {
-            SpriteManipulation.pathTransition(sprites.get(model.getActivePlayer()), model, board);
+            SpriteManipulation.pathTransition(sprites.get(model.getActivePlayer()), model, board, manager.getGameDialog(GameDialogs.BLANK));
+            activePlayerLocationName.textProperty().setValue(model.retrieveLocation(model.getActivePlayer().getPosition()).getName());
         });
     }
     

@@ -253,19 +253,19 @@ public class GameModel {
     }
     
     /**
-     * Rolls the die and moves the player to the resulting position.
-     * @return The int array of die values.
-     */
-    public int[] rollDieAndMove() {
-        return RollDie.rollDieAndMove(data);
-    }
-    
-    /**
      * Rolls the die and retrieves the die values.
      * @return The int array of die values.
      */
     public int[] rollDie() {
         return RollDie.rollDie(data.getDie());
+    }
+    
+    /**
+     * Rolls the die and moves the player the corresponding distance.
+     * @param diceRolls
+     */
+    public void diceMove(int[] diceRolls) {
+        RollDie.diceMove(this, data, diceRolls);
     }
     
     /**

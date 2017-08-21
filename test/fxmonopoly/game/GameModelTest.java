@@ -157,7 +157,9 @@ public class GameModelTest {
         
         assertTrue(model.getActivePlayer().getCanRoll());
         
-        int[] i = model.rollDieAndMove();
+        int[] i = model.rollDie();
+        
+        model.diceMove(i);
         
         if(i[0] == i[1]) {
             assertTrue(model.getActivePlayer().getCanRoll());
@@ -194,7 +196,8 @@ public class GameModelTest {
               !(model.retrieveLocation(model.getActivePlayer().getPosition()) instanceof UtilityLocation) &&
               !(model.retrieveLocation(model.getActivePlayer().getPosition()) instanceof RailwayLocation)) {
             
-            model.rollDieAndMove();
+            int[] i = model.rollDie();
+            model.diceMove(i);
             model.nextPlayer(); 
         }
         

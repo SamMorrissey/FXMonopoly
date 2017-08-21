@@ -149,7 +149,7 @@ public final class ProcessPositionAction {
      * @param data The data to be manipulated.
      */
     private static void taxLocation(GameData data, TaxLocation location) {
-        data.getActivePlayer().addCash(-((TaxLocation) location).getValue());
+        data.getActivePlayer().addCash(((TaxLocation) location).getValue());
     }
     
     /**
@@ -162,14 +162,16 @@ public final class ProcessPositionAction {
             if(location.getIsOwned() && !(location.getIsMortgaged())) {
                 if(location.getOwner().getOwnedUtilities().size() == 1 && !(data.getActiveCard() instanceof NearestUtilityCard)) {
                     multiplier = location.getSingleMultiplier();
+                    int rent = (multiplier * data.getDie().dieRollTotal());
+                    data.getActivePlayer().addCash(-rent);
+                    location.getOwner().addCash(rent);
                 }
                 else {
                     multiplier = location.getDoubleMultiplier();
+                    int rent = (multiplier * data.getDie().dieRollTotal());
+                    data.getActivePlayer().addCash(-rent);
+                    location.getOwner().addCash(rent);
                 }
             }
-            
-            int rent = (multiplier * data.getDie().dieRollTotal());
-            data.getActivePlayer().addCash(-rent);
-            location.getOwner().addCash(rent);
     }
 }

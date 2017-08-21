@@ -46,7 +46,7 @@ public class BoardPopulating {
         int i;
         for(i = 0; i < 40; i++) {
             board.add(new BoardButton());
-            board.get(board.size() - 1).getStyleClass().add("board-button");
+            //board.get(board.size() - 1).getStyleClass().add("board-button");
             board.get(board.size() - 1).setStyle(initialStyle());   
         }
         
@@ -65,6 +65,18 @@ public class BoardPopulating {
                 else if(button.getLocation() instanceof UtilityLocation)
                     utilityListener(button, map);
             }
+            
+            button.hoverProperty().addListener((observable, oldValue, newValue) -> {
+                if(newValue) {
+                    button.setStyle("-fx-border-color: rgba(0, 200, 0, 1);\n" +
+                                    "-fx-border-width: 4;\n" +
+                                    "-fx-border-style: solid inside; \n" +
+                                    "-fx-background-color: transparent;");
+                }
+                else {
+                    button.setStyle(adjustedStyle(button, map));
+                }
+            });
         }
         
         populateGridPane(board, grid);
@@ -86,11 +98,14 @@ public class BoardPopulating {
      */
     private static void propertyListeners(BoardButton button, HashMap<Player, Color> map) {
         ((PropertyLocation) button.getLocation()).getHousesProperty().addListener((observable, oldValue, newValue) -> {
-            button.setStyle(adjustedStyle(button, map));
+            button.styleProperty().setValue(adjustedStyle(button, map));
         });
         
         ((PropertyLocation) button.getLocation()).getOwnerProperty().addListener((observable, oldValue, newValue) -> {
-            button.setStyle(adjustedStyle(button, map));
+            if(newValue != null) 
+                button.styleProperty().setValue(adjustedStyle(button, map));
+            else
+                button.styleProperty().setValue(initialStyle());
         });
     }
     
@@ -101,7 +116,10 @@ public class BoardPopulating {
      */
     private static void railwayListener(BoardButton button, HashMap<Player, Color> map) {
         ((RailwayLocation) button.getLocation()).getOwnerProperty().addListener((observable, oldValue, newValue) -> {
-            button.setStyle(adjustedStyle(button, map));
+            if(newValue != null) 
+                button.styleProperty().setValue(adjustedStyle(button, map));
+            else
+                button.styleProperty().setValue(initialStyle());
         });
     }
     
@@ -112,7 +130,10 @@ public class BoardPopulating {
      */
     private static void utilityListener(BoardButton button, HashMap<Player, Color> map) {
         ((UtilityLocation) button.getLocation()).getOwnerProperty().addListener((observable, oldValue, newValue) -> {
-            button.setStyle(adjustedStyle(button, map));
+            if(newValue != null) 
+                button.styleProperty().setValue(adjustedStyle(button, map));
+            else
+                button.styleProperty().setValue(initialStyle());
         });
     }
     
@@ -192,7 +213,7 @@ public class BoardPopulating {
             return utilityStyle((UtilityLocation) button.getLocation(), map);
         }
         else {
-            return null;
+            return initialStyle();
         }
     }
     
@@ -205,17 +226,18 @@ public class BoardPopulating {
      */
     private static String propertyStyle(PropertyLocation location, HashMap<Player, Color> map) {
         if(location.getOwner() != null) {
-            int borderWidth = 0; 
+            int borderWidth; 
             if(location.getIsHotel()) {
-                borderWidth = 5;
+                borderWidth = 7;
             }
             else {
-                borderWidth = location.getNumberOfHouses();
+                borderWidth = location.getNumberOfHouses() + 2;
             }
             
-            return "-fx-border-width: " + borderWidth + "; " +
-                   "-fx-border-color: " + map.get(location.getOwner()).toString() + "; " +
-                   "-fx-background-color: transparent";    
+            return "-fx-border-width: " + borderWidth + "; \n" +
+                   "-fx-border-color: " + "#" + map.get(location.getOwner()).toString().substring(2) + "; \n" +
+                   "-fx-border-style: solid inside; \n" +
+                   "-fx-background-color: transparent; \n";    
         }
         else {
             return initialStyle();
@@ -233,9 +255,10 @@ public class BoardPopulating {
         
         if(location.getOwner() != null) {
             
-            return "-fx-border-width: 3; " +
-                   "-fx-border-color: " + map.get(location.getOwner()) + "; " +
-                   "-fx-background-color: transparent";  
+            return "-fx-border-width: 3; \n" +
+                   "-fx-border-color: " + "#" + map.get(location.getOwner()).toString().substring(2) + "; \n" +
+                   "-fx-border-style: solid inside; \n" +
+                   "-fx-background-color: transparent; \n";  
         }
         else {
             return initialStyle();
@@ -253,9 +276,10 @@ public class BoardPopulating {
         
         if(location.getOwner() != null) {
             
-            return "-fx-border-width: 3; " +
-                   "-fx-border-color: " + map.get(location.getOwner()) + "; " +
-                   "-fx-background-color: transparent";  
+            return "-fx-border-width: 3; \n" +
+                   "-fx-border-color: " + "#" + map.get(location.getOwner()).toString().substring(2) + "; \n" +
+                   "-fx-border-style: solid inside; \n" +
+                   "-fx-background-color: transparent; \n";  
         }
         else {
             return initialStyle();

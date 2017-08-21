@@ -5,6 +5,7 @@
  */
 package fxmonopoly.game.utils.model;
 
+import fxmonopoly.game.GameModel;
 import fxmonopoly.gamedata.GameData;
 import fxmonopoly.gamedata.die.Die;
 
@@ -25,46 +26,6 @@ public final class RollDie {
     private RollDie() {}
     
     /**
-     * Rolls the die and moves the player the corresponding distance.
-     * @param data The game data to manipulate.
-     * @return The int values of both die.
-     */
-    public static int[] rollDieAndMove(GameData data) {
-        int[] i = new int[2];
-        
-        if(data.getActivePlayer().getCanRoll()) {
-            i[0] = data.getDie().rollFirstDie();
-            i[1] = data.getDie().rollSecondDie();
-        
-        
-            if(i[0] == i[1] && data.getDoublesInARow() == 2) {
-                data.getActivePlayer().moveTo(10);
-                data.getActivePlayer().enterJail();
-                data.getActivePlayer().setCanRoll(false);
-            }
-            else if(i[0] == i[1] && !data.getActivePlayer().isInJail()) {
-                data.incrementDoublesInARow();
-                data.getActivePlayer().setCanRoll(true);
-                data.getActivePlayer().moveBy(i[0] + i[1]);
-            }
-            else if(i[0] == i[1] && data.getActivePlayer().isInJail()) {
-                data.getActivePlayer().exitJail();
-                data.getActivePlayer().setCanRoll(false);
-                data.getActivePlayer().moveBy(i[0] + i[1]);
-            }
-            else if(i[0] != i[1] && !data.getActivePlayer().isInJail()) {
-                data.getActivePlayer().setCanRoll(false);
-                data.getActivePlayer().moveBy(i[0] + i[1]);
-            }
-            else {
-                data.getActivePlayer().setCanRoll(false);
-            }
-        }
-        
-        return i;
-    }
-    
-    /**
      * Rolls the die and retrieves the value of the die rolls.
      * @param die The die to utilise.
      * @return    The values of both die.
@@ -76,5 +37,43 @@ public final class RollDie {
         i[1] = die.rollSecondDie();
         
         return i;
+    }
+    
+    /**
+     * Rolls the die and moves the player the corresponding distance.
+     * @param model The model to call nextPlayer on.
+     * @param data The data to manipulate.
+     * @param diceRolls The dice roll values.
+     */
+    public static void diceMove(GameModel model, GameData data, int[] diceRolls) {
+        if(data.getActivePlayer().getCanRoll()) {
+        
+            if(diceRolls[0] == diceRolls[1] && data.getDoublesInARow() == 2) {
+                data.getActivePlayer().moveTo(10);
+                data.getActivePlayer().enterJail();
+                data.getActivePlayer().setCanRoll(false);
+            }
+            else if(diceRolls[0] == diceRolls[1] && !data.getActivePlayer().isInJail()) {
+                data.incrementDoublesInARow();
+                data.getActivePlayer().setCanRoll(true);
+                data.getActivePlayer().moveBy(diceRolls[0] + diceRolls[1]);
+            }
+            else if(diceRolls[0] == diceRolls[1] && data.getActivePlayer().isInJail()) {
+                data.getActivePlayer().exitJail();
+                data.getActivePlayer().setCanRoll(false);
+                data.getActivePlayer().moveBy(diceRolls[0] + diceRolls[1]);
+            }
+            else if(diceRolls[0] != diceRolls[1] && data.getActivePlayer().isInJail()) {
+                data.getActivePlayer().setCanRoll(false);
+                model.nextPlayer();
+            }
+            else if(diceRolls[0] != diceRolls[1] && !data.getActivePlayer().isInJail()) {
+                data.getActivePlayer().setCanRoll(false);
+                data.getActivePlayer().moveBy(diceRolls[0] + diceRolls[1]);
+            }
+            else {
+                data.getActivePlayer().setCanRoll(false);
+            }
+        }
     }
 }

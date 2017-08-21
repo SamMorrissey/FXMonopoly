@@ -10,7 +10,9 @@ import fxmonopoly.gamedata.players.Player;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javafx.animation.PathTransition;
+import javafx.application.Platform;
 import javafx.geometry.Bounds;
+import javafx.scene.control.Dialog;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.LineTo;
@@ -60,7 +62,7 @@ public class SpriteManipulation {
      * @param model The model to utilise.
      * @param board The board to check bounds positioning.
      */
-    public static void pathTransition(ImageView sprite, GameModel model, ArrayList<BoardButton> board) {
+    public static void pathTransition(ImageView sprite, GameModel model, ArrayList<BoardButton> board, Dialog position) {
         Path path = new Path();
         
         double[] i = getSinglePositionInsets(model.getActivePlayer().getPosition(), model.getActivePlayer().getIsInJailProperty().getValue());
@@ -77,6 +79,15 @@ public class SpriteManipulation {
         pathTran.setDuration(Duration.millis(1500));
         pathTran.setNode(sprite);
         pathTran.setPath(path);
+        pathTran.setOnFinished(e -> {
+            model.processRequiredPositionAction();
+            if(model.userIsActive()) {
+                Platform.runLater(() -> {
+                    DialogContent.getNewPositionDialog(position, model, board);
+                });
+                
+            }
+        });
         pathTran.play();
     }
     
@@ -98,10 +109,10 @@ public class SpriteManipulation {
         }
         else if(boardPosition == 10) {
             i[0] = 20;
-            i[1] = 20;
+            i[1] = 70;
         }
         else if(boardPosition > 10 && boardPosition < 20) {
-            i[0] = 55;
+            i[0] = 40;
             i[1] = 28;
         }
         else if(boardPosition == 20) {
@@ -110,7 +121,7 @@ public class SpriteManipulation {
         }
         else if(boardPosition > 20 && boardPosition < 30) {
             i[0] = 28;
-            i[1] = 55;
+            i[1] = 40;
         }
         else if(boardPosition == 30) {
             i[0] = 65;

@@ -39,7 +39,7 @@ public class ChanceDeck {
         deck.add(new MoveToCard("Go to Jail. \n" + "Do not pass Go, do not collect £200.", true, 10));
         deck.add(new DoublePayableCard("Make general repairs on all your property. \n" + "For each house pay £25, for each hotel pay £100.", true, 25, 100));
         deck.add(new PayableCard("Pay speeding fine of £15.", true, -15, false));
-        deck.add(new MoveToCard("Take a trip to King's Cross Station. \n" + "If you pass Go, collect £200.", true, 25));
+        deck.add(new MoveToCard("Take a trip to King's Cross Station. \n" + "If you pass Go, collect £200.", true, 5));
         deck.add(new MoveToCard("Take a walk to Mayfair.", true, 39));
         deck.add(new PayableCard("You have been elected Chariman of the Board. \n" + "Pay each player £50.", true, -50, true));
         deck.add(new PayableCard("Your building loan matures. \n" + "Collect £150.", true, 150, false));

@@ -10,25 +10,34 @@ and open the template in the editor.
 */
 
 .root {
-    -fx-background-color: rgba(255, 255, 255, 1);
+    -fx-background-color: rgba(0, 0, 0, 1);
     -fx-border-color: rgba(0, 0, 0, 0.8);
     -fx-border-width: 2;
+    -fx-padding: 0 ;
+    -fx-text-fill: white;
+}
+
+.label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
 }
 
 .root:no-header .graphic-container {
-    -fx-padding: 0;
+    -fx-padding: 0 5 5 0;
 }
 
 .button {
-    -fx-background-color: rgba(255, 255, 255, 1);
-    -fx-border-color: rgba(0, 0, 0, 0.8);
-    -fx-border-width: 2;
+    -fx-background-color: rgba(0, 0, 0, 1);
+    -fx-text-fill: rgba(255, 255, 255, 1);
+    -fx-background-radius: 0 0 0 0;
+    -fx-font-weight: bold;
 }
 
 .button:hover {
     -fx-background-color: rgba(0, 200, 0, 1);
-    -fx-border-color: rgba(0, 200, 0, 1);
     -fx-text-fill: rgba(255, 255, 255, 1);
+    -fx-background-radius: 0 0 0 0;
+    -fx-font-weight: bold;
 }
 
 
@@ -37,6 +46,7 @@ and open the template in the editor.
     -fx-border-color: rgba(0, 0, 0, 0.8);
     -fx-border-width: 2;
     -fx-text-fill: black;
+    -fx-font-weight: bold;
 }
 
 .text-field:focused {

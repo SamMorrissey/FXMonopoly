@@ -14,6 +14,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
 import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -73,7 +74,7 @@ public class StageManager {
      * @param dialog
      * @return 
      */
-    public Alert getGameDialog(GameDialogs dialog) {
+    public Dialog getGameDialog(GameDialogs dialog) {
         return dialog.getDialog(stage);
     }
     

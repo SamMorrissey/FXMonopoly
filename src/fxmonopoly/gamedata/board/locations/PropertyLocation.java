@@ -77,7 +77,7 @@ public class PropertyLocation extends Location{
         isMortgaged = false;
         inColourMonopoly = false;
         
-        owner = new SimpleObjectProperty(this, "owner", null);
+        owner = new SimpleObjectProperty();
         
         this.housePrice = housePrice;
     }

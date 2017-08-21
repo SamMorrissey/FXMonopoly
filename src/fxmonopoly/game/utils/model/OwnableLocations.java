@@ -38,7 +38,7 @@ public final class OwnableLocations {
             
             if(location instanceof PropertyLocation) {
                 if(data.getActivePlayer().getCash() > ((PropertyLocation) location).getPrice()) {
-                    data.getActivePlayer().addCash(((PropertyLocation) location).getPrice());
+                    data.getActivePlayer().addCash(-((PropertyLocation) location).getPrice());
                     //activePlayerCash.setValue(data.getActivePlayer().getCash());
                     ((PropertyLocation) location).transferOwnership(data.getActivePlayer());
                     data.getBoard().assimilateColourGroupBooleans(data.getBoard().getGroup((PropertyLocation) location));
@@ -47,7 +47,7 @@ public final class OwnableLocations {
             }
             else if(location instanceof UtilityLocation) {
                 if(data.getActivePlayer().getCash() > ((UtilityLocation) location).getPrice()) {
-                    data.getActivePlayer().addCash(((UtilityLocation) location).getPrice());
+                    data.getActivePlayer().addCash(-((UtilityLocation) location).getPrice());
                     //activePlayerCash.setValue(data.getActivePlayer().getCash());
                     
                     data.getActivePlayer().addLocation(location);
@@ -56,7 +56,7 @@ public final class OwnableLocations {
             }
             else if(location instanceof RailwayLocation) {
                 if(data.getActivePlayer().getCash() > ((RailwayLocation) location).getPrice()) {
-                    data.getActivePlayer().addCash(((RailwayLocation) location).getPrice());
+                    data.getActivePlayer().addCash(-((RailwayLocation) location).getPrice());
                     //activePlayerCash.setValue(data.getActivePlayer().getCash());
                     data.getActivePlayer().addLocation(location);
                     ((RailwayLocation) location).setOwner(data.getActivePlayer());
