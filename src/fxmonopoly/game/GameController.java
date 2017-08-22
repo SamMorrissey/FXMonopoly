@@ -109,8 +109,6 @@ public class GameController implements Initializable, Manageable, LateData {
         model = new GameModel();
         
         
-        BoardPopulating.generateButtons(board, boardPane, colours, model);
-        
         iconifiedButton.setOnAction(e -> manager.setIconified());
         
         exitButton.setOnAction(e ->  manager.getGameDialog(GameDialogs.EXIT).showAndWait() );
@@ -119,6 +117,10 @@ public class GameController implements Initializable, Manageable, LateData {
                                                                           manager.getGameDialog(GameDialogs.BLANK), 
                                                                           model,
                                                                           board));
+        
+        tradeButton.setOnAction(e -> DialogContent.tradeOfferDialog(manager.getGameDialog(GameDialogs.BLANK), model, board));
+        
+        statsButton.setOnAction(e -> DialogContent.statsDialog(model, manager.getGameDialog(GameDialogs.BLANK), colours, sprites, board));
         
         jailEscapeButton.setOnAction(e -> {
             if(model.getActivePlayer().hasGOJFCard()) {
@@ -130,8 +132,6 @@ public class GameController implements Initializable, Manageable, LateData {
         });
         
         endTurnButton.setOnAction(e -> model.nextPlayer());
-        
-        //tradeButton.dis
     }    
     
     /**
@@ -154,6 +154,8 @@ public class GameController implements Initializable, Manageable, LateData {
      */
     @Override
     public void lateDataPass(String sprite, String colour, String name, ArrayList<ObservableList<String>> array) {
+        BoardPopulating.generateButtons(board, boardPane, colours, model, manager);
+        
         model.createAndAddUser(name);
         model.createAndAddCPU();
         sprites.put(model.getUser(), new ImageView(new Image("fxmonopoly/resources/images/sprites/" + sprite + ".png")));
@@ -227,7 +229,9 @@ public class GameController implements Initializable, Manageable, LateData {
             activePlayerName.setStyle("-fx-text-fill: #" + colours.get(model.getActivePlayer()).toString().substring(2) + ";");
             activePlayerCash.textProperty().setValue(String.valueOf("£" + model.getActivePlayerCashProperty().getValue()));
             activePlayerLocationName.textProperty().setValue(model.retrieveLocation(model.getActivePlayer().getPosition()).getName());
-            
+            if(model.getActivePlayer().getTurnsInjail() == 3) {
+                model.activePlayerPayToExitJail();
+            }
         });
         
         model.getActivePlayerCashProperty().addListener(e -> {
@@ -239,8 +243,14 @@ public class GameController implements Initializable, Manageable, LateData {
         });
         
         model.getActivePlayer().getPositionProperty().addListener(e -> {
-            SpriteManipulation.pathTransition(sprites.get(model.getActivePlayer()), model, board, manager.getGameDialog(GameDialogs.BLANK));
+            SpriteManipulation.pathTransition(sprites.get(model.getActivePlayer()), model, board, manager);
             activePlayerLocationName.textProperty().setValue(model.retrieveLocation(model.getActivePlayer().getPosition()).getName());
+        });
+        
+        model.getPlayerListSizeProperty().addListener(e -> {
+            if(model.getPlayerListSizeProperty().getValue() == 1) {
+                DialogContent.endGameDialog(manager, model, manager.getGameDialog(GameDialogs.BLANK), colours, sprites);
+            }
         });
     }
     

@@ -102,8 +102,8 @@ public final class ProcessPositionAction {
      * @param data The data to be manipulated.
      */
     private static void goToJailLocation(GameData data, GoToJailLocation jail) {
-        data.getActivePlayer().moveTo(jail.getJailPosition());
         data.getActivePlayer().enterJail();
+        data.getActivePlayer().moveTo(jail.getJailPosition());   
     }
     
     /**

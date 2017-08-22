@@ -38,6 +38,7 @@ public class GameModel {
     private SimpleStringProperty activePlayerLocationName;
     
     private SimpleBooleanProperty userIsActive;
+    private SimpleIntegerProperty playerListSize;
     
     /**
      * Provides the necessary methods for the GameController to operate on the
@@ -118,6 +119,14 @@ public class GameModel {
     }
     
     /**
+     * Retrieves the full list of players.
+     * @return 
+     */
+    public ArrayList<Player> getPlayerList() {
+        return data.getPlayerList();
+    }
+    
+    /**
      * Increments the CPUPlayer name string so that no two have the same name String.
      * @return The next int.
      */
@@ -148,6 +157,7 @@ public class GameModel {
         activePlayerLocationName = new SimpleStringProperty(this, "activePlayerLocation", retrieveLocation(getActivePlayer().getPosition()).getName());
         
         userIsActive = new SimpleBooleanProperty(this, "userIsActive", data.getUserPlayer() == data.getActivePlayer());
+        playerListSize = new SimpleIntegerProperty(this, "playerListSize", data.getPlayerList().size());
         
         PlayerBindings.generateBindings(this);
     }
@@ -157,6 +167,11 @@ public class GameModel {
      */
     public void nextPlayer() {
         PlayerBindings.clearBindings(this);
+        
+        if(data.getActivePlayer().isInJail()) {
+            data.getActivePlayer().anotherTurnInJail();
+        }
+        
         data.nextPlayer();
         PlayerBindings.generateBindings(this);
     }
@@ -215,6 +230,14 @@ public class GameModel {
      */
     public SimpleStringProperty getActivePlayerLocationNameProperty() {
         return activePlayerLocationName;
+    }
+    
+    /**
+     * Retrieves the player list size Property.
+     * @return The player list size property.
+     */
+    public SimpleIntegerProperty getPlayerListSizeProperty() {
+        return playerListSize;
     }
     
     /**
@@ -404,6 +427,7 @@ public class GameModel {
     public void removeActivePlayerFromGame() {
         if(isActivePlayerBankrupt()) {
             data.removePlayer(data.getActivePlayer());
+            playerListSize.setValue(data.getPlayerList().size());
             
             if(data.getPlayerList().size() > 1) {
                 nextPlayer();

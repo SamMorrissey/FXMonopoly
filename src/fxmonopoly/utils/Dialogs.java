@@ -82,6 +82,27 @@ public enum Dialogs {
             selectionAlert.showAndWait();
         }
     },
+    GAME_INIT_CPU_STRING {
+        @Override
+        void display(Stage stage) {
+            // Creates the dialog and removes any decoration
+            Alert selectionAlert = new Alert(Alert.AlertType.NONE);
+            selectionAlert.initStyle(StageStyle.TRANSPARENT);
+        
+            // Synchronises the dialog with the styling css file
+            selectionAlert.getDialogPane().getStylesheets().add(getClass().getClassLoader().getResource("fxmonopoly/resources/DialogsStyle.css").toExternalForm());
+            selectionAlert.getDialogPane().getStyleClass().add("dialog-pane");
+        
+            // Allows the Dialogs to track the position of the Main Menu
+            selectionAlert.initModality(Modality.APPLICATION_MODAL);
+            selectionAlert.initOwner(stage);
+        
+            // Sets the content of the Dialogs and displays it
+            selectionAlert.setContentText("Your name is an expression of you, try and be creative.");
+            selectionAlert.getButtonTypes().add(ButtonType.OK);
+            selectionAlert.showAndWait();
+        }
+    },
     RROLLED {
         @Override
         void display(Stage stage) {

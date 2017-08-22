@@ -31,6 +31,10 @@ public final class OwnableLocations {
      */
     public static void activePlayerBuyLocation(GameData data) {
         
+        if(data.getActivePlayer().getOwnedLocations().contains(data.getBoard().getLocation(data.getActivePlayer().getPosition()))) {
+            return;
+        }
+        
         Location location = data.getBoard().getLocation(data.getActivePlayer().getPosition());
         
         if(location instanceof PropertyLocation || location instanceof UtilityLocation ||
@@ -194,7 +198,7 @@ public final class OwnableLocations {
             
             if(temp.getMortgagedStatus() && temp.getIsOwned()) {
                 if(temp.getOwner().getCash() < (temp.getPrice() / 2) + (temp.getPrice() / 10)) {
-                    
+                    return;
                 }
                 else {
                     temp.setMortgaged(false);
@@ -207,7 +211,7 @@ public final class OwnableLocations {
             
             if(temp.getIsMortgaged() && temp.getIsOwned()) {
                 if(temp.getOwner().getCash() < (temp.getPrice() / 2) + (temp.getPrice() / 10)) {
-                    
+                    return;
                 }
                 else {
                     temp.setIsMortgaged(false);
@@ -220,7 +224,7 @@ public final class OwnableLocations {
             
             if(temp.getIsMortgaged() && temp.getIsOwned()) {
                 if(temp.getOwner().getCash() < (temp.getPrice() / 2) + (temp.getPrice() / 10)) {
-                    
+                    return;
                 }
                 else {
                     temp.setIsMortgaged(false);

@@ -10,8 +10,11 @@ import fxmonopoly.gamedata.board.locations.PropertyLocation;
 import fxmonopoly.gamedata.board.locations.RailwayLocation;
 import fxmonopoly.gamedata.board.locations.UtilityLocation;
 import fxmonopoly.gamedata.players.Player;
+import fxmonopoly.utils.GameDialogs;
+import fxmonopoly.utils.StageManager;
 import java.util.ArrayList;
 import java.util.HashMap;
+import javafx.scene.control.Dialog;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
@@ -41,7 +44,7 @@ public class BoardPopulating {
      * @param map The Map on which to base the styles.
      * @param model The GameModel to utilise.
      */
-    public static void generateButtons(ArrayList<BoardButton> board, GridPane grid, HashMap<Player, Color> map, GameModel model) {
+    public static void generateButtons(ArrayList<BoardButton> board, GridPane grid, HashMap<Player, Color> map, GameModel model, StageManager manager) {
         
         int i;
         for(i = 0; i < 40; i++) {
@@ -65,6 +68,20 @@ public class BoardPopulating {
                 else if(button.getLocation() instanceof UtilityLocation)
                     utilityListener(button, map);
             }
+            
+            Dialog position = manager.getGameDialog(GameDialogs.BLANK);
+            
+            button.setOnAction(e -> {
+                if(button.isOwnable() && !button.isOwned()) {
+                    DialogContent.unboughtOwnableLocationDialog(position, model, board, board.indexOf(button));
+                }
+                else if(button.isOwned()) {
+                    DialogContent.ownedOwnableLocationDialog(position, model, board, board.indexOf(button));
+                }
+                else {
+                    DialogContent.genericPositionDialog(position, model, board, board.indexOf(button));
+                }
+            });
             
             button.hoverProperty().addListener((observable, oldValue, newValue) -> {
                 if(newValue) {

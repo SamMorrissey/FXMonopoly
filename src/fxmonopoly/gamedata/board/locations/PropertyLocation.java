@@ -344,4 +344,24 @@ public class PropertyLocation extends Location{
     public boolean getIsOwned() {
         return isOwned;
     }
+    
+    /**
+     * Retrieves the String providing information to the user owner of the property.
+     * @return The text String.
+     */
+    public String getUserOwnedString() {
+        return  getName() + "\n" +
+                "\n" +
+                "Price: £" + price + "\n" +
+                "Mortgage Value: £" + mortgageValue + "\n" +
+                "House Price: £" + housePrice + "\n" +
+                "\n" +
+                "Base Rent: £" + baseRent + "\n" +
+                "One House Rent: £" + oneHouseRent + "\n" +
+                "Two House Rent: £" + twoHouseRent + "\n" +
+                "Three House Rent: £" + threeHouseRent + "\n" +
+                "Four House Rent: £" + fourHouseRent + "\n" +
+                "Hotel Rent: £" + hotelRent + "\n";
+                
+    }
 }

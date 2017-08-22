@@ -7,12 +7,12 @@ package fxmonopoly.game.utils.controller;
 
 import fxmonopoly.game.GameModel;
 import fxmonopoly.gamedata.players.Player;
+import fxmonopoly.utils.StageManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javafx.animation.PathTransition;
 import javafx.application.Platform;
 import javafx.geometry.Bounds;
-import javafx.scene.control.Dialog;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.LineTo;
@@ -62,7 +62,7 @@ public class SpriteManipulation {
      * @param model The model to utilise.
      * @param board The board to check bounds positioning.
      */
-    public static void pathTransition(ImageView sprite, GameModel model, ArrayList<BoardButton> board, Dialog position) {
+    public static void pathTransition(ImageView sprite, GameModel model, ArrayList<BoardButton> board, StageManager manager) {
         Path path = new Path();
         
         double[] i = getSinglePositionInsets(model.getActivePlayer().getPosition(), model.getActivePlayer().getIsInJailProperty().getValue());
@@ -83,7 +83,7 @@ public class SpriteManipulation {
             model.processRequiredPositionAction();
             if(model.userIsActive()) {
                 Platform.runLater(() -> {
-                    DialogContent.getNewPositionDialog(position, model, board);
+                    DialogContent.getNewPositionDialog(manager, model, board);
                 });
                 
             }
@@ -104,8 +104,8 @@ public class SpriteManipulation {
             i[1] = 55;
         }
         else if(boardPosition == 10 && inJail) {
-            i[0] = 65;
-            i[1] = 65;
+            i[0] = 45;
+            i[1] = 10;
         }
         else if(boardPosition == 10) {
             i[0] = 20;

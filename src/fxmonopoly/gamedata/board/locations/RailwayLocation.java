@@ -152,4 +152,12 @@ public class RailwayLocation extends Location {
         return isMortgaged;
     }
     
+    /**
+     * Retrieves the String providing information to the user owner of the property.
+     * @return The text String.
+     */
+    public String getUserOwnedString() {
+        return "Rent is " + baseRent + ", doubled for each Railway owned.";
+    }
+    
 }

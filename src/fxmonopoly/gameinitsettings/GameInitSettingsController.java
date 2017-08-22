@@ -68,10 +68,21 @@ public class GameInitSettingsController implements Initializable, Manageable {
                 
                 manager.getDialog(Dialogs.GAME_INIT_BAD_SEL);
             }
+            else if(nameField.getText().startsWith("cpu") || nameField.getText().startsWith("CPU")) {
+                manager.getDialog(Dialogs.GAME_INIT_CPU_STRING);
+            }
             else if(nameField.getText().contains("Rick") || nameField.getText().contains("rick") || nameField.getText().contains("Astley") || nameField.getText().contains("astley")) {
                 manager.getDialog(Dialogs.RROLLED);
                 
-                
+                manager.changeScene(View.GAME);
+                ArrayList<ObservableList<String>> array = new ArrayList<>();
+                array.add(pieceData);
+                array.add(colourData);
+        
+                manager.getLateData().lateDataPass("Rolled",
+                                                   colourSelection.getSelectionModel().getSelectedItem(), 
+                                                   nameField.getText(),
+                                                   array);
             }
             else {
                 manager.changeScene(View.GAME);

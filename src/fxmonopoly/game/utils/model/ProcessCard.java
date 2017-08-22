@@ -107,8 +107,8 @@ public final class ProcessCard {
      */
     private static void moveToCard(GameData data, MoveToCard card) {
         if(card.getDescription().contains("Go to Jail")) {
-                data.getActivePlayer().moveTo(((MoveToCard) card).getMoveLocation());
                 data.getActivePlayer().enterJail();
+                data.getActivePlayer().moveTo(((MoveToCard) card).getMoveLocation());
         }
         data.getActivePlayer().moveTo(((MoveToCard) card).getMoveLocation());
     }

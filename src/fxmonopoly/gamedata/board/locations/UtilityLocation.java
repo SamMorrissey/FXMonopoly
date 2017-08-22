@@ -131,4 +131,15 @@ public class UtilityLocation extends Location {
     public boolean getIsMortgaged() {
         return isMortgaged;
     }
+    
+    /**
+     * Retrieves the String providing information to the user owner of the property.
+     * @return The text String.
+     */
+    public String getUserOwnedString() {
+        return "Rent is " + singleMultiplier + " multiplied by the dice \n" +
+               "roll that landed a player on this property, if the owner \n" +
+               "only has a single Utility, if the owner has both, the \n" +
+               "multiplier is " + doubleMultiplier + ".";
+    }
 }

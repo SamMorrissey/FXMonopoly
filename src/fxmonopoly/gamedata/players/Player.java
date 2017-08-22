@@ -34,6 +34,8 @@ public abstract class Player {
     private final SimpleIntegerProperty cash;
     private final SimpleIntegerProperty boardPosition;
     
+    private int turnsInJail;
+    
     
     
     /**
@@ -282,6 +284,7 @@ public abstract class Player {
     public void exitJail() {
         if(inJail.getValue()) {
             inJail.setValue(false);
+            turnsInJail = 0;
         }
     }
     
@@ -331,5 +334,64 @@ public abstract class Player {
      */
     public SimpleBooleanProperty getCanRollProperty() {
         return canRoll;
+    }
+    
+    /**
+     * Adds another turn in jail.
+     */
+    public void anotherTurnInJail() {
+        turnsInJail++;
+    }
+    
+    /**
+     * Retrieves the turns spent in jail.
+     * @return The number of turns spent in jail.
+     */
+    public int getTurnsInjail() {
+        return turnsInJail;
+    }
+    
+    /**
+     * Retrieves the full player worth based on locations, cash and GOJFCards held.
+     * @return The player worth.
+     */
+    public int getWorth() {
+        int worth = 0;
+        
+        for(PropertyLocation property : getOwnedProperty()) {
+            if(property.getMortgagedStatus()) {
+                worth += property.getPrice() /2;
+            }
+            else if(property.getIsHotel()) {
+                worth += (property.getPrice() + (5 * property.getHousePrice()));
+            }
+            else {
+                worth += (property.getPrice() + (property.getHousePrice() * property.getNumberOfHouses()));
+            }
+        }
+        
+        for(RailwayLocation railway : getOwnedRailways()) {
+            if(railway.getIsMortgaged()) {
+                worth += railway.getPrice() / 2;
+            }
+            else {
+                worth += railway.getPrice();
+            }
+        }
+        
+        for(UtilityLocation utility : getOwnedUtilities()) {
+            if(utility.getIsMortgaged()) {
+                worth += utility.getPrice() / 2;
+            }
+            else {
+                worth += utility.getPrice();
+            }
+        }
+        
+        worth += cash.getValue();
+        
+        worth += 50 * ownedGOJFCards.size();
+        
+        return worth;
     }
 }

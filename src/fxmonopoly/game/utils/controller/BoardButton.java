@@ -7,6 +7,7 @@ package fxmonopoly.game.utils.controller;
 
 
 import fxmonopoly.gamedata.board.locations.*;
+import fxmonopoly.gamedata.players.UserPlayer;
 import javafx.scene.control.Button;
 
 /**
@@ -46,6 +47,14 @@ public class BoardButton extends Button {
     }
     
     /**
+     * Retrieves the isOwnable boolean.
+     * @return True if the location can be owned, false otherwise.
+     */
+    public boolean isOwnable() {
+        return ownable;
+    }
+    
+    /**
      * Retrieves whether this property is owned.
      * @return True if the location is owned, false otherwise.
      */
@@ -59,6 +68,21 @@ public class BoardButton extends Button {
             }
             else if(location instanceof UtilityLocation) {
                 return ((UtilityLocation) location).getIsOwned();
+            }
+        }
+        return false;
+    }
+    
+    public boolean userIsOwner(UserPlayer user) {
+        if(ownable) {
+            if(location instanceof PropertyLocation) {
+                return ((PropertyLocation) location).getOwner() == user;
+            }
+            else if(location instanceof RailwayLocation) {
+                return ((RailwayLocation) location).getOwner() == user;
+            }
+            else if(location instanceof UtilityLocation) {
+                return ((UtilityLocation) location).getOwner() == user;
             }
         }
         return false;
