@@ -91,7 +91,7 @@ public class DecisionSystem {
         else if(location instanceof RailwayLocation) {
             if(model.getActivePlayer().getCash() > ((RailwayLocation) location).getPrice() && !((RailwayLocation) location).getIsOwned()) {
                 model.activePlayerBuyLocation();
-                controller.printToTextFlow(model.getActivePlayer().getName() + " has purchased " + location.getName() + "\n", model.getActivePlayer());
+                //controller.printToTextFlow(model.getActivePlayer().getName() + " has purchased " + location.getName() + "\n", model.getActivePlayer());
             }
         }
         else if(location instanceof UtilityLocation) {
@@ -106,7 +106,7 @@ public class DecisionSystem {
     public void propertyBuyingDecision(PropertyLocation property) {
         if(valueDeterminer(property, model.getActivePlayer()) >= property.getPrice() && model.getActivePlayer().getCash() > property.getPrice() && !property.getIsOwned()) {
             model.activePlayerBuyLocation();
-            controller.printToTextFlow(model.getActivePlayer().getName() + " has bought " + property.getName() + "\n", model.getActivePlayer());
+            //controller.printToTextFlow(model.getActivePlayer().getName() + " has bought " + property.getName() + "\n", model.getActivePlayer());
             
             boolean unOwned = true;
             for(PropertyLocation prop : model.getColourGroup(property)) {
@@ -118,7 +118,7 @@ public class DecisionSystem {
             
             if(!unOwned) {
                 model.mortgageLocation(property);
-                controller.printToTextFlow(model.getActivePlayer().getName() + " has mortgaged " + property.getName() + "\n", model.getActivePlayer());
+                //controller.printToTextFlow(model.getActivePlayer().getName() + " has mortgaged " + property.getName() + "\n", model.getActivePlayer());
             }
         }
         else {
@@ -133,7 +133,7 @@ public class DecisionSystem {
     public void utilityBuyingDecision(UtilityLocation utility) {
         if(valueDeterminer(utility, model.getActivePlayer()) >= utility.getPrice() && model.getActivePlayer().getCash() > utility.getPrice() && !utility.getIsOwned()) {
             model.activePlayerBuyLocation();
-            controller.printToTextFlow(model.getActivePlayer().getName() + " has bought " + utility.getName(), model.getActivePlayer());
+            //controller.printToTextFlow(model.getActivePlayer().getName() + " has bought " + utility.getName(), model.getActivePlayer());
         }
         else {
             controller.bidResolution();

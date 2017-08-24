@@ -39,7 +39,13 @@ public final class ProcessBid {
         
         if(bid != null) {
             if(bid.getHighestBidder().size() == 1) {
-                bid.getHighestBidder().get(0).addCash(-(bid.getSecondHighestBid() + 1));
+                if(bid.getSecondHighestBid() == 0) {
+                    bid.getHighestBidder().get(0).addCash(-(bid.getSecondHighestBid() + 40));
+                }
+                else {
+                    bid.getHighestBidder().get(0).addCash(-(bid.getSecondHighestBid() + 1));
+                }
+                
             
                 processBidTransfer(bid, playerList, bid.getHighestBidder().get(0));
             }

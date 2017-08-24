@@ -196,6 +196,7 @@ public class DialogContent {
         box.getChildren().addAll(graphic, text);
         box.setAlignment(Pos.CENTER);
         box.setMinSize(HBox.USE_PREF_SIZE, HBox.USE_PREF_SIZE);
+        box.setMinHeight(graphic.getFitWidth() + 20);
         
         position.getDialogPane().setContent(box);
         
@@ -238,6 +239,7 @@ public class DialogContent {
         box.setAlignment(Pos.CENTER);
         box.getChildren().addAll(graphic, text);
         box.setMinSize(HBox.USE_PREF_SIZE, HBox.USE_PREF_SIZE);
+        box.setMinHeight(graphic.getFitWidth() + 20);
         
         position.getDialogPane().setContent(box);
         
@@ -316,8 +318,8 @@ public class DialogContent {
      */
     public static void bidDialog(Dialog bid, GameModel model, ArrayList<BoardButton> board) {
         VBox box = new VBox(20);
+        HBox graph = new HBox(20);
         box.setAlignment(Pos.CENTER);
-        box.setMinSize(HBox.USE_PREF_SIZE, HBox.USE_PREF_SIZE);
         
         Label enterBid = new Label("Enter Max Bid:");
         TextField numeric = new TextField();
@@ -336,16 +338,16 @@ public class DialogContent {
             graphic.setImage(new Image("fxmonopoly/resources/images/LeaveJailIcon"));
         }
         
-        box.getChildren().addAll(graphic, enterBid, numeric);
+        graph.getChildren().addAll(graphic);
+        graph.setMinHeight(graphic.getFitWidth() + 20);
+        graph.setAlignment(Pos.CENTER);
+        box.getChildren().addAll(graph, enterBid, numeric);
         
         bid.getDialogPane().setContent(box);
-        
-        bid.getDialogPane().getScene().getWindow().sizeToScene();
         
         ButtonType bidOK = new ButtonType("Bid", ButtonData.OK_DONE);
         bid.getDialogPane().getButtonTypes().add(bidOK);
         bid.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
-        bid.getDialogPane().getScene().getWindow().sizeToScene();
         bid.getDialogPane().setMinSize(DialogPane.USE_PREF_SIZE, DialogPane.USE_PREF_SIZE);
         
         bid.getDialogPane().lookupButton(bidOK).addEventFilter(ActionEvent.ACTION, event -> {
@@ -354,7 +356,6 @@ public class DialogContent {
             }
             else {
                 model.getActiveBid().addBid(model.getUser(), Integer.parseInt(numeric.getText()));
-                model.resolveActiveBid();
             }
         });
         
@@ -380,8 +381,9 @@ public class DialogContent {
      */
     public static void secondaryBidDialog(Dialog bid, GameModel model, ArrayList<BoardButton> board) {
         VBox box = new VBox(10);
+        HBox graph = new HBox(20);
         box.setAlignment(Pos.CENTER);
-        box.setMinSize(HBox.USE_PREF_SIZE, HBox.USE_PREF_SIZE);
+        //box.setMinSize(HBox.USE_PREF_SIZE, HBox.USE_PREF_SIZE);
         
         Label enterBid = new Label("Max Bid Currently: " + (model.getActiveBid().getSecondHighestBid() + 1) + "\n" +
                                    "Enter Max Bid:");
@@ -394,6 +396,7 @@ public class DialogContent {
         
         ImageView graphic = new ImageView();
         
+        
         if(model.getActiveBid().containsLocation()) { 
             graphic = getBoardLocationImage(board, model.retrieveLocationPosition(model.getActiveBid().getLocation()));
         }
@@ -401,15 +404,16 @@ public class DialogContent {
             graphic.setImage(new Image("fxmonopoly/resources/images/LeaveJailIcon"));
         }
         
-        box.getChildren().addAll(graphic, enterBid, numeric);   
-        box.setMinSize(HBox.USE_PREF_SIZE, HBox.USE_PREF_SIZE);
+        graph.getChildren().addAll(graphic);
+        graph.setMinHeight(graphic.getFitWidth() + 20);
+        graph.setAlignment(Pos.CENTER);
+        box.getChildren().addAll(graph, enterBid, numeric);   
         bid.getDialogPane().setContent(box);
         
         ButtonType bidOK = new ButtonType("Bid", ButtonData.OK_DONE);
         bid.getDialogPane().getButtonTypes().add(bidOK);
         bid.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
-        
-        bid.getDialogPane().getScene().getWindow().sizeToScene();
+        bid.getDialogPane().setMinSize(DialogPane.USE_PREF_SIZE, DialogPane.USE_PREF_SIZE);
         
         bid.getDialogPane().lookupButton(bidOK).addEventFilter(ActionEvent.ACTION, event -> {
             if(numeric.getText().isEmpty() || numeric.getText() == null) {
@@ -502,6 +506,7 @@ public class DialogContent {
         
         
         position.getDialogPane().setContent(box);
+        position.getDialogPane().layout();
         
         if(position.getDialogPane().getButtonTypes().isEmpty()) {
             position.getDialogPane().getButtonTypes().add(ButtonType.OK);
@@ -528,11 +533,11 @@ public class DialogContent {
     public static void ownedOwnableLocationDialog(Dialog position, GameModel model, ArrayList<BoardButton> board, int indexOf) {
         
         HBox box = new HBox(20);
+        HBox graph = new HBox(10);
         
         if(board.get(indexOf).isOwned() && board.get(indexOf).userIsOwner(model.getUser())) {
             ImageView graphic = getBoardLocationImage(board, indexOf);
-            //graphic.setRotate(calculateRotation(indexOf));
-            box.setMinHeight(graphic.getFitWidth() + 20);
+            
             String userText;
             
             if(board.get(indexOf).getLocation() instanceof PropertyLocation) {
@@ -564,9 +569,14 @@ public class DialogContent {
                     }
                 });
                 
+                graph.getChildren().addAll(graphic);
+                graph.setMinHeight(graphic.getFitWidth() + 20);
+                graph.setAlignment(Pos.CENTER);
+                
                 VBox box2 = new VBox(20);
                 box2.setAlignment(Pos.CENTER);
-                box2.getChildren().addAll(graphic, develop, undevelop, mortgage);
+                box2.getChildren().addAll(graph, develop, undevelop, mortgage);
+                box.setMinHeight(graphic.getFitWidth() + develop.getHeight() + undevelop.getHeight() + mortgage.getHeight() + 20);
                 
                 box.getChildren().addAll(box2, text);
             }
@@ -586,11 +596,13 @@ public class DialogContent {
                 
                 mortgage.setOnAction(e -> {
                     model.mortgageLocation(board.get(indexOf).getLocation());
-                    if(((PropertyLocation) board.get(indexOf).getLocation()).getMortgagedStatus()) {
+                    if(((RailwayLocation) board.get(indexOf).getLocation()).getIsMortgaged()) {
                         mortgage.setDisable(true);
                     }
                 });  
+                
                 box.getChildren().addAll(graphic, text, mortgage);
+                box.setMinHeight(graphic.getFitWidth() + 20);
             }
             else if(board.get(indexOf).getLocation() instanceof UtilityLocation) {
                 userText = ((UtilityLocation) board.get(indexOf).getLocation()).getUserOwnedString();
@@ -607,12 +619,13 @@ public class DialogContent {
                 
                 mortgage.setOnAction(e -> {
                     model.mortgageLocation(board.get(indexOf).getLocation());
-                    if(((PropertyLocation) board.get(indexOf).getLocation()).getMortgagedStatus()) {
+                    if(((UtilityLocation) board.get(indexOf).getLocation()).getIsMortgaged()) {
                         mortgage.setDisable(true);
                     }
                 });
                 
                 box.getChildren().addAll(graphic, text, mortgage);
+                box.setMinHeight(graphic.getFitWidth() + 20);
             }
         }
         else {
@@ -620,35 +633,55 @@ public class DialogContent {
             box.setMinHeight(graphic.getFitWidth() + 20);
             String userText;
             
+            
             if(board.get(indexOf).getLocation() instanceof PropertyLocation) {
                 userText = ((PropertyLocation) board.get(indexOf).getLocation()).getOwner().getName();
                 Label text = new Label(model.retrieveLocation(indexOf).getName() + "\n" +
-                                                          userText);
+                                                          "Owner: " + userText);
                 text.setMinSize(Label.USE_PREF_SIZE, Label.USE_PREF_SIZE);
                 text.wrapTextProperty().setValue(Boolean.TRUE);
-                box.getChildren().addAll(graphic, text);   
+                
+                graph.getChildren().add(graphic);
+                graph.setAlignment(Pos.CENTER);
+                graph.setMinHeight(graphic.getFitWidth() + 20);
+                
+                box.getChildren().addAll(graph, text); 
+                box.setMinHeight(graphic.getFitWidth() + 20);
             }
             else if(board.get(indexOf).getLocation() instanceof RailwayLocation) {
                 userText = ((RailwayLocation) board.get(indexOf).getLocation()).getOwner().getName();
                 Label text = new Label(model.retrieveLocation(indexOf).getName() + "\n" +
-                                                          userText);
+                                                          "Owner: " + userText);
                 text.setMinSize(Label.USE_PREF_SIZE, Label.USE_PREF_SIZE);
                 text.wrapTextProperty().setValue(Boolean.TRUE);
-                box.getChildren().addAll(graphic, text);
+                
+                graph.getChildren().add(graphic);
+                graph.setAlignment(Pos.CENTER);
+                graph.setMinHeight(graphic.getFitWidth() + 20);
+                
+                box.getChildren().addAll(graph, text);
+                box.setMinHeight(graphic.getFitWidth() + 20);
             }
             else if(board.get(indexOf).getLocation() instanceof UtilityLocation) {
                 userText = ((UtilityLocation) board.get(indexOf).getLocation()).getOwner().getName();
                 Label text = new Label(model.retrieveLocation(indexOf).getName() + "\n" +
-                                                          userText);
+                                                          "Owner: " + userText);
                 text.setMinSize(Label.USE_PREF_SIZE, Label.USE_PREF_SIZE);
                 text.wrapTextProperty().setValue(Boolean.TRUE);
-                box.getChildren().addAll(graphic, text);
+                
+                graph.getChildren().add(graphic);
+                graph.setAlignment(Pos.CENTER);
+                graph.setMinHeight(graphic.getFitWidth() + 20);
+                
+                box.getChildren().addAll(graph, text);
+                box.setMinHeight(graphic.getFitWidth() + 20);
             }
         }
         
         box.setMinSize(HBox.USE_PREF_SIZE, HBox.USE_PREF_SIZE);
         box.setAlignment(Pos.CENTER);
         position.getDialogPane().setContent(box);
+        position.getDialogPane().layout();
         
         if(position.getDialogPane().getButtonTypes().isEmpty()) {
             position.getDialogPane().getButtonTypes().add(ButtonType.OK);

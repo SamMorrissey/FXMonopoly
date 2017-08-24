@@ -123,7 +123,7 @@ public final class ProcessCard {
                 model.nextPlayer();
         }
         else {
-            if(card.getMoveLocation() < model.getActivePlayer().getPosition()) {
+            if(card.getMoveLocation() < model.getActivePlayer().getPosition() && card.getMoveLocation() != 0) {
                 data.getActivePlayer().addCash(200);
                 controller.printToTextFlow(model.getActivePlayer().getName() + " collected £200 passing Go \n", model.getActivePlayer());
             }

@@ -307,7 +307,7 @@ public class GameModel {
      * test for current ownership on the location before utilising this method. 
      */
     public void activePlayerBuyLocation() {
-        OwnableLocations.activePlayerBuyLocation(data);
+        OwnableLocations.activePlayerBuyLocation(controller, data);
     }
     
     /**
@@ -439,7 +439,7 @@ public class GameModel {
      * @param location The location to mortgage.
      */
     public void mortgageLocation(Location location) {
-        OwnableLocations.mortgageLocation(location);
+        OwnableLocations.mortgageLocation(controller, location);
     }
     
     /**
@@ -447,7 +447,7 @@ public class GameModel {
      * @param location The location to demortgage.
      */
     public void deMortgageLocation(Location location) {
-        OwnableLocations.demortgageLocation(location);
+        OwnableLocations.demortgageLocation(controller, location);
     }
     
     /**
