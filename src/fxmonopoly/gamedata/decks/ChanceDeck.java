@@ -82,7 +82,7 @@ public class ChanceDeck {
      * Returns the provided card to the bottom of the deck. Done this way to allow
      * for Get Out Of Jail Free cards to be returned when they are actually used,
      * not immediately after being picked up.
-     * @param card 
+     * @param card The card to return.
      */
     public void returnCard(Card card) {
         shuffledDeck.add(card);

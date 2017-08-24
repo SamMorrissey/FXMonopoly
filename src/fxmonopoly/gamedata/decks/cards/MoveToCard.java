@@ -17,6 +17,7 @@ public class MoveToCard extends Card{
      * Creates a card that designates a specific board location for the player
      * to move to.
      * @param description The card description.
+     * @param fromChanceDeck True if from the chance deck, false otherwise.
      * @param location The board position to be moved to.
      */
     public MoveToCard(String description, boolean fromChanceDeck, int location) {

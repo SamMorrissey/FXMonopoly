@@ -319,7 +319,7 @@ public class Board {
     
     /**
      * Adds the specified number of hotels to the hotels total.
-     * @param hotels 
+     * @param hotels The hotels to add.
      */
     public void addHotels(int hotels) {
         this.hotels += hotels;

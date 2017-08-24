@@ -23,6 +23,7 @@ public class DoublePayableCard extends Card{
      * utilised against specific multipliers (Houses and Hotels in the current
      * Monopoly game).
      * @param description The card description.
+     * @param fromChanceDeck True if from the chance deck, false otherwise.
      * @param firstValue The first value mentioned on the card.
      * @param secondValue The second value mentioned on the card.
      */

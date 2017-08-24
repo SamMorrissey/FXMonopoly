@@ -364,4 +364,25 @@ public class PropertyLocation extends Location{
                 "Hotel Rent: £" + hotelRent + "\n";
                 
     }
+    
+    /**
+     * Retrieves the value of the property.
+     * @return The property's value.
+     */
+    public int getValue() {
+        int value = price;
+        
+        if(isHotel) {
+            value += 5 * housePrice;
+        }
+        else {
+            value += numberOfHouses * housePrice;
+        }
+        
+        if(isMortgaged) {
+            value = (value / 2);
+        }
+        
+        return value;
+    }
 }

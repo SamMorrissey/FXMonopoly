@@ -148,6 +148,23 @@ public final class EvenDevelopment {
     }
     
     /**
+     * Removes all developments from an entire colour group.
+     * @param board The board to utilise.
+     * @param property The property to get the group of.
+     * @return The reimbursement value.
+     */
+    public static int removeAllDevelopmentInColourGroup(Board board, PropertyLocation property) {
+        int reimbursement = 0;
+        for(PropertyLocation temp : board.getGroup(property)) {
+            while(!(temp.getNumberOfHouses() == 0)) {
+                reimbursement += evenlyReduce(board, property);
+            }
+        }
+        
+        return reimbursement;
+    }
+    
+    /**
      * Determines the value of the reimbursement for hotels when they are 
      * being sold. Should only be called when the number of houses available is 
      * less than four, although this method will still work perfectly fine if

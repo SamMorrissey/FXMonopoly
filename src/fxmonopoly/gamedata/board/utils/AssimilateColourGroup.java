@@ -34,7 +34,7 @@ public final class AssimilateColourGroup {
      * when false. This is because when set to false, each property automatically
      * sets its developable status to false. However a colour group monopoly is
      * possible even with mortgaged property, which would affect the isDevelopable
-     * status. In logic terms: !A => !B but A !=> B.
+     * status.
      * @param group The group to operate on.
      */
     public static void assimilate(ArrayList<PropertyLocation> group) {

@@ -5,6 +5,7 @@
  */
 package fxmonopoly.game.utils.model;
 
+import fxmonopoly.game.GameController;
 import fxmonopoly.gamedata.bid.Bid;
 import fxmonopoly.gamedata.board.locations.Location;
 import fxmonopoly.gamedata.board.locations.PropertyLocation;
@@ -30,39 +31,41 @@ public final class ProcessBid {
     
     /**
      * Determines the winning bidder and then calls processBidTransfer
+     * @param controller The controller to print text out to.
      * @param bid        The bid to operate on.
      * @param playerList The player list to pass when processing transfer.
      */
-    public static void resolveBid(Bid bid, ArrayList<Player> playerList) {
+    public static void resolveBid(GameController controller, Bid bid, ArrayList<Player> playerList) {
         
-        
-        if(bid.getHighestBidder().size() == 1) {
-            bid.getHighestBidder().get(0).addCash(-(bid.getSecondHighestBid() + 1));
+        if(bid != null) {
+            if(bid.getHighestBidder().size() == 1) {
+                bid.getHighestBidder().get(0).addCash(-(bid.getSecondHighestBid() + 1));
             
-            processBidTransfer(bid, playerList, bid.getHighestBidder().get(0));
-        }
-        else if(bid.getHighestBidder().size() > 1) {
+                processBidTransfer(bid, playerList, bid.getHighestBidder().get(0));
+            }
+            else if(bid.getHighestBidder().size() > 1) {
             
             
-            Player highestBidder = null;
+                Player highestBidder = null;
             
-            for(Player player : bid.getHighestBidder()) {
-                if(player instanceof UserPlayer) {
-                    highestBidder = player;
-                    break;
+                for(Player player : bid.getHighestBidder()) {
+                    if(player instanceof UserPlayer) {
+                        highestBidder = player;
+                        break;
+                    }
                 }
-            }
             
-            if(highestBidder == null) {
-                highestBidder = bid.getHighestBidder().get(0);
-            }
+                if(highestBidder == null) {
+                    highestBidder = bid.getHighestBidder().get(0);
+                }
             
      
-            highestBidder.addCash(-bid.getHighestBid());
+                highestBidder.addCash(-bid.getHighestBid());
+                controller.printToTextFlow(highestBidder.getName() + " has won the auction \n", highestBidder);
             
-            processBidTransfer(bid, playerList, highestBidder);
-        }    
-        
+                processBidTransfer(bid, playerList, highestBidder);
+            }    
+        }
     }
     
     /**
@@ -101,7 +104,7 @@ public final class ProcessBid {
                     temp.getOwner().removeLocation(location);
                 
                 
-                temp.getOwner().removeLocation(location);
+                
                 temp.setOwner(player);
                 player.addLocation(location);
             }
@@ -111,7 +114,7 @@ public final class ProcessBid {
                 if(temp.getOwner() != null)
                     temp.getOwner().removeLocation(location);
                 
-                temp.getOwner().removeLocation(location);
+                
                 ((RailwayLocation) location).setOwner(player);
                 player.addLocation(location);
             }

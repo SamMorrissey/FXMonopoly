@@ -212,7 +212,7 @@ public class GameData {
     
     /**
      * Retrieves the currently active Card. 
-     * @return 
+     * @return Retrieves the currently active card.
      */
     public Card getActiveCard() {
         return activeCard;

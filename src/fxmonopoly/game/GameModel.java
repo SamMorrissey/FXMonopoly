@@ -9,6 +9,7 @@ import fxmonopoly.game.utils.model.*;
 import fxmonopoly.gamedata.GameData;
 import fxmonopoly.gamedata.bid.Bid;
 import fxmonopoly.gamedata.board.locations.*;
+import fxmonopoly.gamedata.board.utils.EvenDevelopment;
 import fxmonopoly.gamedata.decks.cards.Card;
 import fxmonopoly.gamedata.players.*;
 import fxmonopoly.gamedata.trade.TradeOffer;
@@ -40,6 +41,8 @@ public class GameModel {
     private SimpleBooleanProperty userIsActive;
     private SimpleIntegerProperty playerListSize;
     
+    private GameController controller;
+    
     /**
      * Provides the necessary methods for the GameController to operate on the
      * game. 
@@ -48,6 +51,14 @@ public class GameModel {
         initialList = new ArrayList<>();
         reorderedList = new ArrayList<>();
         data = new GameData();
+    }
+    
+    /**
+     * Sets the GameController of this GameModel
+     * @param controller The controller to set.
+     */
+    public void setController(GameController controller) {
+        this.controller = controller;
     }
     
     /**
@@ -120,7 +131,7 @@ public class GameModel {
     
     /**
      * Retrieves the full list of players.
-     * @return 
+     * @return The list of players.
      */
     public ArrayList<Player> getPlayerList() {
         return data.getPlayerList();
@@ -231,7 +242,7 @@ public class GameModel {
     public SimpleStringProperty getActivePlayerLocationNameProperty() {
         return activePlayerLocationName;
     }
-    
+
     /**
      * Retrieves the player list size Property.
      * @return The player list size property.
@@ -285,10 +296,10 @@ public class GameModel {
     
     /**
      * Rolls the die and moves the player the corresponding distance.
-     * @param diceRolls
+     * @param diceRolls The values of the dice utilised.
      */
     public void diceMove(int[] diceRolls) {
-        RollDie.diceMove(this, data, diceRolls);
+        RollDie.diceMove(controller, this, data, diceRolls);
     }
     
     /**
@@ -311,10 +322,30 @@ public class GameModel {
     /**
      * Regresses the specified property provided that the user is the owner.
      * @param property The property to regress.
-     * @return The value of the reimbursement.
+     * @return The cost of the development.
      */
     public int userRegressProperty(PropertyLocation property) {
         return OwnableLocations.userRegressProperty(data, property);
+    }
+    
+    /**
+     * Develops the specified property provided that the specified player is the owner.
+     * @param property The property to develop
+     * @param player The player to develop the property.
+     * @return The cost of the development.
+     */
+    public int specifiedPlayerDevelopProperty(PropertyLocation property, Player player) {
+        return OwnableLocations.specifiedPlayerDevelopProperty(data, player, property);
+    }
+    
+    /**
+     * Regresses the specified property provided that the specified player is the owner.
+     * @param property The property to regress.
+     * @param player The player to regress the property.
+     * @return The value of the reimbursement.
+     */
+    public int specifiedPlayerRegressProperty(PropertyLocation property, Player player) {
+        return OwnableLocations.specifiedPlayerRegressProperty(data, player, property);
     }
     
     /**
@@ -333,6 +364,16 @@ public class GameModel {
      */
     public int activePlayerRegressProperty(PropertyLocation property) {
         return OwnableLocations.activePlayerRegressProperty(data, property);
+    }
+    
+    /**
+     * Removes all development from a property group and provides a reimbursement
+     * value.
+     * @param property The property of the group to reduce.
+     * @return The value of reimbursement.
+     */
+    public int removeAllDevelopmentFromGroup(PropertyLocation property) {
+        return EvenDevelopment.removeAllDevelopmentInColourGroup(data.getBoard(), property);
     }
     
     /**
@@ -371,6 +412,26 @@ public class GameModel {
         return (location instanceof PropertyLocation || 
                 location instanceof RailwayLocation || 
                 location instanceof UtilityLocation);   
+    }
+    
+    /**
+     * Retrieves the ownership status of the specified location.
+     * @param location The location to check.
+     * @return True if owned, false otherwise, or if not an ownable location.
+     */
+    public boolean locationIsOwned(Location location) {
+        if(location instanceof PropertyLocation) {
+            return ((PropertyLocation) location).getIsOwned();
+        }
+        else if(location instanceof RailwayLocation) {
+            return ((RailwayLocation) location).getIsOwned();
+        }
+        else if(location instanceof UtilityLocation) {
+            return ((UtilityLocation) location).getIsOwned();
+        }
+        else {
+            return false;
+        }
     }
     
     /**
@@ -456,7 +517,7 @@ public class GameModel {
      */
     public void resolveActiveTrade() {
         if(data.getActiveTrade().hasPlayerTo()) {
-            ProcessTrade.resolveTrade(data.getActiveTrade());
+            ProcessTrade.resolveTrade(data.getActiveTrade(), this);
             data.clearActiveTrade();
         }   
     }
@@ -488,7 +549,7 @@ public class GameModel {
      */
     public void resolveActiveBid() {
         if(data.getActiveBid().containsBid()) {
-            ProcessBid.resolveBid(data.getActiveBid(), data.getPlayerList());
+            ProcessBid.resolveBid(controller, data.getActiveBid(), data.getPlayerList());
             data.clearActiveBid();
         }
     }
@@ -502,7 +563,7 @@ public class GameModel {
     
     /**
      * Retrieves the active card instance.
-     * @return 
+     * @return Retrieves the active card.
      */
     public Card getActiveCard() {
         return data.getActiveCard();
@@ -514,7 +575,7 @@ public class GameModel {
     public void processCardActions() {
         
         if(data.getActiveCard() != null) {
-            ProcessCard.processCardActions(data);
+            ProcessCard.processCardActions(controller, this, data);
             
             if(data.getActiveCard().getFromChanceDeck()) {
                 data.returnChanceCard(data.getActiveCard());
@@ -530,6 +591,6 @@ public class GameModel {
      * fines, jail movement, drawing a card into the active slot etc.
      */
     public void processRequiredPositionAction() {
-        ProcessPositionAction.processRequiredPositionAction(data);
+        ProcessPositionAction.processRequiredPositionAction(controller, this, data);
     }
 }

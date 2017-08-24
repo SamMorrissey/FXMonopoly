@@ -43,13 +43,13 @@ public class BoardPopulating {
      * @param grid The GridPane in which to locate the buttons.
      * @param map The Map on which to base the styles.
      * @param model The GameModel to utilise.
+     * @param manager The manager to retrieve dialogs from.
      */
     public static void generateButtons(ArrayList<BoardButton> board, GridPane grid, HashMap<Player, Color> map, GameModel model, StageManager manager) {
         
         int i;
         for(i = 0; i < 40; i++) {
             board.add(new BoardButton());
-            //board.get(board.size() - 1).getStyleClass().add("board-button");
             board.get(board.size() - 1).setStyle(initialStyle());   
         }
         

@@ -5,6 +5,7 @@
  */
 package fxmonopoly.game.utils.model;
 
+import fxmonopoly.game.GameModel;
 import fxmonopoly.gamedata.board.locations.PropertyLocation;
 import fxmonopoly.gamedata.board.locations.RailwayLocation;
 import fxmonopoly.gamedata.board.locations.UtilityLocation;
@@ -27,22 +28,26 @@ public final class ProcessTrade {
     /**
      * Fully resolves the active trade instance between two players.
      * @param transfer The trade to transfer.
+     * @param model The model to utilise.
      */
-    public static void resolveTrade(TradeOffer transfer) {
+    public static void resolveTrade(TradeOffer transfer, GameModel model) {
 
-            transferTradeTo(transfer);
-            transferTradeFrom(transfer);
+            transferTradeTo(transfer, model);
+            transferTradeFrom(transfer, model);
     }
     
     /**
      * Transfers all items specified to the trade offer recipient.
      */
-    private static void transferTradeTo(TradeOffer transfer) {
+    private static void transferTradeTo(TradeOffer transfer, GameModel model) {
         
         if(transfer.containsOfferLocations()) {
             
             transfer.getOfferList().forEach(e -> {
                 if(e instanceof PropertyLocation) {
+                    if(((PropertyLocation) e).getIsHotel() || ((PropertyLocation) e).getNumberOfHouses() > 0) {
+                        ((PropertyLocation) e).getOwner().addCash(model.removeAllDevelopmentFromGroup((PropertyLocation) e));
+                    }
                     ((PropertyLocation) e).transferOwnership(transfer.getPlayerTo());
                     transfer.getPlayerTo().addLocation(e);
                     transfer.getPlayerFrom().removeLocation(e);
@@ -77,12 +82,15 @@ public final class ProcessTrade {
     /**
      * Transfers all items specified to the trade offer initiator.
      */
-    private static void transferTradeFrom(TradeOffer transfer) {
+    private static void transferTradeFrom(TradeOffer transfer, GameModel model) {
         
         if(transfer.containsForLocations()) {
             
             transfer.getForList().forEach(e -> {
                 if(e instanceof PropertyLocation) {
+                    if(((PropertyLocation) e).getIsHotel() || ((PropertyLocation) e).getNumberOfHouses() > 0) {
+                        ((PropertyLocation) e).getOwner().addCash(model.removeAllDevelopmentFromGroup((PropertyLocation) e));
+                    }
                     ((PropertyLocation) e).transferOwnership(transfer.getPlayerFrom());
                     transfer.getPlayerFrom().addLocation(e);
                     transfer.getPlayerTo().removeLocation(e);

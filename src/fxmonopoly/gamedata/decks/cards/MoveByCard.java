@@ -16,6 +16,7 @@ public class MoveByCard extends Card {
     /**
      * Creates a new MoveBy card, that specified a distance to move.
      * @param description The description of this card.
+     * @param fromChanceDeck True if from the chance deck, false otherwise.
      * @param distance The distance to be moved.
      */
     public MoveByCard(String description, boolean fromChanceDeck, int distance) {

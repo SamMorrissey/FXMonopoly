@@ -52,7 +52,7 @@ public class TradeOffer {
     
     /**
      * Sets the recipient of the trade offer to the specified input.
-     * @param playerTo 
+     * @param playerTo The player the trade offer is aimed at.
      */
     public void setPlayerTo(Player playerTo) {
         if(playerTo != null) 
@@ -152,7 +152,7 @@ public class TradeOffer {
     /**
      * Adds the specified cash value to the offer. Any value of 0 or below will
      * cause the containsCash method to return false.
-     * @param cashFrom 
+     * @param cashFrom The cash intended to be received.
      */
     public void addCashFrom(int cashFrom) {
         this.cashFrom = cashFrom;

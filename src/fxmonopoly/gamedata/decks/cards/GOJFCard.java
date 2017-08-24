@@ -15,6 +15,7 @@ public class GOJFCard extends Card {
     
     /**
      * Creates a Get Out Of Jail Free card.
+     * @param fromChanceDeck True if from the chance deck, false otherwise.
      */
     public GOJFCard(boolean fromChanceDeck) {
         super("Get Out Of Jail Free", fromChanceDeck);

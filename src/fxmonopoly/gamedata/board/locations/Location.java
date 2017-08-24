@@ -24,6 +24,10 @@ public abstract class Location {
         this.name = new SimpleStringProperty(this, "name", name);
     }
     
+    /**
+     * Retrieves the name property of the location.
+     * @return The name property.
+     */
     public SimpleStringProperty getNameProperty() {
         return name;
     }

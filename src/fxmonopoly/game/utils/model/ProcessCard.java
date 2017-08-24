@@ -5,6 +5,8 @@
  */
 package fxmonopoly.game.utils.model;
 
+import fxmonopoly.game.GameController;
+import fxmonopoly.game.GameModel;
 import fxmonopoly.gamedata.GameData;
 import fxmonopoly.gamedata.board.locations.PropertyLocation;
 import fxmonopoly.gamedata.board.locations.RailwayLocation;
@@ -32,29 +34,31 @@ public final class ProcessCard {
     /**
      * Checks the type of the active card and then calls the necessary action to
      * perform.
+     * @param controller The controller to utilise for text output.
+     * @param model The model to utilise.
      * @param data The data to be manipulated.
      */
-    public static void processCardActions(GameData data) {
+    public static void processCardActions(GameController controller, GameModel model, GameData data) {
         
         Card card = data.getActiveCard();
         
         if(card instanceof DoublePayableCard) {
-            doublePayableCard(data, (DoublePayableCard) card);
+            doublePayableCard(controller, data, (DoublePayableCard) card);
         }
         else if(card instanceof GOJFCard) {
             gojfCard(data, (GOJFCard) card);
         }
         else if(card instanceof MoveByCard) {
-            moveByCard(data, (MoveByCard) card);
+            moveByCard(controller, model, data, (MoveByCard) card);
         }
         else if(card instanceof MoveToCard) {
-            moveToCard(data, (MoveToCard) card);
+            moveToCard(controller, model, data, (MoveToCard) card);
         }
         else if(card instanceof NearestRailwayCard) {
-            nearestRailwayCard(data, (NearestRailwayCard) card);
+            nearestRailwayCard(controller, model, data, (NearestRailwayCard) card);
         }
         else if(card instanceof NearestUtilityCard) {
-            nearestUtilityCard(data, (NearestUtilityCard) card);
+            nearestUtilityCard(controller, model, data, (NearestUtilityCard) card);
         }
         else if(card instanceof PayableCard) {
             payableCard(data, (PayableCard) card);
@@ -67,7 +71,7 @@ public final class ProcessCard {
      * @param data The data to manipulate.
      * @param card The card to evaluate.
      */
-    private static void doublePayableCard(GameData data,DoublePayableCard card) {
+    private static void doublePayableCard(GameController controller, GameData data,DoublePayableCard card) {
         int balance = 0;
         
         for(PropertyLocation location : data.getActivePlayer().getOwnedProperty()) {
@@ -80,6 +84,7 @@ public final class ProcessCard {
             }
             
             data.getActivePlayer().addCash(-balance);
+            controller.printToTextFlow(data.getActivePlayer().getName() + " paid £" + balance + " for repairs \n", data.getActivePlayer());
     }
     
     /**
@@ -96,8 +101,11 @@ public final class ProcessCard {
      * @param data The data to manipulate.
      * @param card The card to evaluate.
      */
-    private static void moveByCard(GameData data, MoveByCard card) {
+    private static void moveByCard(GameController controller, GameModel model, GameData data, MoveByCard card) {
         data.getActivePlayer().moveBy(card.getDistance());
+        model.processRequiredPositionAction();
+        controller.pathTransition(model);
+        controller.runNextMove();
     }
     
     /**
@@ -105,12 +113,25 @@ public final class ProcessCard {
      * @param data The data to manipulate.
      * @param card The card to evaluate.
      */
-    private static void moveToCard(GameData data, MoveToCard card) {
+    private static void moveToCard(GameController controller, GameModel model, GameData data, MoveToCard card) {
         if(card.getDescription().contains("Go to Jail")) {
                 data.getActivePlayer().enterJail();
                 data.getActivePlayer().moveTo(((MoveToCard) card).getMoveLocation());
+                model.processRequiredPositionAction();
+                controller.pathTransition(model);
+                controller.printToTextFlow(model.getActivePlayer().getName() + " was sent to Jail \n", model.getActivePlayer());
+                model.nextPlayer();
         }
-        data.getActivePlayer().moveTo(((MoveToCard) card).getMoveLocation());
+        else {
+            if(card.getMoveLocation() < model.getActivePlayer().getPosition()) {
+                data.getActivePlayer().addCash(200);
+                controller.printToTextFlow(model.getActivePlayer().getName() + " collected £200 passing Go \n", model.getActivePlayer());
+            }
+            data.getActivePlayer().moveTo(((MoveToCard) card).getMoveLocation());
+            model.processRequiredPositionAction();
+            controller.pathTransition(model);
+            controller.runNextMove();
+        }
     }
     
     /**
@@ -118,10 +139,15 @@ public final class ProcessCard {
      * @param data The data to manipulate.
      * @param card The card to evaluate.
      */
-    private static void nearestRailwayCard(GameData data, NearestRailwayCard card) {
+    private static void nearestRailwayCard(GameController controller, GameModel model, GameData data, NearestRailwayCard card) {
+        if(model.getActivePlayer().getPosition() > 35) {
+            data.getActivePlayer().addCash(200);
+            controller.printToTextFlow(model.getActivePlayer().getName() + " collected £200 passing Go \n", model.getActivePlayer());
+        }
         while(!(data.getBoard().getLocation(data.getActivePlayer().getPosition()) instanceof RailwayLocation)) {
                 data.getActivePlayer().moveBy(1);
-            }
+        }
+        controller.pathTransition(model);
         
         RailwayLocation location = (RailwayLocation) data.getBoard().getLocation(data.getActivePlayer().getPosition());
         
@@ -131,6 +157,8 @@ public final class ProcessCard {
             data.getActivePlayer().addCash(-i);
             location.getOwner().addCash(i);
         }
+        
+        controller.runNextMove();
     }
     
     /**
@@ -138,11 +166,16 @@ public final class ProcessCard {
      * @param data The data to manipulate.
      * @param card The card to evaluate.
      */
-    private static void nearestUtilityCard(GameData data, NearestUtilityCard card) {
+    private static void nearestUtilityCard(GameController controller, GameModel model, GameData data, NearestUtilityCard card) {
+        if(model.getActivePlayer().getPosition() > 28) {
+            data.getActivePlayer().addCash(200);
+            controller.printToTextFlow(model.getActivePlayer().getName() + " collected £200 passing Go \n", model.getActivePlayer());
+        }
         while(!(data.getBoard().getLocation(data.getActivePlayer().getPosition()) instanceof UtilityLocation)) {
                 data.getActivePlayer().moveBy(1);
-            }
+        }
             
+        controller.pathTransition(model);
         UtilityLocation location = (UtilityLocation) data.getBoard().getLocation(data.getActivePlayer().getPosition());
         
         if(location.getIsOwned() && location.getOwner() != data.getActivePlayer()) {

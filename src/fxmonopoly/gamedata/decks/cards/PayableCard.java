@@ -22,6 +22,7 @@ public class PayableCard extends Card {
      * that must be paid, as well as a boolean determining whether this value is
      * per player or not.
      * @param description The card description.
+     * @param fromChanceDeck True if from the chance deck, false otherwise.
      * @param value The value specified by the card.
      * @param perPlayer Whether the value is per player in the game.
      */

@@ -19,7 +19,6 @@ public class Main extends Application {
      * The default JavaFX method for starting the application, as opposed to the
      * main method.
      * @param stage The Stage on which the application is displayed.
-     * @throws Exception 
      */
     @Override
     public void start(Stage stage) throws Exception {

@@ -40,6 +40,7 @@ public class PlayerBindings {
         model.getUserIsActiveProperty()
              .setValue(model.userIsActive());
         
+        
     } 
     
     /**

@@ -5,6 +5,7 @@
  */
 package fxmonopoly.game.utils.model;
 
+import fxmonopoly.game.GameController;
 import fxmonopoly.game.GameModel;
 import fxmonopoly.gamedata.GameData;
 import fxmonopoly.gamedata.die.Die;
@@ -41,38 +42,50 @@ public final class RollDie {
     
     /**
      * Rolls the die and moves the player the corresponding distance.
+     * @param controller The controller to utilise for path transitions.
      * @param model The model to call nextPlayer on.
      * @param data The data to manipulate.
      * @param diceRolls The dice roll values.
      */
-    public static void diceMove(GameModel model, GameData data, int[] diceRolls) {
+    public static void diceMove(GameController controller, GameModel model, GameData data, int[] diceRolls) {
         if(data.getActivePlayer().getCanRoll()) {
         
             if(diceRolls[0] == diceRolls[1] && data.getDoublesInARow() == 2) {
-                data.getActivePlayer().moveTo(10);
-                data.getActivePlayer().enterJail();
+                data.getActivePlayerProperty().getValue().moveTo(10);
+                data.getActivePlayerProperty().getValue().enterJail();
+                controller.pathTransition(model);
                 data.getActivePlayer().setCanRoll(false);
+                controller.runNextMove();
             }
             else if(diceRolls[0] == diceRolls[1] && !data.getActivePlayer().isInJail()) {
                 data.incrementDoublesInARow();
-                data.getActivePlayer().setCanRoll(true);
-                data.getActivePlayer().moveBy(diceRolls[0] + diceRolls[1]);
+                data.getActivePlayerProperty().getValue().setCanRoll(true);
+                data.getActivePlayerProperty().getValue().moveBy(diceRolls[0] + diceRolls[1]);
+                model.processRequiredPositionAction(); 
+                controller.pathTransition(model);
+                controller.runNextMove();
             }
             else if(diceRolls[0] == diceRolls[1] && data.getActivePlayer().isInJail()) {
-                data.getActivePlayer().exitJail();
-                data.getActivePlayer().setCanRoll(false);
-                data.getActivePlayer().moveBy(diceRolls[0] + diceRolls[1]);
+                data.getActivePlayerProperty().getValue().exitJail();
+                data.getActivePlayerProperty().getValue().setCanRoll(false);
+                data.getActivePlayerProperty().getValue().moveBy(diceRolls[0] + diceRolls[1]);
+                model.processRequiredPositionAction();
+                controller.pathTransition(model);
+                controller.runNextMove();
             }
             else if(diceRolls[0] != diceRolls[1] && data.getActivePlayer().isInJail()) {
-                data.getActivePlayer().setCanRoll(false);
+                data.getActivePlayerProperty().getValue().setCanRoll(false);
                 model.nextPlayer();
             }
             else if(diceRolls[0] != diceRolls[1] && !data.getActivePlayer().isInJail()) {
-                data.getActivePlayer().setCanRoll(false);
-                data.getActivePlayer().moveBy(diceRolls[0] + diceRolls[1]);
+                data.getActivePlayerProperty().getValue().setCanRoll(false);
+                data.getActivePlayerProperty().getValue().moveBy(diceRolls[0] + diceRolls[1]);
+                model.processRequiredPositionAction();
+                controller.pathTransition(model);
+                controller.runNextMove();
             }
             else {
-                data.getActivePlayer().setCanRoll(false);
+                data.getActivePlayerProperty().getValue().setCanRoll(false);
             }
         }
     }

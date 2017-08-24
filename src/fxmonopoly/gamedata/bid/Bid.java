@@ -8,6 +8,7 @@ package fxmonopoly.gamedata.bid;
 import fxmonopoly.gamedata.board.locations.Location;
 import fxmonopoly.gamedata.decks.cards.GOJFCard;
 import fxmonopoly.gamedata.players.Player;
+import fxmonopoly.gamedata.players.UserPlayer;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -22,6 +23,7 @@ public class Bid {
     private final HashMap<Player, Integer> bidMap;
     private Location location;
     private GOJFCard card;
+    private boolean resolvingBankruptcy;
     
     public Bid() {
         bidMap = new HashMap<>();
@@ -73,7 +75,12 @@ public class Bid {
         
         for(Player player : bidMap.keySet()) {
             if(bidMap.get(player).equals(getHighestBid())) {
-                highestBidders.add(player);
+                if(player instanceof UserPlayer) {
+                    highestBidders.add(0, player);
+                }
+                else {
+                    highestBidders.add(player);
+                }
             }
         }
 
@@ -94,6 +101,9 @@ public class Bid {
                     i = bidMap.get(player);
                 }
             }
+        }
+        else {
+            i = getHighestBid();
         }
         
         return i;

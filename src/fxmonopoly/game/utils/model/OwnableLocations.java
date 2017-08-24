@@ -7,6 +7,7 @@ package fxmonopoly.game.utils.model;
 
 import fxmonopoly.gamedata.GameData;
 import fxmonopoly.gamedata.board.locations.*;
+import fxmonopoly.gamedata.players.Player;
 
 /**
  * Defines the highest level manipulations regarding ownable locations, although
@@ -27,7 +28,7 @@ public final class OwnableLocations {
      * test for current ownership on the location before utilising this method. 
      * This is necessary at a higher level than the GameModel hence this method 
      * does not check.
-     * @param data
+     * @param data The data to utilise.
      */
     public static void activePlayerBuyLocation(GameData data) {
         
@@ -41,27 +42,27 @@ public final class OwnableLocations {
            location instanceof RailwayLocation) {
             
             if(location instanceof PropertyLocation) {
-                if(data.getActivePlayer().getCash() > ((PropertyLocation) location).getPrice()) {
+                if(data.getActivePlayer().getCash() > ((PropertyLocation) location).getPrice() &&
+                   !((PropertyLocation) location).getIsOwned()) {
+                    
                     data.getActivePlayer().addCash(-((PropertyLocation) location).getPrice());
-                    //activePlayerCash.setValue(data.getActivePlayer().getCash());
                     ((PropertyLocation) location).transferOwnership(data.getActivePlayer());
                     data.getBoard().assimilateColourGroupBooleans(data.getBoard().getGroup((PropertyLocation) location));
                     data.getActivePlayer().addLocation(location);
                 }
             }
             else if(location instanceof UtilityLocation) {
-                if(data.getActivePlayer().getCash() > ((UtilityLocation) location).getPrice()) {
+                if(data.getActivePlayer().getCash() > ((UtilityLocation) location).getPrice() &&
+                        !((UtilityLocation) location).getIsOwned()) {
                     data.getActivePlayer().addCash(-((UtilityLocation) location).getPrice());
-                    //activePlayerCash.setValue(data.getActivePlayer().getCash());
-                    
                     data.getActivePlayer().addLocation(location);
                     ((UtilityLocation) location).setOwner(data.getActivePlayer());
                 }
             }
             else if(location instanceof RailwayLocation) {
-                if(data.getActivePlayer().getCash() > ((RailwayLocation) location).getPrice()) {
+                if(data.getActivePlayer().getCash() > ((RailwayLocation) location).getPrice() &&
+                        !((RailwayLocation) location).getIsOwned()) {
                     data.getActivePlayer().addCash(-((RailwayLocation) location).getPrice());
-                    //activePlayerCash.setValue(data.getActivePlayer().getCash());
                     data.getActivePlayer().addLocation(location);
                     ((RailwayLocation) location).setOwner(data.getActivePlayer());
                 }
@@ -74,7 +75,7 @@ public final class OwnableLocations {
      * either the user doesn't own the property or the property/none of its colour
      * group can be developed then this will return 0 and have no effect on 
      * development.
-     * @param data
+     * @param data The data to utilise.
      * @param property The property to develop
      * @return The cost of the development.
      */
@@ -96,7 +97,7 @@ public final class OwnableLocations {
      * either the user doesn't own the property or the property/none of its colour
      * group can be regressed then this will return 0 and have no effect on 
      * development.
-     * @param data
+     * @param data The data to utilise.
      * @param property The property to regress.
      * @return The value of the reimbursement.
      */
@@ -118,7 +119,7 @@ public final class OwnableLocations {
      * If either the active player doesn't own this property or the property/none
      * of its colour group can be developed then this will return 0 and have no 
      * effect on development.
-     * @param data
+     * @param data The data to utilise.
      * @param property The property to develop.
      * @return The cost of the development.
      */
@@ -139,7 +140,7 @@ public final class OwnableLocations {
      * If either the active player doesn't own this property of the property/none
      * of its colour group can be regressed then this will return 0 and have no
      * effect on development.
-     * @param data
+     * @param data The data to utilise.
      * @param property The property to regress.
      * @return The value of the reimbursement.
      */
@@ -149,6 +150,49 @@ public final class OwnableLocations {
             data.getBoard().assimilateColourGroupBooleans(data.getBoard().getGroup(property));
             data.getActivePlayer().addCash(reimburse);
             //activePlayerCash.setValue(data.getActivePlayer().getCash());
+            return reimburse;
+        }
+        
+        return 0;
+    }
+    
+    /**
+     * Develops the specified property provided that the specified player is the owner..
+     * If either the player doesn't own this property or the property/none
+     * of its colour group can be developed then this will return 0 and have no 
+     * effect on development.
+     * @param data The data to utilise.
+     * @param player The player to check.
+     * @param property The property to develop.
+     * @return The cost of the development.
+     */
+    public static int specifiedPlayerDevelopProperty(GameData data, Player player, PropertyLocation property) {
+        if(property.getOwner() == player) {
+            int cost = data.getBoard().evenlyDevelop(property);
+            data.getBoard().assimilateColourGroupBooleans(data.getBoard().getGroup(property));
+            player.addCash(-cost);
+            return cost;
+        }
+        
+        return 0;
+    }
+    
+    /**
+     * Regresses the specified property provided that the specified player is the owner.
+     * If either the player doesn't own this property of the property/none
+     * of its colour group can be regressed then this will return 0 and have no
+     * effect on development.
+     * @param data The data to utilise.
+     * @param player The player to check.
+     * @param property The property to regress.
+     * @return The value of the reimbursement.
+     */
+    public static int specifiedPlayerRegressProperty(GameData data, Player player, PropertyLocation property) {
+        if(property.getOwner() == player) {
+            int reimburse = data.getBoard().evenlyReduce(property);
+            data.getBoard().assimilateColourGroupBooleans(data.getBoard().getGroup(property));
+            player.addCash(reimburse);
+           
             return reimburse;
         }
         

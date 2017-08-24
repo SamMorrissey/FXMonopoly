@@ -5,6 +5,7 @@
  */
 package fxmonopoly.game.utils.controller;
 
+import fxmonopoly.game.GameController;
 import fxmonopoly.game.GameModel;
 import fxmonopoly.gamedata.board.locations.ChanceLocation;
 import fxmonopoly.gamedata.board.locations.CommunityChestLocation;
@@ -27,6 +28,7 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -94,9 +96,12 @@ public class DialogContent {
     /**
      * Creates the Dice roll pane that moves the active player.
      * @param diceRoll The alert to set the content of.
+     * @param newPositionAlert The dialog to pass on.
+     * @param controller The controller to utilise.
      * @param model The model to utilise.
+     * @param board The board to determine dialog positioning from.
      */
-    public static void diceRollAndMovePane(Dialog diceRoll, Dialog newPositionAlert, GameModel model, ArrayList<BoardButton> board) {
+    public static void diceRollAndMovePane(Dialog diceRoll, Dialog newPositionAlert, GameController controller, GameModel model, ArrayList<BoardButton> board) {
         HBox dice = new HBox(20);
         
         ImageView die1 = new ImageView(new Image("fxmonopoly/resources/images/die/Blank.png"));
@@ -124,6 +129,7 @@ public class DialogContent {
         
         diceRoll.getDialogPane().lookupButton(ButtonType.CLOSE).addEventFilter(ActionEvent.ACTION, event -> {
             model.diceMove(i);
+            controller.pathTransition(model); 
         });
         
         diceRoll.showAndWait();
@@ -132,25 +138,26 @@ public class DialogContent {
     /**
      * Provides the methods for retrieving the necessary dialog.
      * @param manager The manager to utilise.
+     * @param controller The controller to pass.
      * @param model The model to pass.
      * @param board The BoardButton list to pass.
      */
-    public static void getNewPositionDialog(StageManager manager, GameModel model, ArrayList<BoardButton> board) {
+    public static void getNewPositionDialog(StageManager manager, GameController controller, GameModel model, ArrayList<BoardButton> board) {
         Location location = model.retrieveLocation(model.getActivePlayer().getPosition());
         
         if(location instanceof PropertyLocation) {
             if(!((PropertyLocation) location).getIsOwned()) {
-                unownedOwnableLocation(manager, model, board);
+                unownedOwnableLocation(manager, controller, model, board);
             }
         }
         else if(location instanceof RailwayLocation) {
             if(! ((RailwayLocation) location).getIsOwned()) {
-                unownedOwnableLocation(manager, model, board);
+                unownedOwnableLocation(manager, controller, model, board);
             }
         }
         else if(location instanceof UtilityLocation) {
             if(! ((UtilityLocation) location).getIsOwned()) {
-                unownedOwnableLocation(manager, model, board);
+                unownedOwnableLocation(manager, controller, model, board);
             }
         }
         else if(location instanceof ChanceLocation || location instanceof CommunityChestLocation) {
@@ -161,16 +168,16 @@ public class DialogContent {
     /**
      * Displays the Dialog for when an ownable location is reached but has no current
      * owner.
-     * @param position The Dialog to set the content of.
+     * @param manager The manager to retrieve the dialog from.
+     * @param controller The controller to utilise for print outs.
      * @param model The model to operate on.
      * @param board The board position to grab the image from.
      */
-    private static void unownedOwnableLocation(StageManager manager, GameModel model, ArrayList<BoardButton> board) {
+    private static void unownedOwnableLocation(StageManager manager, GameController controller, GameModel model, ArrayList<BoardButton> board) {
         Dialog position = manager.getGameDialog(GameDialogs.BLANK);
-        ButtonType buy = new ButtonType("Buy", ButtonData.OTHER); 
+        ButtonType buy = new ButtonType("Buy", ButtonData.OK_DONE); 
         position.getDialogPane().getButtonTypes().add(buy);
-        position.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
-        position.getDialogPane().setMaxWidth(150);
+        position.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
         position.setContentText(model.retrieveLocation(model.getActivePlayer().getPosition()).getName() + " is available to purchase");
         
         double x = board.get(0).getParent().getScene().getX() + board.get(0).getParent().getScene().getWidth() / 2 - position.getWidth() / 2;
@@ -188,15 +195,26 @@ public class DialogContent {
         HBox box = new HBox(20);
         box.getChildren().addAll(graphic, text);
         box.setAlignment(Pos.CENTER);
+        box.setMinSize(HBox.USE_PREF_SIZE, HBox.USE_PREF_SIZE);
         
         position.getDialogPane().setContent(box);
+        
         
         position.getDialogPane().lookupButton(buy).addEventFilter(ActionEvent.ACTION, event -> {
             model.activePlayerBuyLocation();
         });
+       
         
-        position.getDialogPane().lookupButton(ButtonType.CANCEL).addEventFilter(ActionEvent.ACTION, event -> {
-            
+        position.getDialogPane().lookupButton(ButtonType.CLOSE).addEventFilter(ActionEvent.ACTION, event -> {
+            if(model.locationIsOwned(model.retrieveLocation(model.getActivePlayer().getPosition()))) {
+                position.close();
+            }
+            else {
+                model.startBid();
+                model.getActiveBid().setLocation(model.retrieveLocation(model.getActivePlayer().getPosition()));
+                controller.bidResolution();
+                position.close();
+            }
         });
         
         
@@ -219,6 +237,7 @@ public class DialogContent {
         HBox box = new HBox(20);
         box.setAlignment(Pos.CENTER);
         box.getChildren().addAll(graphic, text);
+        box.setMinSize(HBox.USE_PREF_SIZE, HBox.USE_PREF_SIZE);
         
         position.getDialogPane().setContent(box);
         
@@ -230,6 +249,7 @@ public class DialogContent {
         
         position.getDialogPane().lookupButton(ButtonType.OK).addEventFilter(ActionEvent.ACTION, event -> {
             model.processCardActions();
+            position.close();
         });
         
         position.setX(x);
@@ -295,7 +315,9 @@ public class DialogContent {
      * @param board The board to grab images from.
      */
     public static void bidDialog(Dialog bid, GameModel model, ArrayList<BoardButton> board) {
-        VBox box = new VBox(10);
+        VBox box = new VBox(20);
+        box.setAlignment(Pos.CENTER);
+        box.setMinSize(HBox.USE_PREF_SIZE, HBox.USE_PREF_SIZE);
         
         Label enterBid = new Label("Enter Max Bid:");
         TextField numeric = new TextField();
@@ -317,13 +339,14 @@ public class DialogContent {
         box.getChildren().addAll(graphic, enterBid, numeric);
         
         bid.getDialogPane().setContent(box);
+        
         bid.getDialogPane().getScene().getWindow().sizeToScene();
         
         ButtonType bidOK = new ButtonType("Bid", ButtonData.OK_DONE);
         bid.getDialogPane().getButtonTypes().add(bidOK);
         bid.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
-        
         bid.getDialogPane().getScene().getWindow().sizeToScene();
+        bid.getDialogPane().setMinSize(DialogPane.USE_PREF_SIZE, DialogPane.USE_PREF_SIZE);
         
         bid.getDialogPane().lookupButton(bidOK).addEventFilter(ActionEvent.ACTION, event -> {
             if(numeric.getText().isEmpty() || numeric.getText() == null) {
@@ -331,12 +354,12 @@ public class DialogContent {
             }
             else {
                 model.getActiveBid().addBid(model.getUser(), Integer.parseInt(numeric.getText()));
-                
+                model.resolveActiveBid();
             }
         });
         
         bid.getDialogPane().lookupButton(ButtonType.CANCEL).addEventFilter(ActionEvent.ACTION, event -> {
-            
+            model.resolveActiveBid();
         });
         
         double x = board.get(0).getParent().getScene().getX() + board.get(0).getParent().getScene().getWidth() / 2 - bid.getWidth() / 2;
@@ -357,6 +380,8 @@ public class DialogContent {
      */
     public static void secondaryBidDialog(Dialog bid, GameModel model, ArrayList<BoardButton> board) {
         VBox box = new VBox(10);
+        box.setAlignment(Pos.CENTER);
+        box.setMinSize(HBox.USE_PREF_SIZE, HBox.USE_PREF_SIZE);
         
         Label enterBid = new Label("Max Bid Currently: " + (model.getActiveBid().getSecondHighestBid() + 1) + "\n" +
                                    "Enter Max Bid:");
@@ -371,14 +396,14 @@ public class DialogContent {
         
         if(model.getActiveBid().containsLocation()) { 
             graphic = getBoardLocationImage(board, model.retrieveLocationPosition(model.getActiveBid().getLocation()));
-            //graphic.setRotate(calculateRotation(model.getActivePlayer().getPosition()));
         }
         else if(model.getActiveBid().containsGOJFCard()) {
             graphic.setImage(new Image("fxmonopoly/resources/images/LeaveJailIcon"));
         }
         
-        box.getChildren().addAll(graphic, enterBid, numeric);      
-        bid.getDialogPane().getScene().getWindow().sizeToScene();
+        box.getChildren().addAll(graphic, enterBid, numeric);   
+        box.setMinSize(HBox.USE_PREF_SIZE, HBox.USE_PREF_SIZE);
+        bid.getDialogPane().setContent(box);
         
         ButtonType bidOK = new ButtonType("Bid", ButtonData.OK_DONE);
         bid.getDialogPane().getButtonTypes().add(bidOK);
@@ -433,6 +458,7 @@ public class DialogContent {
         text.wrapTextProperty().setValue(Boolean.TRUE);
         HBox box = new HBox(20);
         box.getChildren().addAll(graphic, text);
+        box.setMinSize(HBox.USE_PREF_SIZE, HBox.USE_PREF_SIZE);
         box.setMinHeight(graphic.getFitWidth() + 20);
         box.setAlignment(Pos.CENTER);
         
@@ -470,8 +496,10 @@ public class DialogContent {
         text.wrapTextProperty().setValue(Boolean.TRUE);
         HBox box = new HBox(20);
         box.getChildren().addAll(graphic, text);
+        box.setMinSize(HBox.USE_PREF_SIZE, HBox.USE_PREF_SIZE);
         box.setMinHeight(graphic.getFitWidth() + 20);
         box.setAlignment(Pos.CENTER);
+        
         
         position.getDialogPane().setContent(box);
         
@@ -618,6 +646,7 @@ public class DialogContent {
             }
         }
         
+        box.setMinSize(HBox.USE_PREF_SIZE, HBox.USE_PREF_SIZE);
         box.setAlignment(Pos.CENTER);
         position.getDialogPane().setContent(box);
         
@@ -641,14 +670,13 @@ public class DialogContent {
     /**
      * Retrieves the Dialog for when an unbought ownable board button is clicked on, 
      * to provide information on the specified location.
+     * @param controller The controller for text print outs.
      * @param trade The Dialog to set up.
      * @param model The model to operate on.
      * @param board The list of BoardButtons to grab the graphic from.
      */
-    public static void tradeOfferDialog(Dialog trade, GameModel model, ArrayList<BoardButton> board) {
+    public static void tradeOfferDialog(GameController controller, Dialog trade, GameModel model, ArrayList<BoardButton> board) {
         model.startTrade(model.getUser());
-        
-        //trade.getDialogPane().setMaxWidth(400);
         
         HBox sides = new HBox(30);
         sides.setAlignment(Pos.CENTER);
@@ -688,7 +716,7 @@ public class DialogContent {
                     if(((UtilityLocation) location).getIsMortgaged())
                         cell.getStyleClass().add("mortgaged-cell");
                 }
-                        
+                     
             cell.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
                 list.requestFocus();
                 if (! cell.isEmpty()) {
@@ -701,6 +729,7 @@ public class DialogContent {
                     event.consume();
                 }
             });
+        
             return cell;
         });
                 
@@ -751,7 +780,7 @@ public class DialogContent {
         }
         
         ListView<String> forList = new ListView();
-        forList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        
         forList.setMaxHeight(100);
         forList.setMaxWidth(150);
         
@@ -762,18 +791,20 @@ public class DialogContent {
         cashSliderFrom.setMaxWidth(120);
         
         combo.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            ObservableList listFor = FXCollections.observableArrayList();
+            ObservableList<String> listFor = FXCollections.observableArrayList();
             for(Player player : model.getPlayerList()) {
-                if(player.getName() == newValue) {
+                if(player.getName().equals(newValue)) {
+                    model.getActiveTrade().setPlayerTo(player);
                     for(Location location : player.getOwnedLocations()) {
                         listFor.add(location.getName());
                     }
                     forList.setItems(listFor);
+                    forList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
                     
                     forList.setCellFactory(e -> {
                         ListCell<String> cell = new ListCell<>();
                         cell.textProperty().bind(cell.itemProperty());
-                        Location location = model.getActiveTrade().getPlayerTo().getOwnedLocations().get(locations.indexOf(cell.textProperty().getValue()));
+                        Location location = model.getActiveTrade().getPlayerTo().getOwnedLocations().get(listFor.indexOf(cell.textProperty().getValue()) + 1);
                         if(location instanceof PropertyLocation) {
                             if(((PropertyLocation) location).getMortgagedStatus())
                                 cell.getStyleClass().add("mortgaged-cell");
@@ -788,14 +819,14 @@ public class DialogContent {
                         }
                         
                         cell.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-                            list.requestFocus();
+                            forList.requestFocus();
                             if (! cell.isEmpty()) {
                                 int index = cell.getIndex();
-                                if (list.getSelectionModel().getSelectedIndices().contains(index)) {
-                                    list.getSelectionModel().clearSelection(index);
+                                if (forList.getSelectionModel().getSelectedIndices().contains(index)) {
+                                    forList.getSelectionModel().clearSelection(index);
                                 } 
                                 else {
-                                    list.getSelectionModel().select(index);
+                                    forList.getSelectionModel().select(index);
                                 }
                                   event.consume();
                             }
@@ -804,7 +835,6 @@ public class DialogContent {
                     });
                     
                     cashSliderFrom.setMax(player.getCash());
-                    model.getActiveTrade().setPlayerTo(player);
                     model.getActiveTrade().getGOJFListFrom().removeAll(model.getActiveTrade().getGOJFListFrom());
                     break;
                     
@@ -840,6 +870,7 @@ public class DialogContent {
         toGet.getChildren().addAll(combo, forList, cashValueFrom, cashSliderFrom, gojfFrom, gojfBoxFrom);
         
         sides.getChildren().addAll(offer, toGet);
+        sides.setMinSize(HBox.USE_PREF_SIZE, HBox.USE_PREF_SIZE);
         
         trade.getDialogPane().setContent(sides);
         trade.getDialogPane().getScene().getWindow().sizeToScene();
@@ -871,6 +902,8 @@ public class DialogContent {
                     if(cashSliderFrom.getValue() > 0) {
                         model.getActiveTrade().addCashFrom((int) cashSliderFrom.getValue());
                     }
+                    
+                    controller.tradeResolution();
                 }
                 else {
                     model.cancelActiveTrade();
@@ -1003,9 +1036,11 @@ public class DialogContent {
         toGet.getChildren().addAll(toText, forList, cashValueTo, gojfTo);
         
         sides.getChildren().addAll(offer, toGet);
+        sides.setMinSize(HBox.USE_PREF_SIZE, HBox.USE_PREF_SIZE);
         
         trade.getDialogPane().setContent(sides);
         trade.getDialogPane().getScene().getWindow().sizeToScene();
+        trade.getDialogPane().setMinSize(DialogPane.USE_PREF_SIZE, DialogPane.USE_PREF_SIZE);
         
         if(trade.getDialogPane().getButtonTypes().isEmpty()) {
             trade.getDialogPane().getButtonTypes().add(ButtonType.OK);
@@ -1060,6 +1095,7 @@ public class DialogContent {
             box.getChildren().add(info);
         }
         
+        box.setMinSize(HBox.USE_PREF_SIZE, HBox.USE_PREF_SIZE);
         dialog.getDialogPane().setContent(box);
         
         if(dialog.getDialogPane().getButtonTypes().isEmpty()) {
@@ -1147,6 +1183,7 @@ public class DialogContent {
         });
         
         box.getChildren().addAll(list, undevelop, sellGOJFCards);
+        box.setMinSize(HBox.USE_PREF_SIZE, HBox.USE_PREF_SIZE);
         
         dialog.getDialogPane().setContent(box);
         
@@ -1164,6 +1201,8 @@ public class DialogContent {
             dialog.setX(x);
             dialog.setY(y);
         }
+        
+        dialog.showAndWait();
     }
     
     /**
@@ -1192,5 +1231,7 @@ public class DialogContent {
         dialog.getDialogPane().lookupButton(ButtonType.OK).addEventFilter(ActionEvent.ACTION, event -> {
             manager.changeScene(View.MAIN_MENU);
         });
+        
+        dialog.showAndWait();
     }
 }

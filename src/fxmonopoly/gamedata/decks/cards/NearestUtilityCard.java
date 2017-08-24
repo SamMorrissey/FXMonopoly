@@ -18,6 +18,7 @@ public class NearestUtilityCard extends Card {
      * Creates a Nearest Utility card, which as the name suggests is intended to
      * cause an action that advances the player to the next utility.
      * @param description The card description.
+     * @param fromChanceDeck True if from the chance deck, false otherwise.
      */
     public NearestUtilityCard(String description, boolean fromChanceDeck) {
         super(description, fromChanceDeck);

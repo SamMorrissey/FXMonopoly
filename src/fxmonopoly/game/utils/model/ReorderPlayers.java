@@ -29,7 +29,7 @@ public final class ReorderPlayers {
     /**
      * Automatically rolls the die for all CPUPlayers in the player list, and maps
      * them alongside the user and user roll value.
-     * @param model
+     * @param model The model to utilise.
      * @param userRoll The user die roll value.
      */
     public static void reorderList(GameModel model, int userRoll) {

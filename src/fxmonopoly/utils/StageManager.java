@@ -71,8 +71,8 @@ public class StageManager {
     
     /**
      * Retrieves the specified game dialog attached to the input enum value.
-     * @param dialog
-     * @return 
+     * @param dialog The dialog to pass.
+     * @return The dialog specified.
      */
     public Dialog getGameDialog(GameDialogs dialog) {
         return dialog.getDialog(stage);
