@@ -49,6 +49,13 @@ public final class RollDie {
      */
     public static void diceMove(GameController controller, GameModel model, GameData data, int[] diceRolls) {
         if(data.getActivePlayer().getCanRoll()) {
+            
+            int position = model.getActivePlayer().getPosition();
+            
+            if((position + diceRolls[0] + diceRolls[1]) > 39) {
+               data.getActivePlayer().addCash(200);
+               controller.printToTextFlow(model.getActivePlayer().getName() + " collected £200 passing Go \n", model.getActivePlayer());
+            }
         
             if(diceRolls[0] == diceRolls[1] && data.getDoublesInARow() == 2) {
                 data.getActivePlayerProperty().getValue().moveTo(10);
@@ -87,6 +94,8 @@ public final class RollDie {
             else {
                 data.getActivePlayerProperty().getValue().setCanRoll(false);
             }
+            
+            
         }
     }
 }
