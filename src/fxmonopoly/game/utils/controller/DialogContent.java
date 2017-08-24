@@ -925,7 +925,7 @@ public class DialogContent {
                     for(Location location : model.getActiveTrade().getPlayerTo().getOwnedLocations()) {
                         for(String string : forList.getSelectionModel().getSelectedItems()) {
                             if(string.equals(location.getName())) 
-                                model.getActiveTrade().getOfferList().add(location);
+                                model.getActiveTrade().getForList().add(location);
                         }
                     }
                 
