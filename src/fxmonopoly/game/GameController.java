@@ -358,6 +358,9 @@ public class GameController implements Initializable, Manageable, LateData {
                     if(model.getActiveBid() != null && !model.getActiveBid().getHighestBidder().isEmpty() && !(model.getActiveBid().getHighestBidder().get(0) instanceof UserPlayer)) {
                         DialogContent.secondaryBidDialog(manager.getGameDialog(GameDialogs.BLANK), model, board);
                     }
+                    else {
+                        model.resolveActiveBid();
+                    }
                 }
             }
         }

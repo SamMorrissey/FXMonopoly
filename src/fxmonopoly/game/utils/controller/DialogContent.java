@@ -352,7 +352,7 @@ public class DialogContent {
         
         bid.getDialogPane().lookupButton(bidOK).addEventFilter(ActionEvent.ACTION, event -> {
             if(numeric.getText().isEmpty() || numeric.getText() == null) {
-                
+                model.resolveActiveBid();
             }
             else {
                 model.getActiveBid().addBid(model.getUser(), Integer.parseInt(numeric.getText()));
