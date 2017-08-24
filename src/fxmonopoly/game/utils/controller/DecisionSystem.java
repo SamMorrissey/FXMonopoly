@@ -396,7 +396,7 @@ public class DecisionSystem {
                     return (int) ((property.getPrice() + (property.getHousePrice() * property.getNumberOfHouses())) * 2.5);
                 }
             }
-            else if(numberOwned == 0 && owners.size() == 1) {
+            else if(numberOwned == 0 && owners.size() == 1 && model.getColourGroup(property).size() > 2) {
                 if(property.getMortgagedStatus()) {
                     return (property.getPrice() * 3) / 2;
                 }

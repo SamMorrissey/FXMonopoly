@@ -590,14 +590,12 @@ public class DialogContent {
                 Button mortgage = new Button("Mortgage");
                 mortgage.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
                 
-                if(((RailwayLocation) board.get(indexOf).getLocation()).getIsMortgaged()) {
-                        mortgage.setDisable(true);
-                    }
-                
-                mortgage.setOnAction(e -> {
-                    model.mortgageLocation(board.get(indexOf).getLocation());
+                mortgage.setOnAction(e -> { 
                     if(((RailwayLocation) board.get(indexOf).getLocation()).getIsMortgaged()) {
-                        mortgage.setDisable(true);
+                        model.deMortgageLocation(board.get(indexOf).getLocation());
+                    }
+                    else {
+                        model.mortgageLocation(board.get(indexOf).getLocation());
                     }
                 });  
                 
@@ -613,14 +611,12 @@ public class DialogContent {
                 Button mortgage = new Button("(De)Mortgage");
                 mortgage.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
                 
-                if(((UtilityLocation) board.get(indexOf).getLocation()).getIsMortgaged()) {
-                        mortgage.setDisable(true);
-                    }
-                
                 mortgage.setOnAction(e -> {
-                    model.mortgageLocation(board.get(indexOf).getLocation());
                     if(((UtilityLocation) board.get(indexOf).getLocation()).getIsMortgaged()) {
-                        mortgage.setDisable(true);
+                        model.deMortgageLocation(board.get(indexOf).getLocation());
+                    }
+                    else {
+                        model.mortgageLocation(board.get(indexOf).getLocation());
                     }
                 });
                 
