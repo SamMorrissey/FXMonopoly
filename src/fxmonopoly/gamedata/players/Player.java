@@ -359,7 +359,7 @@ public abstract class Player {
         int worth = 0;
         
         for(PropertyLocation property : getOwnedProperty()) {
-            if(property.getMortgagedStatus()) {
+            if(property.getMortgaged()) {
                 worth += property.getPrice() /2;
             }
             else if(property.getIsHotel()) {
@@ -371,7 +371,7 @@ public abstract class Player {
         }
         
         for(RailwayLocation railway : getOwnedRailways()) {
-            if(railway.getIsMortgaged()) {
+            if(railway.getMortgaged()) {
                 worth += railway.getPrice() / 2;
             }
             else {
@@ -380,7 +380,7 @@ public abstract class Player {
         }
         
         for(UtilityLocation utility : getOwnedUtilities()) {
-            if(utility.getIsMortgaged()) {
+            if(utility.getMortgaged()) {
                 worth += utility.getPrice() / 2;
             }
             else {

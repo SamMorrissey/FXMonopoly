@@ -158,10 +158,18 @@ public class GameInitSettingsController implements Initializable, Manageable {
         array.add(pieceData);
         array.add(colourData);
         
-        manager.getLateData().lateDataPass(pieceSelection.getSelectionModel().getSelectedItem(),
-                                           colourSelection.getSelectionModel().getSelectedItem(), 
-                                           nameField.getText(),
-                                           array);
+        manager
+            .getLateData()
+            .lateDataPass(
+                pieceSelection
+                    .getSelectionModel()
+                    .getSelectedItem(),
+                colourSelection
+                    .getSelectionModel()
+                    .getSelectedItem(),
+                nameField.getText(),
+                array
+            );
     }
     
 }

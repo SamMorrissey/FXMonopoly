@@ -130,7 +130,7 @@ public final class ProcessPositionAction {
      * @param property The property location.
      */
     private static void propertyLocation(GameController controller, GameData data, PropertyLocation property) {
-        if(property.getIsOwned() && !(property.getMortgagedStatus()) && property.getOwner() != data.getActivePlayer()) {
+        if(property.getIsOwned() && !(property.getMortgaged()) && property.getOwner() != data.getActivePlayer()) {
             data.getActivePlayer().addCash(-property.getRent());
             property.getOwner().addCash(property.getRent());
             controller.printToTextFlow(data.getActivePlayer().getName() + " paid £" + property.getRent() + " to " + property.getOwner().getName() + "\n", data.getActivePlayer());
@@ -144,7 +144,7 @@ public final class ProcessPositionAction {
      * @param railway The railway location.
      */
     private static void railwayLocation(GameController controller, GameData data, RailwayLocation railway) {
-        if(railway.getIsOwned() && !(railway.getIsMortgaged())) {
+        if(railway.getIsOwned() && !(railway.getMortgaged())) {
                 if(data.getActiveCard() instanceof NearestRailwayCard) {
                     int rent = railway.getBaseRent() * ((railway.getRentMultiplier(railway.getOwner().getOwnedRailways().size())) * 2);
                     data.getActivePlayer().addCash(-rent);
@@ -180,7 +180,7 @@ public final class ProcessPositionAction {
     private static void utilityLocation(GameController controller, GameData data, UtilityLocation location) {
         int multiplier = 0;
             
-            if(location.getIsOwned() && !(location.getIsMortgaged())) {
+            if(location.getIsOwned() && !(location.getMortgaged())) {
                 if(location.getOwner().getOwnedUtilities().size() == 1 && !(data.getActiveCard() instanceof NearestUtilityCard)) {
                     multiplier = location.getSingleMultiplier();
                     int rent = (multiplier * data.getDie().dieRollTotal());

@@ -10,32 +10,43 @@ import fxmonopoly.game.utils.controller.BoardPopulating;
 import fxmonopoly.game.utils.controller.DecisionSystem;
 import fxmonopoly.game.utils.controller.DialogContent;
 import fxmonopoly.game.utils.controller.SpriteManipulation;
+import fxmonopoly.gamedata.board.locations.*;
 import fxmonopoly.gamedata.players.CPUPlayer;
 import fxmonopoly.gamedata.players.Player;
 import fxmonopoly.gamedata.players.UserPlayer;
 import fxmonopoly.utils.GameDialogs;
+import fxmonopoly.utils.GameDialogs2;
 import fxmonopoly.utils.StageManager;
+import fxmonopoly.utils.View;
 import fxmonopoly.utils.interfacing.LateData;
 import fxmonopoly.utils.interfacing.Manageable;
+
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.function.Consumer;
+
+import fxmonopoly.utils.interfacing.NodeReference;
 import javafx.animation.PathTransition;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelReader;
+import javafx.scene.image.WritableImage;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
@@ -125,17 +136,13 @@ public class GameController implements Initializable, Manageable, LateData {
         
         iconifiedButton.setOnAction(e -> manager.setIconified());
         
-        exitButton.setOnAction(e ->  manager.getGameDialog(GameDialogs.EXIT).showAndWait() );
+        exitButton.setOnAction(e ->  exitDialog());
         
-        rollDiceButton.setOnAction(e -> DialogContent.diceRollAndMovePane(manager.getGameDialog(GameDialogs.BLANK), 
-                                                                          manager.getGameDialog(GameDialogs.BLANK),
-                                                                          this,
-                                                                          model,
-                                                                          board));
+        rollDiceButton.setOnAction(e -> dieRollAndMoveDialog());
         
-        tradeButton.setOnAction(e -> DialogContent.tradeOfferDialog(this, manager.getGameDialog(GameDialogs.BLANK), model, board));
+        tradeButton.setOnAction(e -> tradeOfferDialog());
         
-        statsButton.setOnAction(e -> DialogContent.statsDialog(model, manager.getGameDialog(GameDialogs.BLANK), colours, sprites, board));
+        statsButton.setOnAction(e -> DialogContent.statsDialog(model, manager.getGameDialog(GameDialogs2.BLANK), colours, sprites, board));
         
         jailEscapeButton.setOnAction(e -> {
             if(model.getUser().isInJail()) {
@@ -164,6 +171,51 @@ public class GameController implements Initializable, Manageable, LateData {
     @Override
     public void setStageManager(StageManager manager) {
         this.manager = manager;
+    }
+
+    private void dieRollAndMoveDialog() {
+        int[] dieRolls = model.rollDie();
+        DialogContent content = new DialogContent();
+        Dialog dialog = content.diceRollAndMovePane(manager.getGameDialog(GameDialogs2.BLANK), dieRolls);
+        Button roll = content.registerNodeByName(NodeReference.ROLL_BUTTON.name(), NodeReference.ROLL_BUTTON.getNode());
+
+        roll.setOnAction(ActionEvent.ACTION, e -> {
+            HBox box = content.retrieveNodeByName(NodeReference.ROLL_HBOX.name();
+            ((ImageView) box.getChildren().get(0)).setImage(new Image("fxmonopoly/resources/images/die/" + dieRolls[0] + ".png"));
+            ((ImageView) box.getChildren().get(1)).setImage(new Image("fxmonopoly/resources/images/die/" + dieRolls[1] + ".png"));
+
+            dialog.getDialogPane().lookupButton(ButtonType.CLOSE).setDisable(false);
+            roll.disableProperty().setValue(true);
+        });
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+        dialog.getDialogPane().lookupButton(ButtonType.CLOSE).addEventFilter(ActionEvent.ACTION, e -> {
+            model.diceMove(dieRolls);
+            pathTransition(model);
+        });
+        dialog.showAndWait();
+    }
+
+    private void dieRollDialog() {
+        int[] dieRolls = model.rollDie();
+        DialogContent content = new DialogContent();
+        Dialog dialog = content.diceRollAndMovePane(manager.getGameDialog(GameDialogs2.BLANK), dieRolls);
+        Button roll = content.registerNodeByName(NodeReference.ROLL_BUTTON.name(), NodeReference.ROLL_BUTTON.getNode());
+        roll.setOnAction(ActionEvent.ACTION, e -> {
+            HBox box = content.retrieveNodeByName(NodeReference.ROLL_HBOX.name());
+            ((ImageView) box.getChildren().get(0)).setImage(new Image("fxmonopoly/resources/images/die/" + i[0] + ".png"));
+            ((ImageView) box.getChildren().get(1)).setImage(new Image("fxmonopoly/resources/images/die/" + i[1] + ".png"));
+            model.reorderList(i[0] + i[1]);
+
+            dialog.getDialogPane().lookupButton(ButtonType.OK).setDisable(false);
+            roll.disableProperty().setValue(true);
+        });
+        DialogContent.diceRollPane(
+            manager.getGameDialog(GameDialogs2.BLANK),
+            model.rollDie());
+    }
+
+    private void exitDialog() {
+        manager.getGameDialog(GameDialogs2.EXIT).showAndWait();
     }
     
     /**
@@ -201,19 +253,8 @@ public class GameController implements Initializable, Manageable, LateData {
         }
         
         PauseTransition pause = new PauseTransition(Duration.millis(2000));
-        pause.setOnFinished(e -> {
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    DialogContent.diceRollPane(manager.getGameDialog(GameDialogs.BLANK), model);
-                    SpriteManipulation.populateInitialPositions(sprites, board, boardAnchor);
-                    generateUIBindings();
-                    if(model.getActivePlayer() instanceof CPUPlayer) {
-                        system.rollDiceAndMove();
-                    }
-                }
-            });
-        });
+        pause.setOnFinished(e -> Platform.runLater(this::dieRollDialog));
+
         pause.play();
     }
     
@@ -281,7 +322,14 @@ public class GameController implements Initializable, Manageable, LateData {
         
         model.getPlayerListSizeProperty().addListener(e -> {
             if(model.getPlayerListSizeProperty().getValue() == 1) {
-                DialogContent.endGameDialog(manager, model, manager.getGameDialog(GameDialogs.BLANK), colours, sprites);
+                DialogContent.endGameDialog(
+                    manager.getGameDialog(GameDialogs2.BLANK),
+                    new ImageView(sprites.get(model.getPlayerList().get(0)).getImage()),
+                    model.getPlayerList().get(0).getName() + "has won the Match!",
+                    "£" + model.getPlayerList().get(0).getCash(),
+                    "-fx-text-fill: #" + String.valueOf(colours.get(model.getPlayerList().get(0))).substring(2) + ";",
+                    () -> manager.changeScene(View.MAIN_MENU)
+                );
             }
         });
         
@@ -315,7 +363,7 @@ public class GameController implements Initializable, Manageable, LateData {
                 if(model.isActivePlayerBankrupt())
                     model.removeActivePlayerFromGame();
                 else 
-                    DialogContent.bidDialog(manager.getGameDialog(GameDialogs.BLANK), model, board);
+                    DialogContent.bidDialog(manager.getGameDialog(GameDialogs2.BLANK), model, board);
             }
         }
         else {
@@ -323,7 +371,7 @@ public class GameController implements Initializable, Manageable, LateData {
                 if(model.isActivePlayerBankrupt())
                      model.removeActivePlayerFromGame();
                 else
-                    DialogContent.bankruptcyResolutionDialog(model, manager.getGameDialog(GameDialogs.BLANK), board);
+                    DialogContent.bankruptcyResolutionDialog(model, manager.getGameDialog(GameDialogs2.BLANK), board);
             } 
         }
     }
@@ -336,7 +384,7 @@ public class GameController implements Initializable, Manageable, LateData {
             system.specifiedPlayerRespondToTrade(model.getActiveTrade().getPlayerTo());
         }
         else {
-            DialogContent.tradeReceivedDialog(manager.getGameDialog(GameDialogs.BLANK), model, board);
+            tradeReceivedDialog();
         }
     }
     
@@ -353,10 +401,28 @@ public class GameController implements Initializable, Manageable, LateData {
             
             for(Player player : model.getPlayerList()) {
                 if(player instanceof UserPlayer && player.getCash() > 0) {
-                    DialogContent.bidDialog(manager.getGameDialog(GameDialogs.BLANK), model, board);
+                    ImageView graphic = new ImageView();
+                    if(model.getActiveBid().containsLocation())
+                        graphic = getBoardLocationImage(board, model.retrieveLocationPosition(model.getActiveBid().getLocation()));
+                    else if(model.getActiveBid().containsGOJFCard())
+                        graphic.setImage(new Image("fxmonopoly/resources/images/LeaveJailIcon"));
+
+                    DialogContent.bidDialog(
+                        manager.getGameDialog(GameDialogs2.BLANK),
+                        graphic,
+                        "Enter Max Bid:",
+                        model::resolveActiveBid,
+                        bidValue -> model.getActiveBid().addBid(model.getUser(), bidValue)
+                    );
                     
                     if(model.getActiveBid() != null && !model.getActiveBid().getHighestBidder().isEmpty() && !(model.getActiveBid().getHighestBidder().get(0) instanceof UserPlayer)) {
-                        DialogContent.secondaryBidDialog(manager.getGameDialog(GameDialogs.BLANK), model, board);
+                        DialogContent.bidDialog(
+                            manager.getGameDialog(GameDialogs2.BLANK),
+                            graphic,
+                            "Max Bid Currently: " + (model.getActiveBid().getSecondHighestBid() + 1) + "\n" + "Enter Max Bid:",
+                            model::resolveActiveBid,
+                            bidValue -> model.getActiveBid().addBid(model.getUser(), bidValue)
+                        );
                     }
                     else {
                         model.resolveActiveBid();
@@ -381,8 +447,7 @@ public class GameController implements Initializable, Manageable, LateData {
         printOut.heightProperty().addListener( e -> {
             printOut.layout();
             scroll.setVvalue( 1.0d ); 
-            }
-        );
+        });
     }    
     
     /**
@@ -416,7 +481,6 @@ public class GameController implements Initializable, Manageable, LateData {
         pathTran.setNode(sprite);
         pathTran.setPath(path);
         pathTran.play();
-        pathTran = null;
     }
     
     /**
@@ -428,7 +492,7 @@ public class GameController implements Initializable, Manageable, LateData {
             activePlayerLocationName.textProperty().setValue(model.retrieveLocation(model.getActivePlayer().getPosition()).getName());
                 
             Platform.runLater(() -> {
-                DialogContent.getNewPositionDialog(manager, this, model, board);
+                getNewPositionDialog();
                 activePlayerCash.textProperty().setValue(String.valueOf("£" + model.getActivePlayerCashProperty().getValue()));
                 activePlayerLocationName.textProperty().setValue(model.retrieveLocation(model.getActivePlayer().getPosition()).getName());
             });      
@@ -445,13 +509,288 @@ public class GameController implements Initializable, Manageable, LateData {
                     getDecisionSystem().rollDiceAndMove();
                 }
                 else {
-                    getDecisionSystem().developmentDecision();
-                    getDecisionSystem().makeTrade();
+                    try {
+                        getDecisionSystem().developmentDecision();
+                        getDecisionSystem().makeTrade();
+                    } catch (Exception e) { }
                         
                     model.nextPlayer();
-                        
                 }    
             });
         }
+    }
+
+    /**
+     * Retrieves the Image from the specified board position.
+     * @param board The board to retrieve bounds from.
+     * @param position The board position to grab the image of.
+     * @return The image created.
+     */
+    public static Image getBoardLocationImage(ArrayList<BoardButton> board, int position) {
+        int minX = (int) board.get(position).getBoundsInParent().getMinX() + 1;
+        int minY = (int) board.get(position).getBoundsInParent().getMinY() + 1;
+
+        int width = (int) board.get(position).getBoundsInParent().getWidth() - 2;
+        int height = (int) board.get(position).getBoundsInParent().getHeight() - 2;
+
+        Image image = new Image("fxmonopoly/resources/images/Board.png");
+        PixelReader reader = image.getPixelReader();
+        WritableImage newImage = new WritableImage(reader, minX, minY, width, height);
+
+        ImageView crop = new ImageView(newImage);
+        crop.setPreserveRatio(true);
+        crop.setRotate(calculateRotation(position));
+
+        if((position > 10 && position < 20) || (position > 30 && position <= 39)) {
+            crop.setFitHeight(width);
+            crop.setFitWidth(height + (width - height));
+        }
+
+        return crop.getImage();
+    }
+
+    /**
+     * Calculates the board image rotation for utilisation in Dialogs.
+     * @param position The position to calculate the rotation from.
+     * @return The rotation to apply.
+     */
+    private static int calculateRotation(int position) {
+        if(position >= 0 && position < 10) {
+            return 0;
+        }
+        else if(position > 10 && position < 20) {
+            return 270;
+        }
+        else if(position >= 20 && position <= 30) {
+            return 180;
+        }
+        else {
+            return 90;
+        }
+    }
+
+    /**
+     * Provides the methods for retrieving the necessary dialog.
+     * @param manager The manager to utilise.
+     * @param controller The controller to pass.
+     * @param model The model to pass.
+     * @param board The BoardButton list to pass.
+     */
+    public void getNewPositionDialog() {
+        Location location = model.retrieveLocation(model.getActivePlayer().getPosition());
+        Image image = getBoardLocationImage(board, model.getActivePlayer().getPosition());
+        ImageView graphic = 
+        graphic.setRotate(calculateRotation(model.getActivePlayer().getPosition()));
+
+        if (location instanceof BaseOwnableLocation) {
+            if ( !((BaseOwnableLocation) location).getIsOwned() ) {
+                unownedOwnableLocation();
+            }
+        } else if (location instanceof ChanceLocation || location instanceof CommunityChestLocation) {
+            DialogContent.cardLocation(
+                manager.getGameDialog(GameDialogs2.BLANK),
+                graphic,
+                model.getActiveCard().getDescription(),
+                model::processCardActions
+            );
+        }
+    }
+
+    private void unownedOwnableLocation(Image image) {
+        DialogContent content = new DialogContent();
+        Dialog dialog = content.unownedOwnableLocation(manager.getGameDialog(GameDialogs2.BLANK));
+        HBox box = content.retrieveNodeByName(NodeReference.BOARD_HBOX.name());
+        ImageView graphic = content.retrieveNodeByName(NodeReference.BOARD_LOCATION_IMAGE.name());
+        graphic.setImage(image);
+        box.setMinHeight(graphic.getFitWidth() + 20);
+
+        ButtonType buy = new ButtonType("Buy", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().add(buy);
+        dialog.getDialogPane().lookupButton(buy).addEventFilter(ActionEvent.ACTION, e -> model.activePlayerBuyLocation());
+
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+        dialog.getDialogPane().lookupButton(ButtonType.CLOSE).addEventFilter(ActionEvent.ACTION, e -> {
+            if (!model.locationIsOwned(model.retrieveLocation(model.getActivePlayer().getPosition()))) {
+                model.startBid();
+                model.getActiveBid().setLocation(model.retrieveLocation(model.getActivePlayer().getPosition()));
+                bidResolution();
+            }
+        });
+    }
+
+    private void cardLocationDialog() {
+        DialogContent content = new DialogContent();
+        Dialog dialog = content.cardLocation(manager.getGameDialog(GameDialogs2.BLANK));
+
+    }
+
+    private void tradeOfferDialog() {
+        model.startTrade(model.getUser());
+
+        DialogContent content = new DialogContent();
+        Dialog dialog = content.tradeOfferDialog(manager.getGameDialog(GameDialogs2.BLANK));
+
+        Slider playerSlider = content.retrieveNodeByName(NodeReference.TRADE_CASH_SLIDER_PLAYER.name());
+        playerSlider.setMax(model.getUser().getCash());
+
+        ComboBox combo = content.retrieveNodeByName(NodeReference.OPPONENTS_LIST.name());
+        model.getPlayerList().forEach(player -> {
+            if (player != model.getUser()) combo.getItems().add(player.getName());
+        });
+        combo.getSelectionModel().selectedItemProperty().addListener(tradeOpponentListListener(content));
+
+        VBox offer = content.retrieveNodeByName(NodeReference.TRADE_OPPONENT_SIDE.name());
+        offer.getChildren().add(0, combo);
+        tradeButtonActions(content);
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CLOSE);
+        dialog.getDialogPane().lookupButton(ButtonType.OK).addEventFilter(ActionEvent.ACTION, e -> tradeConfirmListener(content, combo));
+        dialog.getDialogPane().lookupButton(ButtonType.CLOSE).addEventFilter(ActionEvent.ACTION, e -> model.cancelActiveTrade());
+        dialog.showAndWait();
+    }
+
+    private void tradeReceivedDialog() {
+        model.startTrade(model.getUser());
+
+        DialogContent content = new DialogContent();
+        Dialog dialog = content.tradeReceivedDialog(manager.getGameDialog(GameDialogs2.BLANK));
+
+        Slider playerSlider = content.retrieveNodeByName(NodeReference.TRADE_CASH_SLIDER_PLAYER.name());
+        playerSlider.setMax(model.getUser().getCash());
+
+        tradeButtonActions(content);
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CLOSE);
+        dialog.getDialogPane().lookupButton(ButtonType.OK).addEventFilter(ActionEvent.ACTION, e -> model.resolveActiveTrade());
+        dialog.getDialogPane().lookupButton(ButtonType.CLOSE).addEventFilter(ActionEvent.ACTION, e -> model.cancelActiveTrade());
+        dialog.showAndWait();
+    }
+
+    private void tradeConfirmListener(DialogContent content, ComboBox combo) {
+        if(combo.getSelectionModel().getSelectedItem() != null) {
+            ListView<String> list = content.retrieveNodeByName(NodeReference.TRADE_LIST_PLAYER.name());
+            for(Location location : model.getActiveTrade().getPlayerFrom().getOwnedLocations()) {
+                for(String string : list.getSelectionModel().getSelectedItems()) {
+                    if(string.equals(location.getName()))
+                        model.getActiveTrade().getOfferList().add(location);
+                }
+            }
+            ListView<String> forList = content.retrieveNodeByName(NodeReference.TRADE_LIST_OPPONENT.name());
+            for(Location location : model.getActiveTrade().getPlayerTo().getOwnedLocations()) {
+                for(String string : forList.getSelectionModel().getSelectedItems()) {
+                    if(string.equals(location.getName()))
+                        model.getActiveTrade().getForList().add(location);
+                }
+            }
+
+            Slider playerCash = content.retrieveNodeByName(NodeReference.TRADE_CASH_SLIDER_PLAYER.name());
+            Slider opponentCash = content.retrieveNodeByName(NodeReference.TRADE_CASH_SLIDER_OPPONENT.name());
+
+            if(playerCash.getValue() > 0) {
+                model.getActiveTrade().addCashTo((int) playerCash.getValue());
+            }
+            if(opponentCash.getValue() > 0) {
+                model.getActiveTrade().addCashFrom((int) opponentCash.getValue());
+            }
+
+            tradeResolution();
+        } else {
+            model.cancelActiveTrade();
+        }
+
+    }
+
+    private void setUpTradeContentListeners(Player player, DialogContent content) {
+        ListView<String> list = content.retrieveNodeByName(
+            player instanceof UserPlayer ? NodeReference.TRADE_LIST_PLAYER.name() : NodeReference.TRADE_LIST_OPPONENT.name()
+        );
+
+        ObservableList<String> locations = FXCollections.observableArrayList();
+        for(Location location : player.getOwnedLocations()) {
+            locations.add(location.getName());
+        }
+        list.setItems(locations);
+        list.setCellFactory(e -> {
+            ListCell<String> cell = new ListCell<>();
+            cell.textProperty().bind(cell.itemProperty());
+            Location location = model.getUser().getOwnedLocations().get(locations.indexOf(cell.textProperty().getValue()) + 1);
+            if (((BaseOwnableLocation) location).getMortgaged())
+                cell.getStyleClass().add("mortgaged-cell");
+
+            cell.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+                list.requestFocus();
+                if (! cell.isEmpty()) {
+                    int index = cell.getIndex();
+                    if (list.getSelectionModel().getSelectedIndices().contains(index)) {
+                        list.getSelectionModel().clearSelection(index);
+                    } else {
+                        list.getSelectionModel().select(index);
+                    }
+                    event.consume();
+                }
+            });
+
+            return cell;
+        });
+    }
+
+    private void tradeButtonActions(DialogContent content) {
+        content.retrieveNodeByName(NodeReference.GOJF_PLAYER_ADD.name()).addEventFilter(ActionEvent.ACTION, e -> {
+            if(model.getUser().hasGOJFCard())
+                model.getActiveTrade().getGOJFListTo().add(model.getUser().getGOJFCard());
+        });
+        content.retrieveNodeByName(NodeReference.GOJF_PLAYER_REMOVE.name()).addEventFilter(ActionEvent.ACTION, e -> {
+            if(!model.getActiveTrade().getGOJFListTo().isEmpty())
+                model.getActiveTrade().getGOJFListTo().remove(0);
+        });
+        content.retrieveNodeByName(NodeReference.GOJF_OPPONENT_ADD.name()).addEventFilter(ActionEvent.ACTION, e -> {
+            if(model.getActiveTrade().getPlayerTo() != null && model.getActiveTrade().getPlayerTo().hasGOJFCard())
+                model.getActiveTrade().getGOJFListFrom().add(model.getUser().getGOJFCard());
+        });
+        content.retrieveNodeByName(NodeReference.GOJF_OPPONENT_REMOVE.name()).addEventFilter(ActionEvent.ACTION, e -> {
+            if(!model.getActiveTrade().getGOJFListFrom().isEmpty())
+                model.getActiveTrade().getGOJFListFrom().remove(0);
+        });
+    }
+
+    private ChangeListener tradeOpponentListListener(DialogContent content) {
+        return (observable, oldValue, newValue) -> {
+            ObservableList<String> listFor = FXCollections.observableArrayList();
+            ListView<String> forList = content.retrieveNodeByName(NodeReference.TRADE_LIST_OPPONENT.toString());
+            for(Player player : model.getPlayerList()) {
+                if(player.getName().equals(newValue)) {
+                    model.getActiveTrade().setPlayerTo(player);
+                    for(Location location : player.getOwnedLocations()) {
+                        listFor.add(location.getName());
+                    }
+                    forList.setItems(listFor);
+                    forList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+                    forList.setCellFactory(e -> {
+                        ListCell<String> cell = new ListCell<>();
+                        cell.textProperty().bind(cell.itemProperty());
+                        Location location = model.getActiveTrade().getPlayerTo().getOwnedLocations().get(listFor.indexOf(cell.textProperty().getValue()) + 1);
+                        if (((BaseOwnableLocation) location).getMortgaged())
+                            cell.getStyleClass().add("mortgaged-cell");
+
+                        cell.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+                            forList.requestFocus();
+                            if (! cell.isEmpty()) {
+                                int index = cell.getIndex();
+                                if (forList.getSelectionModel().getSelectedIndices().contains(index)) {
+                                    forList.getSelectionModel().clearSelection(index);
+                                }
+                                else {
+                                    forList.getSelectionModel().select(index);
+                                }
+                                event.consume();
+                            }
+                        });
+                        return cell;
+                    });
+                    ((Slider) content.retrieveNodeByName(NodeReference.TRADE_CASH_SLIDER_OPPONENT.toString())).setMax(player.getCash());
+                    model.getActiveTrade().getGOJFListFrom().removeAll(model.getActiveTrade().getGOJFListFrom());
+                    break;
+                }
+            }
+        };
     }
 }

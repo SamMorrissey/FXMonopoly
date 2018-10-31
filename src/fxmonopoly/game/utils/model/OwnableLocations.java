@@ -86,6 +86,8 @@ public final class OwnableLocations {
      */
     public static int userDevelopProperty(GameData data, PropertyLocation property) {
         
+        System.out.println(data.getUserPlayer().getName());
+        
         if(property.getOwner() == data.getUserPlayer()) {
             int cost = data.getBoard().evenlyDevelop(property);
             data.getBoard().assimilateColourGroupBooleans(data.getBoard().getGroup(property));
@@ -94,6 +96,7 @@ public final class OwnableLocations {
         }
         
         return 0;
+        
     }
     
     /**
@@ -210,7 +213,7 @@ public final class OwnableLocations {
         if(location instanceof PropertyLocation) {
             PropertyLocation temp = (PropertyLocation) location;
             
-            if(temp.getNumberOfHouses() == 0 && !temp.getIsHotel() && !temp.getMortgagedStatus() && temp.getIsOwned()) {
+            if(temp.getNumberOfHouses() == 0 && !temp.getIsHotel() && !temp.getMortgaged() && temp.getIsOwned()) {
                 temp.setMortgaged(true);
                 temp.getOwner().addCash(temp.getPrice() / 2);
                 controller.printToTextFlow(temp.getOwner().getName() + " has mortgaged " + temp.getName() + "\n", temp.getOwner());
@@ -219,8 +222,8 @@ public final class OwnableLocations {
         else if(location instanceof RailwayLocation) {
             RailwayLocation temp = (RailwayLocation) location;
             
-            if(!temp.getIsMortgaged() && temp.getIsOwned()) {
-                temp.setIsMortgaged(true);
+            if(!temp.getMortgaged() && temp.getIsOwned()) {
+                temp.setMortgaged(true);
                 temp.getOwner().addCash(temp.getPrice() / 2);
                 controller.printToTextFlow(temp.getOwner().getName() + " has mortgaged " + temp.getName() + "\n", temp.getOwner());
             }
@@ -228,8 +231,8 @@ public final class OwnableLocations {
         else if(location instanceof UtilityLocation) {
             UtilityLocation temp = (UtilityLocation) location;
             
-            if(!temp.getIsMortgaged() && temp.getIsOwned()) {
-                temp.setIsMortgaged(true);
+            if(!temp.getMortgaged() && temp.getIsOwned()) {
+                temp.setMortgaged(true);
                 temp.getOwner().addCash(temp.getPrice() / 2);
                 controller.printToTextFlow(temp.getOwner().getName() + " has mortgaged " + temp.getName() + "\n", temp.getOwner());
             }
@@ -246,7 +249,7 @@ public final class OwnableLocations {
         if(location instanceof PropertyLocation) {
             PropertyLocation temp = (PropertyLocation) location;
             
-            if(temp.getMortgagedStatus() && temp.getIsOwned()) {
+            if(temp.getMortgaged() && temp.getIsOwned()) {
                 if(temp.getOwner().getCash() < (temp.getPrice() / 2) + (temp.getPrice() / 10)) {
                     controller.printToTextFlow("Not enough cash to demortgage " + temp.getName() + "\n", temp.getOwner());
                     return;
@@ -261,13 +264,13 @@ public final class OwnableLocations {
         else if(location instanceof RailwayLocation) {
             RailwayLocation temp = (RailwayLocation) location;
             
-            if(temp.getIsMortgaged() && temp.getIsOwned()) {
+            if(temp.getMortgaged() && temp.getIsOwned()) {
                 if(temp.getOwner().getCash() < (temp.getPrice() / 2) + (temp.getPrice() / 10)) {
                     controller.printToTextFlow("Not enough cash to demortgage " + temp.getName() + "\n", temp.getOwner());
                     return;
                 }
                 else {
-                    temp.setIsMortgaged(false);
+                    temp.setMortgaged(false);
                     temp.getOwner().addCash(- ((temp.getPrice() / 2) + (temp.getPrice() / 10)));
                     controller.printToTextFlow(temp.getOwner().getName() + " has demortgaged " + temp.getName() + "\n", temp.getOwner()); 
                 }
@@ -276,13 +279,13 @@ public final class OwnableLocations {
         else if(location instanceof UtilityLocation) {
             UtilityLocation temp = (UtilityLocation) location;
             
-            if(temp.getIsMortgaged() && temp.getIsOwned()) {
+            if(temp.getMortgaged() && temp.getIsOwned()) {
                 if(temp.getOwner().getCash() < (temp.getPrice() / 2) + (temp.getPrice() / 10)) {
                     controller.printToTextFlow("Not enough cash to demortgage " + temp.getName() + "\n", temp.getOwner());
                     return;
                 }
                 else {
-                    temp.setIsMortgaged(false);
+                    temp.setMortgaged(false);
                     temp.getOwner().addCash(- ((temp.getPrice() / 2) + (temp.getPrice() / 10)));
                     controller.printToTextFlow(temp.getOwner().getName() + " has demortgaged " + temp.getName() + "\n", temp.getOwner()); 
                 }

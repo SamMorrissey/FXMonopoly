@@ -5,28 +5,23 @@
  */
 package fxmonopoly.game.utils.controller;
 
-import fxmonopoly.game.GameController;
 import fxmonopoly.game.GameModel;
-import fxmonopoly.gamedata.board.locations.ChanceLocation;
-import fxmonopoly.gamedata.board.locations.CommunityChestLocation;
-import fxmonopoly.gamedata.board.locations.Location;
-import fxmonopoly.gamedata.board.locations.PropertyLocation;
-import fxmonopoly.gamedata.board.locations.RailwayLocation;
-import fxmonopoly.gamedata.board.locations.UtilityLocation;
+import fxmonopoly.gamedata.board.locations.*;
 import fxmonopoly.gamedata.players.Player;
-import fxmonopoly.utils.GameDialogs;
-import fxmonopoly.utils.StageManager;
-import fxmonopoly.utils.View;
-import java.util.ArrayList;
-import java.util.HashMap;
+import fxmonopoly.utils.DialogContentBuilder;
+
+import java.util.*;
+import java.util.function.Consumer;
+
+import fxmonopoly.utils.interfacing.NodeReference;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
@@ -35,10 +30,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelReader;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -52,45 +44,32 @@ import javafx.scene.paint.Color;
  * @author Sam P. Morrissey.
  */
 public class DialogContent {
-    
-    /**
-     * Ensures that the class cannot be instantiated, since it has no reason to 
-     * be, as it has no state and only static methods.
-     */
-    private DialogContent() {}
-    
+
+    public static int CENTRE_DIALOG_X;
+    public static int CENTRE_DIALOG_Y;
+
+    private Map<String, Node> nodeMap = new LinkedHashMap<>();
+    private DialogContentBuilder builder;
+
+    public <T extends Node> T registerNodeByName(String name, T node) {
+        nodeMap.put(name, node);
+        return node;
+    }
+
+    public <T extends Node> T retrieveNodeByName(String name) { return (T) nodeMap.get(name); }
+
+    private void pullBuilderNodesIntoMap() { builder.getNodeMap().forEach((key, value) -> nodeMap.put(key.name(), value)); }
+
     /**
      * Creates a Dice roll pane to do the initial order.
      * @param diceRoll The alert to set the content of.
      * @param model The model to utilise.
      */
-    public static void diceRollPane(Dialog diceRoll, GameModel model) {
-        HBox dice = new HBox(20);
-        
-        ImageView die1 = new ImageView(new Image("fxmonopoly/resources/images/die/Blank.png"));
-        ImageView die2 = new ImageView(new Image("fxmonopoly/resources/images/die/Blank.png"));
-        Button rollAction = new Button("Roll");
-        rollAction.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
-        
-        dice.getChildren().addAll(die1, die2, rollAction);
-        dice.setAlignment(Pos.CENTER);
-        
-        diceRoll.getDialogPane().setContent(dice);   
-        diceRoll.getDialogPane().getButtonTypes().add(ButtonType.OK);
-        diceRoll.getDialogPane().lookupButton(ButtonType.OK).setDisable(true);
-        
-        int[] i = model.rollDie();
-        rollAction.addEventHandler(ActionEvent.ACTION, e -> {
-            HBox box = (HBox) diceRoll.getDialogPane().getContent();
-            ((ImageView) box.getChildren().get(0)).setImage(new Image("fxmonopoly/resources/images/die/" + i[0] + ".png"));
-            ((ImageView) box.getChildren().get(1)).setImage(new Image("fxmonopoly/resources/images/die/" + i[1] + ".png"));
-            model.reorderList(i[0] + i[1]);
-            
-            diceRoll.getDialogPane().lookupButton(ButtonType.OK).setDisable(false);
-            rollAction.disableProperty().setValue(true);
-        });
-        
-        diceRoll.showAndWait();
+    public Dialog diceRollPane(Dialog diceRoll, int[] dieRolls) {
+        DialogContentBuilder builder = new DialogContentBuilder(diceRoll)
+            .generateBaseDiceRollContent(dieRolls)
+            .setDisabledStateOfButton(ButtonType.OK, true);
+        return builder.eject();
     }
     
     /**
@@ -101,68 +80,11 @@ public class DialogContent {
      * @param model The model to utilise.
      * @param board The board to determine dialog positioning from.
      */
-    public static void diceRollAndMovePane(Dialog diceRoll, Dialog newPositionAlert, GameController controller, GameModel model, ArrayList<BoardButton> board) {
-        HBox dice = new HBox(20);
-        
-        ImageView die1 = new ImageView(new Image("fxmonopoly/resources/images/die/Blank.png"));
-        ImageView die2 = new ImageView(new Image("fxmonopoly/resources/images/die/Blank.png"));
-        Button rollAction = new Button("Roll");
-        rollAction.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
-        
-        dice.getChildren().addAll(die1, die2, rollAction);
-        dice.setAlignment(Pos.CENTER);
-        
-        diceRoll.getDialogPane().setContent(dice);
-        diceRoll.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
-        diceRoll.getDialogPane().lookupButton(ButtonType.CLOSE).setDisable(true);
-        
-        int[] i = model.rollDie();
-        
-        rollAction.addEventHandler(ActionEvent.ACTION, e -> {
-            HBox box = (HBox) diceRoll.getDialogPane().getContent();
-            ((ImageView) box.getChildren().get(0)).setImage(new Image("fxmonopoly/resources/images/die/" + i[0] + ".png"));
-            ((ImageView) box.getChildren().get(1)).setImage(new Image("fxmonopoly/resources/images/die/" + i[1] + ".png"));
-            
-            diceRoll.getDialogPane().lookupButton(ButtonType.CLOSE).setDisable(false);
-            rollAction.disableProperty().setValue(true);
-        });
-        
-        diceRoll.getDialogPane().lookupButton(ButtonType.CLOSE).addEventFilter(ActionEvent.ACTION, event -> {
-            model.diceMove(i);
-            controller.pathTransition(model); 
-        });
-        
-        diceRoll.showAndWait();
-    }
-    
-    /**
-     * Provides the methods for retrieving the necessary dialog.
-     * @param manager The manager to utilise.
-     * @param controller The controller to pass.
-     * @param model The model to pass.
-     * @param board The BoardButton list to pass.
-     */
-    public static void getNewPositionDialog(StageManager manager, GameController controller, GameModel model, ArrayList<BoardButton> board) {
-        Location location = model.retrieveLocation(model.getActivePlayer().getPosition());
-        
-        if(location instanceof PropertyLocation) {
-            if(!((PropertyLocation) location).getIsOwned()) {
-                unownedOwnableLocation(manager, controller, model, board);
-            }
-        }
-        else if(location instanceof RailwayLocation) {
-            if(! ((RailwayLocation) location).getIsOwned()) {
-                unownedOwnableLocation(manager, controller, model, board);
-            }
-        }
-        else if(location instanceof UtilityLocation) {
-            if(! ((UtilityLocation) location).getIsOwned()) {
-                unownedOwnableLocation(manager, controller, model, board);
-            }
-        }
-        else if(location instanceof ChanceLocation || location instanceof CommunityChestLocation) {
-            cardLocation(manager.getGameDialog(GameDialogs.BLANK), model, board);
-        }
+    public Dialog diceRollAndMovePane(Dialog diceRoll, int[] dieRolls) {
+        DialogContentBuilder builder = new DialogContentBuilder(diceRoll)
+            .generateBaseDiceRollContent(dieRolls)
+            .setDisabledStateOfButton(ButtonType.CLOSE, true);
+        return builder.eject();
     }
     
     /**
@@ -173,141 +95,27 @@ public class DialogContent {
      * @param model The model to operate on.
      * @param board The board position to grab the image from.
      */
-    private static void unownedOwnableLocation(StageManager manager, GameController controller, GameModel model, ArrayList<BoardButton> board) {
-        Dialog position = manager.getGameDialog(GameDialogs.BLANK);
-        ButtonType buy = new ButtonType("Buy", ButtonData.OK_DONE); 
-        position.getDialogPane().getButtonTypes().add(buy);
-        position.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
-        position.setContentText(model.retrieveLocation(model.getActivePlayer().getPosition()).getName() + " is available to purchase");
-        
-        double x = board.get(0).getParent().getScene().getX() + board.get(0).getParent().getScene().getWidth() / 2 - position.getWidth() / 2;
-        double y = board.get(0).getParent().getScene().getY() + board.get(0).getParent().getScene().getHeight() / 2 - position.getHeight() / 2;
-        
-        position.setX(x);
-        position.setY(y);
-        
-        position.getDialogPane().getScene().getWindow().sizeToScene();
-        
-        ImageView graphic = getBoardLocationImage(board, model.getActivePlayer().getPosition());
-        graphic.setRotate(calculateRotation(model.getActivePlayer().getPosition()));
-        Label text = new Label(model.retrieveLocation(model.getActivePlayer().getPosition()).getName()+ " is available to purchase");
-        text.wrapTextProperty().setValue(Boolean.TRUE);
-        HBox box = new HBox(20);
-        box.getChildren().addAll(graphic, text);
-        box.setAlignment(Pos.CENTER);
-        box.setMinSize(HBox.USE_PREF_SIZE, HBox.USE_PREF_SIZE);
-        box.setMinHeight(graphic.getFitWidth() + 20);
-        
-        position.getDialogPane().setContent(box);
-        
-        
-        position.getDialogPane().lookupButton(buy).addEventFilter(ActionEvent.ACTION, event -> {
-            model.activePlayerBuyLocation();
-        });
-       
-        
-        position.getDialogPane().lookupButton(ButtonType.CLOSE).addEventFilter(ActionEvent.ACTION, event -> {
-            if(model.locationIsOwned(model.retrieveLocation(model.getActivePlayer().getPosition()))) {
-                position.close();
-            }
-            else {
-                model.startBid();
-                model.getActiveBid().setLocation(model.retrieveLocation(model.getActivePlayer().getPosition()));
-                controller.bidResolution();
-                position.close();
-            }
-        });
-        
-        
-        position.getDialogPane().getScene().getWindow().sizeToScene();
-        position.showAndWait();
+    public Dialog unownedOwnableLocation(Dialog dialog) {
+        DialogContentBuilder builder = new DialogContentBuilder(dialog)
+            .generateBaseBoardLocationContent()
+            .setXAndYPosition(CENTRE_DIALOG_X, CENTRE_DIALOG_Y)
+            .sizeToScene();
+        return builder.eject();
     }
     
     /**
      * Displays the Dialog utilised when a Card location is landed on.
-     * @param position The Dialog to set the content of.
+     * @param dialog The Dialog to set the content of.
      * @param model The model to operate on.
      * @param board The board position to grab the image from.
      */
-    private static void cardLocation(Dialog position, GameModel model, ArrayList<BoardButton> board) {
-        position.getDialogPane().getButtonTypes().add(ButtonType.OK);
-        
-        Label text = new Label(model.getActiveCard().getDescription());
-        ImageView graphic = getBoardLocationImage(board, model.getActivePlayer().getPosition());
-        graphic.setRotate(calculateRotation(model.getActivePlayer().getPosition()));
-        HBox box = new HBox(20);
-        box.setAlignment(Pos.CENTER);
-        box.getChildren().addAll(graphic, text);
-        box.setMinSize(HBox.USE_PREF_SIZE, HBox.USE_PREF_SIZE);
-        box.setMinHeight(graphic.getFitWidth() + 20);
-        
-        position.getDialogPane().setContent(box);
-        
-        position.getDialogPane().getScene().getWindow().sizeToScene();
-        
-        
-        double x = board.get(0).getParent().getScene().getX() + board.get(0).getParent().getScene().getWidth() / 2 - position.getWidth() / 2;
-        double y = board.get(0).getParent().getScene().getY() + board.get(0).getParent().getScene().getHeight() / 2 - position.getHeight() / 2;
-        
-        position.getDialogPane().lookupButton(ButtonType.OK).addEventFilter(ActionEvent.ACTION, event -> {
-            model.processCardActions();
-            position.close();
-        });
-        
-        position.setX(x);
-        position.setY(y);
-        position.getDialogPane().getScene().getWindow().sizeToScene();
-        position.showAndWait();
-        
-    }
-    
-    /**
-     * Retrieves the Image from the specified board position.
-     * @param board The board to retrieve bounds from.
-     * @param position The board position to grab the image of.
-     * @return The image created.
-     */
-    private static ImageView getBoardLocationImage(ArrayList<BoardButton> board, int position) {
-        int minX = (int) board.get(position).getBoundsInParent().getMinX() + 1;
-        int minY = (int) board.get(position).getBoundsInParent().getMinY() + 1;
-        
-        int width = (int) board.get(position).getBoundsInParent().getWidth() - 2;
-        int height = (int) board.get(position).getBoundsInParent().getHeight() - 2;
-         
-        Image image = new Image("fxmonopoly/resources/images/Board.png");
-        PixelReader reader = image.getPixelReader();
-        WritableImage newImage = new WritableImage(reader, minX, minY, width, height);
-        
-        ImageView crop = new ImageView(newImage);
-        crop.setPreserveRatio(true);
-        crop.setRotate(calculateRotation(position));
-        
-        if((position > 10 && position < 20) || (position > 30 && position <= 39)) {
-            crop.setFitHeight(width);
-            crop.setFitWidth(height + (width - height));
-        }
-
-        return crop;
-    }
-    
-    /**
-     * Calculates the board image rotation for utilisation in Dialogs.
-     * @param position The position to calculate the rotation from.
-     * @return The rotation to apply.
-     */
-    private static int calculateRotation(int position) {
-        if(position >= 0 && position < 10) {
-            return 0;
-        }
-        else if(position > 10 && position < 20) {
-            return 270;
-        }
-        else if(position >= 20 && position <= 30) {
-            return 180;
-        }
-        else {
-            return 90;
-        }
+    public Dialog cardLocation(Dialog dialog, ImageView graphic, String text, Runnable okAction) {
+        map.put(ButtonType.OK, okAction);
+        DialogContentBuilder builder = new DialogContentBuilder(dialog)
+            .generateBaseBoardLocationContent()
+            .setXAndYPosition(CENTRE_DIALOG_X, CENTRE_DIALOG_Y)
+            .sizeToScene();
+        return builder.eject();
     }
     
     /**
@@ -316,133 +124,31 @@ public class DialogContent {
      * @param model The model to operate on.
      * @param board The board to grab images from.
      */
-    public static void bidDialog(Dialog bid, GameModel model, ArrayList<BoardButton> board) {
-        VBox box = new VBox(20);
-        HBox graph = new HBox(20);
-        box.setAlignment(Pos.CENTER);
-        
-        Label enterBid = new Label("Enter Max Bid:");
+    public static void bidDialog(Dialog bid, ImageView graphic, String text, Runnable resolveActiveBid, Consumer<Integer> okAddBid) {
+        Label enterBid = new Label(text);
         TextField numeric = new TextField();
         numeric.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*")) {
                 numeric.setText(newValue.replaceAll("[^\\d]", ""));
             }
         });
-        
-        ImageView graphic = new ImageView();
-        
-        if(model.getActiveBid().containsLocation()) { 
-            graphic = getBoardLocationImage(board, model.retrieveLocationPosition(model.getActiveBid().getLocation()));
-        }
-        else if(model.getActiveBid().containsGOJFCard()) {
-            graphic.setImage(new Image("fxmonopoly/resources/images/LeaveJailIcon"));
-        }
-        
-        graph.getChildren().addAll(graphic);
-        graph.setMinHeight(graphic.getFitWidth() + 20);
-        graph.setAlignment(Pos.CENTER);
-        box.getChildren().addAll(graph, enterBid, numeric);
-        
-        bid.getDialogPane().setContent(box);
-        
-        ButtonType bidOK = new ButtonType("Bid", ButtonData.OK_DONE);
-        bid.getDialogPane().getButtonTypes().add(bidOK);
-        bid.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
-        bid.getDialogPane().setMinSize(DialogPane.USE_PREF_SIZE, DialogPane.USE_PREF_SIZE);
-        
-        bid.getDialogPane().lookupButton(bidOK).addEventFilter(ActionEvent.ACTION, event -> {
-            if(numeric.getText().isEmpty() || numeric.getText() == null) {
-                model.resolveActiveBid();
-            }
-            else {
-                model.getActiveBid().addBid(model.getUser(), Integer.parseInt(numeric.getText()));
-            }
+
+        Map<ButtonType, Runnable> map = new LinkedHashMap<>();
+        map.put(new ButtonType("Bid", ButtonData.OK_DONE), (e) -> {
+            if(numeric.getText().isEmpty() || numeric.getText() == null)
+                resolveActiveBid.run();
+            else
+                okAddBid.accept(Integer.parseInt(numeric.getText()));
         });
-        
-        bid.getDialogPane().lookupButton(ButtonType.CANCEL).addEventFilter(ActionEvent.ACTION, event -> {
-            model.resolveActiveBid();
-        });
-        
-        double x = board.get(0).getParent().getScene().getX() + board.get(0).getParent().getScene().getWidth() / 2 - bid.getWidth() / 2;
-        double y = board.get(0).getParent().getScene().getY() + board.get(0).getParent().getScene().getHeight() / 2 - bid.getHeight() / 2;
-        
-        bid.setX(x);
-        bid.setY(y);
-        bid.getDialogPane().getScene().getWindow().sizeToScene();
-        bid.showAndWait();
+        map.put(ButtonType.CANCEL, resolveActiveBid);
+
+        DialogContentBuilder builder = new DialogContentBuilder(bid)
+            .generateBaseBidContent(graphic, Arrays.asList(enterBid, numeric), map)
+            .sizeToScene()
+            .setXAndYPosition(CENTRE_DIALOG_X, CENTRE_DIALOG_Y);
+        builder.activate();
     }
-    
-    /**
-     * Retrieves the second bid Dialog which appears only if the conditions are 
-     * correct from the initial bid window.
-     * @param bid The dialog to fill the content of.
-     * @param model The model to operate on.
-     * @param board The board to grab images from.
-     */
-    public static void secondaryBidDialog(Dialog bid, GameModel model, ArrayList<BoardButton> board) {
-        VBox box = new VBox(10);
-        HBox graph = new HBox(20);
-        box.setAlignment(Pos.CENTER);
-        //box.setMinSize(HBox.USE_PREF_SIZE, HBox.USE_PREF_SIZE);
-        
-        Label enterBid = new Label("Max Bid Currently: " + (model.getActiveBid().getSecondHighestBid() + 1) + "\n" +
-                                   "Enter Max Bid:");
-        TextField numeric = new TextField();
-        numeric.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("\\d*")) {
-                numeric.setText(newValue.replaceAll("[^\\d]", ""));
-            }
-        });
-        
-        ImageView graphic = new ImageView();
-        
-        
-        if(model.getActiveBid().containsLocation()) { 
-            graphic = getBoardLocationImage(board, model.retrieveLocationPosition(model.getActiveBid().getLocation()));
-        }
-        else if(model.getActiveBid().containsGOJFCard()) {
-            graphic.setImage(new Image("fxmonopoly/resources/images/LeaveJailIcon"));
-        }
-        
-        graph.getChildren().addAll(graphic);
-        graph.setMinHeight(graphic.getFitWidth() + 20);
-        graph.setAlignment(Pos.CENTER);
-        box.getChildren().addAll(graph, enterBid, numeric);   
-        bid.getDialogPane().setContent(box);
-        
-        ButtonType bidOK = new ButtonType("Bid", ButtonData.OK_DONE);
-        bid.getDialogPane().getButtonTypes().add(bidOK);
-        bid.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
-        bid.getDialogPane().setMinSize(DialogPane.USE_PREF_SIZE, DialogPane.USE_PREF_SIZE);
-        
-        bid.getDialogPane().lookupButton(bidOK).addEventFilter(ActionEvent.ACTION, event -> {
-            if(numeric.getText().isEmpty() || numeric.getText() == null) {
-                model.resolveActiveBid();
-            }
-            else {
-                if(Integer.parseInt(numeric.getText()) < model.getActiveBid().getHighestBid()) {
-                    model.resolveActiveBid();
-                }
-                else {
-                    model.getActiveBid().addBid(model.getUser(), Integer.parseInt(numeric.getText()));
-                    model.resolveActiveBid();
-                } 
-            }
-        });
-        
-        bid.getDialogPane().lookupButton(ButtonType.CANCEL).addEventFilter(ActionEvent.ACTION, event -> {
-            model.resolveActiveBid();
-        });
-        
-        double x = board.get(0).getParent().getScene().getX() + board.get(0).getParent().getScene().getWidth() / 2 - bid.getWidth() / 2;
-        double y = board.get(0).getParent().getScene().getY() + board.get(0).getParent().getScene().getHeight() / 2 - bid.getHeight() / 2;
-        
-        bid.setX(x);
-        bid.setY(y);
-        bid.getDialogPane().getScene().getWindow().sizeToScene();
-        bid.showAndWait();
-    }
-    
+
     /**
      * Retrieves the Dialog for when a board button is clicked on, to provide
      * information on generic areas i.e. non-ownable locations.
@@ -451,35 +157,19 @@ public class DialogContent {
      * @param board The list of BoardButtons to grab the graphic from.
      * @param indexOf The index of the button to be utilised (i.e. board position).
      */
-    public static void genericPositionDialog(Dialog position, GameModel model, ArrayList<BoardButton> board, int indexOf) {
-   
-        position.getDialogPane().setMaxWidth(150);
-        
-        ImageView graphic = getBoardLocationImage(board, indexOf);
-           
-        Label text = new Label(model.retrieveLocation(indexOf).getName());
-        text.setMinWidth(80);
-        text.wrapTextProperty().setValue(Boolean.TRUE);
-        HBox box = new HBox(20);
-        box.getChildren().addAll(graphic, text);
-        box.setMinSize(HBox.USE_PREF_SIZE, HBox.USE_PREF_SIZE);
-        box.setMinHeight(graphic.getFitWidth() + 20);
-        box.setAlignment(Pos.CENTER);
-        
-        position.getDialogPane().setContent(box);
-        
-        if(position.getDialogPane().getButtonTypes().isEmpty()) {
-            position.getDialogPane().getButtonTypes().add(ButtonType.OK);
-            
-            position.getDialogPane().getScene().getWindow().sizeToScene();
-            double x = board.get(0).getParent().getScene().getX() + board.get(0).getParent().getScene().getWidth() / 2 - position.getWidth() / 2;
-            double y = board.get(0).getParent().getScene().getY() + board.get(0).getParent().getScene().getHeight() / 2 - position.getHeight() / 2;
-        
-            position.setX(x);
-            position.setY(y);
-        }
-       
-        position.showAndWait();
+    public static void genericPositionDialog(Dialog position, ImageView graphic, String text, int width) {
+        Label label = new Label(text);
+        label.setMinWidth(80);
+        label.wrapTextProperty().setValue(Boolean.TRUE);
+
+        Map<ButtonType, Runnable> map = new LinkedHashMap<>();
+        map.put(ButtonType.OK, () -> {});
+        DialogContentBuilder builder = new DialogContentBuilder(position)
+            .generateBaseBoardLocationContent(Arrays.asList(graphic,label), map)
+            .setXAndYPosition(CENTRE_DIALOG_X, CENTRE_DIALOG_Y)
+            .sizeToScene()
+            .setPaneMaxWidth(width);
+        builder.activate();
     }
     
     /**
@@ -490,210 +180,122 @@ public class DialogContent {
      * @param board The list of BoardButtons to grab the graphic from.
      * @param indexOf The index of the button to be utilised (i.e. board position).
      */
-    public static void unboughtOwnableLocationDialog(Dialog position, GameModel model, ArrayList<BoardButton> board, int indexOf) {
-        position.getDialogPane().setMaxWidth(170);
-        
-        ImageView graphic = getBoardLocationImage(board, indexOf);
-        Label text = new Label(model.retrieveLocation(indexOf).getName() + "\n" +
-                               "You must purchase this property to reveal more information");
-        text.setMinSize(Label.USE_PREF_SIZE, Label.USE_PREF_SIZE);
-        text.wrapTextProperty().setValue(Boolean.TRUE);
-        HBox box = new HBox(20);
-        box.getChildren().addAll(graphic, text);
-        box.setMinSize(HBox.USE_PREF_SIZE, HBox.USE_PREF_SIZE);
-        box.setMinHeight(graphic.getFitWidth() + 20);
-        box.setAlignment(Pos.CENTER);
-        
-        
-        position.getDialogPane().setContent(box);
-        position.getDialogPane().layout();
-        
-        if(position.getDialogPane().getButtonTypes().isEmpty()) {
-            position.getDialogPane().getButtonTypes().add(ButtonType.OK);
-            
-            position.getDialogPane().getScene().getWindow().sizeToScene();
-            double x = board.get(0).getParent().getScene().getX() + board.get(0).getParent().getScene().getWidth() / 2 - position.getWidth() / 2;
-            double y = board.get(0).getParent().getScene().getY() + board.get(0).getParent().getScene().getHeight() / 2 - position.getHeight() / 2;
-        
-            position.setX(x);
-            position.setY(y);
-        }
-        
-        position.showAndWait();
-    }
-    
-    /**
-     * Retrieves the Dialog for when an unbought ownable board button is clicked on, 
-     * to provide information on the specified location.
-     * @param position The Dialog to set up.
-     * @param model The model to operate on.
-     * @param board The list of BoardButtons to grab the graphic from.
-     * @param indexOf The index of the button to be utilised (i.e. board position).
-     */
-    public static void ownedOwnableLocationDialog(Dialog position, GameModel model, ArrayList<BoardButton> board, int indexOf) {
-        
+    public static void ownedOwnableLocationDialog(Dialog position, ImageView graphic, String text, Runnable developAction, Runnable undevelopAction, Runnable mortgageAction) {
+
         HBox box = new HBox(20);
         HBox graph = new HBox(10);
-        
-        if(board.get(indexOf).isOwned() && board.get(indexOf).userIsOwner(model.getUser())) {
-            ImageView graphic = getBoardLocationImage(board, indexOf);
-            
-            String userText;
-            
-            if(board.get(indexOf).getLocation() instanceof PropertyLocation) {
-                userText = ((PropertyLocation) board.get(indexOf).getLocation()).getUserOwnedString();
-                Label text = new Label(userText);
-                text.setMinSize(Label.USE_PREF_SIZE, Label.USE_PREF_SIZE);
-                text.wrapTextProperty().setValue(Boolean.TRUE);
-                Button develop = new Button("+");
-                develop.setOnAction(e -> {
-                    model.userDevelopProperty((PropertyLocation) board.get(indexOf).getLocation());
-                });
-                develop.setStyle("-fx-font-size: 20;");
-            
-                Button undevelop = new Button("-");
-                undevelop.setOnAction(e -> {
-                    model.userRegressProperty((PropertyLocation) board.get(indexOf).getLocation());
-                });
-                undevelop.setStyle("-fx-font-size: 20;");
+
+        Label text = setUpText(text);
+        List<Button> buttons = ownedPropertyButtons(developAction, undevelopAction, mortgageAction);
+        buttons.get(2).setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
+
+        int height = 0;
+        for (Button button : buttons) height += button.getHeight();
+
+        graph.getChildren().addAll(graphic);
+        graph.setMinHeight(graphic.getFitWidth() + 20);
+        graph.setAlignment(Pos.CENTER);
                 
-                Button mortgage = new Button("(De)Mortgage");
-                mortgage.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
+        VBox box2 = new VBox(20);
+        box2.setAlignment(Pos.CENTER);
+        box2.getChildren().add(graph);
+        box2.getChildren().addAll(buttons);
+        box.setMinHeight(graphic.getFitWidth() + height + 20);
                 
-                mortgage.setOnAction(e -> {
-                    if(((PropertyLocation) board.get(indexOf).getLocation()).getMortgagedStatus()) {
-                        model.deMortgageLocation(board.get(indexOf).getLocation());
-                    }
-                    else if(!((PropertyLocation) board.get(indexOf).getLocation()).getMortgagedStatus()) {
-                        model.mortgageLocation(board.get(indexOf).getLocation());
-                    }
-                });
-                
-                graph.getChildren().addAll(graphic);
-                graph.setMinHeight(graphic.getFitWidth() + 20);
-                graph.setAlignment(Pos.CENTER);
-                
-                VBox box2 = new VBox(20);
-                box2.setAlignment(Pos.CENTER);
-                box2.getChildren().addAll(graph, develop, undevelop, mortgage);
-                box.setMinHeight(graphic.getFitWidth() + develop.getHeight() + undevelop.getHeight() + mortgage.getHeight() + 20);
-                
-                box.getChildren().addAll(box2, text);
-            }
-            else if(board.get(indexOf).getLocation() instanceof RailwayLocation) {
-                userText = ((RailwayLocation) board.get(indexOf).getLocation()).getUserOwnedString();
-                Label text = new Label(userText);
-                text.setMinSize(Label.USE_PREF_SIZE, Label.USE_PREF_SIZE);
-                text.wrapTextProperty().setValue(Boolean.TRUE);
-                
-                
-                Button mortgage = new Button("Mortgage");
-                mortgage.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
-                
-                mortgage.setOnAction(e -> { 
-                    if(((RailwayLocation) board.get(indexOf).getLocation()).getIsMortgaged()) {
-                        model.deMortgageLocation(board.get(indexOf).getLocation());
-                    }
-                    else {
-                        model.mortgageLocation(board.get(indexOf).getLocation());
-                    }
-                });  
-                
-                box.getChildren().addAll(graphic, text, mortgage);
-                box.setMinHeight(graphic.getFitWidth() + 20);
-            }
-            else if(board.get(indexOf).getLocation() instanceof UtilityLocation) {
-                userText = ((UtilityLocation) board.get(indexOf).getLocation()).getUserOwnedString();
-                Label text = new Label(userText);
-                text.setMinSize(Label.USE_PREF_SIZE, Label.USE_PREF_SIZE);
-                text.wrapTextProperty().setValue(Boolean.TRUE);
-                
-                Button mortgage = new Button("(De)Mortgage");
-                mortgage.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
-                
-                mortgage.setOnAction(e -> {
-                    if(((UtilityLocation) board.get(indexOf).getLocation()).getIsMortgaged()) {
-                        model.deMortgageLocation(board.get(indexOf).getLocation());
-                    }
-                    else {
-                        model.mortgageLocation(board.get(indexOf).getLocation());
-                    }
-                });
-                
-                box.getChildren().addAll(graphic, text, mortgage);
-                box.setMinHeight(graphic.getFitWidth() + 20);
-            }
-        }
-        else {
-            ImageView graphic = getBoardLocationImage(board, indexOf);
-            box.setMinHeight(graphic.getFitWidth() + 20);
-            String userText;
-            
-            
-            if(board.get(indexOf).getLocation() instanceof PropertyLocation) {
-                userText = ((PropertyLocation) board.get(indexOf).getLocation()).getOwner().getName();
-                Label text = new Label(model.retrieveLocation(indexOf).getName() + "\n" +
-                                                          "Owner: " + userText);
-                text.setMinSize(Label.USE_PREF_SIZE, Label.USE_PREF_SIZE);
-                text.wrapTextProperty().setValue(Boolean.TRUE);
-                
-                graph.getChildren().add(graphic);
-                graph.setAlignment(Pos.CENTER);
-                graph.setMinHeight(graphic.getFitWidth() + 20);
-                
-                box.getChildren().addAll(graph, text); 
-                box.setMinHeight(graphic.getFitWidth() + 20);
-            }
-            else if(board.get(indexOf).getLocation() instanceof RailwayLocation) {
-                userText = ((RailwayLocation) board.get(indexOf).getLocation()).getOwner().getName();
-                Label text = new Label(model.retrieveLocation(indexOf).getName() + "\n" +
-                                                          "Owner: " + userText);
-                text.setMinSize(Label.USE_PREF_SIZE, Label.USE_PREF_SIZE);
-                text.wrapTextProperty().setValue(Boolean.TRUE);
-                
-                graph.getChildren().add(graphic);
-                graph.setAlignment(Pos.CENTER);
-                graph.setMinHeight(graphic.getFitWidth() + 20);
-                
-                box.getChildren().addAll(graph, text);
-                box.setMinHeight(graphic.getFitWidth() + 20);
-            }
-            else if(board.get(indexOf).getLocation() instanceof UtilityLocation) {
-                userText = ((UtilityLocation) board.get(indexOf).getLocation()).getOwner().getName();
-                Label text = new Label(model.retrieveLocation(indexOf).getName() + "\n" +
-                                                          "Owner: " + userText);
-                text.setMinSize(Label.USE_PREF_SIZE, Label.USE_PREF_SIZE);
-                text.wrapTextProperty().setValue(Boolean.TRUE);
-                
-                graph.getChildren().add(graphic);
-                graph.setAlignment(Pos.CENTER);
-                graph.setMinHeight(graphic.getFitWidth() + 20);
-                
-                box.getChildren().addAll(graph, text);
-                box.setMinHeight(graphic.getFitWidth() + 20);
-            }
-        }
-        
-        box.setMinSize(HBox.USE_PREF_SIZE, HBox.USE_PREF_SIZE);
-        box.setAlignment(Pos.CENTER);
-        position.getDialogPane().setContent(box);
-        position.getDialogPane().layout();
-        
-        if(position.getDialogPane().getButtonTypes().isEmpty()) {
-            position.getDialogPane().getButtonTypes().add(ButtonType.OK);
-            position.getDialogPane().setMaxWidth(170);
-            
-            position.getDialogPane().getScene().getWindow().sizeToScene();
-            double x = board.get(0).getParent().getScene().getX() + board.get(0).getParent().getScene().getWidth() / 2 - position.getWidth() / 2;
-            double y = board.get(0).getParent().getScene().getY() + board.get(0).getParent().getScene().getHeight() / 2 - position.getHeight() / 2;
-        
-            position.setX(x);
-            position.setY(y);
-            
-            position.getDialogPane().getScene().getWindow().sizeToScene();
-        }
-        
-        position.showAndWait();
+        box.getChildren().addAll(box2, text);
+
+        Map<ButtonType, Runnable> map = new LinkedHashMap<>();
+        map.put(ButtonType.OK, () -> {});
+        DialogContentBuilder builder = new DialogContentBuilder(position)
+            .generateBaseBoardLocationContent(box, map)
+            .setXAndYPosition(CENTRE_DIALOG_X, CENTRE_DIALOG_Y)
+            .setPaneMaxWidth(170)
+            .sizeToScene();
+        builder.activate();
+    }
+
+    private static Label setUpText(String text) {
+        Label label = new Label(text);
+        label.setMinSize(Label.USE_PREF_SIZE, Label.USE_PREF_SIZE);
+        label.wrapTextProperty().setValue(Boolean.TRUE);
+    }
+
+    private static void applyButtonTypes(Map<Button, Runnable> buttonActionMap) {
+        buttonActionMap.entrySet().forEach( entry ->
+            entry.getKey().setOnAction(e -> entry.getValue().run())
+        );
+    }
+
+    private static List<Button> ownedPropertyButtons(Runnable developOnAction, Runnable undevelopOnAction, Runnable mortgageOnAction) {
+        return Arrays
+            .asList(developButton(developOnAction), undevelopButton(undevelopOnAction), mortgageButton(mortgageOnAction));
+    }
+
+    private Button developButton(Runnable onAction) {
+        return createAndRegisterCustomButton("+", onAction);
+    }
+
+    private Button undevelopButton(Runnable onAction) {
+        return createAndRegisterCustomButton("-", onAction);
+    }
+
+    private Button mortgageButton(Runnable onAction) {
+        return createAndRegisterCustomButton("(De)Mortgage", onAction);
+    }
+
+    private Button createAndRegisterCustomButton(String label, Runnable onAction, String name) {
+        Button button = createCustomButton(label, onAction);
+        nodeMap.put(name, button);
+        return button;
+    }
+
+    private static Button createCustomButton(String label, Runnable onAction) {
+        Button button = new Button(label);
+        button.setOnAction(e -> onAction.run());
+        button.setStyle("-fx-font-size: 20;");
+        return button;
+    }
+
+    public static void genericOwnedPropertySetUp(Dialog dialog, ImageView graphic, String text, Runnable mortgageAction) {
+        HBox box = new HBox(20);
+        Label label = setUpText(text);
+
+        Button mortgage = mortgageButton(mortgageAction);
+        mortgage.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
+        if (graphic != null)
+            box.getChildren().addAll(graphic, label, mortgage);
+        else
+            box.getChildren().addAll(label, mortgage);
+        box.setMinHeight(graphic.getFitWidth() + 20);
+
+        Map<ButtonType, Runnable> map = new LinkedHashMap<>();
+        map.put(ButtonType.OK, () -> {});
+        DialogContentBuilder builder = new DialogContentBuilder(dialog)
+            .generateBaseBoardLocationContent(box, map)
+            .setXAndYPosition(CENTRE_DIALOG_X, CENTRE_DIALOG_Y)
+            .sizeToScene();
+        builder.activate();
+    }
+
+    public static void genericUnownedPropertyDialog(Dialog dialog, ImageView graphic, String text) {
+        HBox box = new HBox(20);
+        HBox graph = new HBox(10);
+        Label label = setUpText(text);
+
+        graph.getChildren().add(graphic);
+        graph.setAlignment(Pos.CENTER);
+        graph.setMinHeight(graphic.getFitWidth() + 20);
+
+        box.getChildren().addAll(graph, label);
+        box.setMinHeight(graphic.getFitWidth() + 20);
+
+        Map<ButtonType, Runnable> map = new LinkedHashMap<>();
+        map.put(ButtonType.OK, () -> {});
+        DialogContentBuilder builder = new DialogContentBuilder(dialog)
+            .generateBaseBoardLocationContent(box, map)
+            .setXAndYPosition(CENTRE_DIALOG_X, CENTRE_DIALOG_Y)
+            .sizeToScene();
+        builder.activate();
     }
     
     /**
@@ -704,257 +306,26 @@ public class DialogContent {
      * @param model The model to operate on.
      * @param board The list of BoardButtons to grab the graphic from.
      */
-    public static void tradeOfferDialog(GameController controller, Dialog trade, GameModel model, ArrayList<BoardButton> board) {
-        model.startTrade(model.getUser());
-        
-        HBox sides = new HBox(30);
+    public Dialog tradeOfferDialog(Dialog trade){
+        DialogContentBuilder builder = new DialogContentBuilder(trade);
+        HBox sides = registerNodeByName(NodeReference.TRADE_PANE.name(), NodeReference.TRADE_PANE.getNode());
         sides.setAlignment(Pos.CENTER);
-        VBox offer = new VBox(10);
+
+        VBox offer = builder.generateBaseTradeSideContent(true, false);
         offer.setAlignment(Pos.CENTER);
+        offer.getChildren().add(0, setUpText("Your offer: "));
+
+        VBox receive = builder.generateBaseTradeSideContent(false, false);
+        receive.setAlignment(Pos.CENTER);
+        receive.getChildren().add(0, registerNodeByName(NodeReference.OPPONENTS_LIST.name(), NodeReference.OPPONENTS_LIST.getNode()));
         
-        Label text = new Label("Your Offer:");
-        text.setMinSize(Label.USE_PREF_SIZE, Label.USE_PREF_SIZE);
-        text.wrapTextProperty().setValue(Boolean.TRUE);
-        
-        ListView<String> list = new ListView();
-        list.setMaxHeight(100);
-        list.setMaxWidth(150);
-        
-        ObservableList<String> locations = FXCollections.observableArrayList();
-        for(Location location : model.getUser().getOwnedLocations()) {
-            locations.add(location.getName());
-        }
-        
-        list.setItems(locations);
-        list.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        
-        list.setCellFactory(e -> {
-            ListCell<String> cell = new ListCell<>();
-            cell.textProperty().bind(cell.itemProperty());
-            
-            Location location = model.getUser().getOwnedLocations().get(locations.indexOf(cell.textProperty().getValue()) + 1);
-            if(location instanceof PropertyLocation) {
-                if(((PropertyLocation) location).getMortgagedStatus())
-                    cell.getStyleClass().add("mortgaged-cell");
-                }
-                else if(location instanceof RailwayLocation) {
-                    if(((RailwayLocation) location).getIsMortgaged())
-                        cell.getStyleClass().add("mortgaged-cell");
-                }
-                else if(location instanceof UtilityLocation) {
-                    if(((UtilityLocation) location).getIsMortgaged())
-                        cell.getStyleClass().add("mortgaged-cell");
-                }
-                     
-            cell.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-                list.requestFocus();
-                if (! cell.isEmpty()) {
-                    int index = cell.getIndex();
-                    if (list.getSelectionModel().getSelectedIndices().contains(index)) {
-                        list.getSelectionModel().clearSelection(index);
-                    } else {
-                        list.getSelectionModel().select(index);
-                    }
-                    event.consume();
-                }
-            });
-        
-            return cell;
-        });
-                
-        Label cashValue = new Label();
-        cashValue.setMinSize(Label.USE_PREF_SIZE, Label.USE_PREF_SIZE);
-        cashValue.wrapTextProperty().setValue(Boolean.TRUE);
-        Slider cashSlider = new Slider();
-        cashSlider.setMaxWidth(120);
-        cashSlider.setMin(0);
-        cashSlider.setMax(model.getUser().getCash());
-        cashSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            cashValue.textProperty().setValue(String.valueOf("£" + (int) cashSlider.getValue()));
-        });
-        
-        HBox gojfBox = new HBox(10);
-        gojfBox.setAlignment(Pos.CENTER);
-        Label gojf = new Label("Get Out of Jail Free Cards:");
-        gojf.setMinSize(Label.USE_PREF_SIZE, Label.USE_PREF_SIZE);
-        gojf.wrapTextProperty().setValue(Boolean.TRUE);
-        Button add = new Button("+");
-        add.setOnAction(e -> {
-            if(model.getUser().hasGOJFCard())
-                model.getActiveTrade().getGOJFListTo().add(model.getUser().getGOJFCard());
-        });
-        add.setStyle("-fx-font-size: 20;");
-            
-        Button remove = new Button("-");
-        remove.setOnAction(e -> {
-            if(!model.getActiveTrade().getGOJFListTo().isEmpty())
-                model.getActiveTrade().getGOJFListTo().remove(0);
-        });
-        remove.setStyle("-fx-font-size: 20;");
-        
-        gojfBox.getChildren().addAll(remove, add);
-        
-        offer.getChildren().addAll(text, list, cashValue, cashSlider, gojf, gojfBox);
-        
-        
-        VBox toGet = new VBox(10);
-        toGet.setAlignment(Pos.CENTER);
-        
-        ComboBox combo = new ComboBox();
-        
-        for(Player player : model.getPlayerList()) {
-            if(player != model.getUser()) {
-                combo.getItems().add(player.getName());
-            }
-        }
-        
-        ListView<String> forList = new ListView();
-        
-        forList.setMaxHeight(100);
-        forList.setMaxWidth(150);
-        
-        Label cashValueFrom = new Label();
-        cashValueFrom.setMinSize(Label.USE_PREF_SIZE, Label.USE_PREF_SIZE);
-        cashValueFrom.wrapTextProperty().setValue(Boolean.TRUE);
-        Slider cashSliderFrom = new Slider();
-        cashSliderFrom.setMaxWidth(120);
-        
-        combo.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            ObservableList<String> listFor = FXCollections.observableArrayList();
-            for(Player player : model.getPlayerList()) {
-                if(player.getName().equals(newValue)) {
-                    model.getActiveTrade().setPlayerTo(player);
-                    for(Location location : player.getOwnedLocations()) {
-                        listFor.add(location.getName());
-                    }
-                    forList.setItems(listFor);
-                    forList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-                    
-                    forList.setCellFactory(e -> {
-                        ListCell<String> cell = new ListCell<>();
-                        cell.textProperty().bind(cell.itemProperty());
-                        Location location = model.getActiveTrade().getPlayerTo().getOwnedLocations().get(listFor.indexOf(cell.textProperty().getValue()) + 1);
-                        if(location instanceof PropertyLocation) {
-                            if(((PropertyLocation) location).getMortgagedStatus())
-                                cell.getStyleClass().add("mortgaged-cell");
-                        }
-                        else if(location instanceof RailwayLocation) {
-                            if(((RailwayLocation) location).getIsMortgaged())
-                                cell.getStyleClass().add("mortgaged-cell");
-                        }
-                        else if(location instanceof UtilityLocation) {
-                            if(((UtilityLocation) location).getIsMortgaged())
-                                cell.getStyleClass().add("mortgaged-cell");
-                        }
-                        
-                        cell.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-                            forList.requestFocus();
-                            if (! cell.isEmpty()) {
-                                int index = cell.getIndex();
-                                if (forList.getSelectionModel().getSelectedIndices().contains(index)) {
-                                    forList.getSelectionModel().clearSelection(index);
-                                } 
-                                else {
-                                    forList.getSelectionModel().select(index);
-                                }
-                                  event.consume();
-                            }
-                        });
-                        return cell;
-                    });
-                    
-                    cashSliderFrom.setMax(player.getCash());
-                    model.getActiveTrade().getGOJFListFrom().removeAll(model.getActiveTrade().getGOJFListFrom());
-                    break;
-                    
-                }
-            }
-        });
-        
-        cashSliderFrom.setMin(0);
-        cashSliderFrom.valueProperty().addListener((observable, oldValue, newValue) -> {
-            cashValueFrom.textProperty().setValue(String.valueOf("£" + (int) cashSliderFrom.getValue()));
-        });
-        cashSliderFrom.setValue(0);
-        
-        HBox gojfBoxFrom = new HBox(10);
-        gojfBoxFrom.setAlignment(Pos.CENTER);
-        Label gojfFrom = new Label("Get Out of Jail Free Cards:");
-        Button addFrom = new Button("+");
-        addFrom.setOnAction(e -> {
-            if(model.getActiveTrade().getPlayerTo() != null && model.getActiveTrade().getPlayerTo().hasGOJFCard())
-                model.getActiveTrade().getGOJFListFrom().add(model.getUser().getGOJFCard());
-        });
-        addFrom.setStyle("-fx-font-size: 20;");
-            
-        Button removeFrom = new Button("-");
-        removeFrom.setOnAction(e -> {
-            if(!model.getActiveTrade().getGOJFListFrom().isEmpty())
-                model.getActiveTrade().getGOJFListFrom().remove(0);
-        });
-        removeFrom.setStyle("-fx-font-size: 20;");
-        
-        gojfBoxFrom.getChildren().addAll(removeFrom, addFrom);
-        
-        toGet.getChildren().addAll(combo, forList, cashValueFrom, cashSliderFrom, gojfFrom, gojfBoxFrom);
-        
-        sides.getChildren().addAll(offer, toGet);
+        sides.getChildren().addAll(offer, receive);
         sides.setMinSize(HBox.USE_PREF_SIZE, HBox.USE_PREF_SIZE);
         
         trade.getDialogPane().setContent(sides);
         trade.getDialogPane().getScene().getWindow().sizeToScene();
-        
-        if(trade.getDialogPane().getButtonTypes().isEmpty()) {
-            trade.getDialogPane().getButtonTypes().add(ButtonType.OK);
-            trade.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
-            
-            trade.getDialogPane().lookupButton(ButtonType.OK).addEventFilter(ActionEvent.ACTION, event -> {
-                if(combo.getSelectionModel().getSelectedItem() != null) {
-       
-                    for(Location location : model.getActiveTrade().getPlayerFrom().getOwnedLocations()) {
-                        for(String string : list.getSelectionModel().getSelectedItems()) {
-                            if(string.equals(location.getName())) 
-                                model.getActiveTrade().getOfferList().add(location);
-                        }
-                    }
-                
-                    for(Location location : model.getActiveTrade().getPlayerTo().getOwnedLocations()) {
-                        for(String string : forList.getSelectionModel().getSelectedItems()) {
-                            if(string.equals(location.getName())) 
-                                model.getActiveTrade().getForList().add(location);
-                        }
-                    }
-                
-                    if(cashSlider.getValue() > 0) {
-                        model.getActiveTrade().addCashTo((int) cashSlider.getValue());
-                    }
-                    if(cashSliderFrom.getValue() > 0) {
-                        model.getActiveTrade().addCashFrom((int) cashSliderFrom.getValue());
-                    }
-                    
-                    controller.tradeResolution();
-                }
-                else {
-                    model.cancelActiveTrade();
-                }
-                
-            });
-            trade.getDialogPane().lookupButton(ButtonType.CLOSE).addEventFilter(ActionEvent.ACTION, event -> {
-                model.cancelActiveTrade();
-            });
-            
-            trade.getDialogPane().getScene().getWindow().sizeToScene();
-            double x = board.get(0).getParent().getScene().getX() + board.get(0).getParent().getScene().getWidth() / 2 - trade.getWidth() / 2;
-            double y = board.get(0).getParent().getScene().getY() + board.get(0).getParent().getScene().getHeight() / 2 - trade.getHeight() / 2;
-        
-            trade.setX(x);
-            trade.setY(y);
-            
-            trade.getDialogPane().getScene().getWindow().sizeToScene();
-            
-        }
-        
-        trade.showAndWait();
+
+        return trade;
     }
     
     /**
@@ -964,136 +335,27 @@ public class DialogContent {
      * @param model The model to operate on.
      * @param board The list of BoardButtons to grab the graphic from.
      */
-    public static void tradeReceivedDialog(Dialog trade, GameModel model, ArrayList<BoardButton> board) {
-        model.startTrade(model.getUser());
-        
-        
-        HBox sides = new HBox(30);
+    public Dialog tradeReceivedDialog(Dialog trade) {
+        DialogContentBuilder builder = new DialogContentBuilder(trade);
+        HBox sides = registerNodeByName(NodeReference.TRADE_PANE.name(), NodeReference.TRADE_PANE.getNode());
         sides.setAlignment(Pos.CENTER);
-        VBox offer = new VBox(10);
+
+        VBox offer = builder.generateBaseTradeSideContent(false, true);
         offer.setAlignment(Pos.CENTER);
-        
-        Label text = new Label(model.getActiveTrade().getPlayerFrom().getName() + "has offered:");
-        text.setMinSize(Label.USE_PREF_SIZE, Label.USE_PREF_SIZE);
-        text.wrapTextProperty().setValue(Boolean.TRUE);
-        
-        ListView<String> list = new ListView();
-        list.setMaxHeight(100);
-        list.setMaxWidth(150);
-        
-        ObservableList<String> locations = FXCollections.observableArrayList();
-        for(Location location : model.getUser().getOwnedLocations()) {
-            locations.add(location.getName());
-        }
-        
-        list.setItems(locations);
-        list.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        
-        list.setCellFactory(e -> {
-            ListCell<String> cell = new ListCell<>();
-            cell.textProperty().bind(cell.itemProperty());
-            
-            Location location = model.getUser().getOwnedLocations().get(locations.indexOf(cell.textProperty().getValue()) + 1);
-            if(location instanceof PropertyLocation) {
-                if(((PropertyLocation) location).getMortgagedStatus())
-                    cell.getStyleClass().add("mortgaged-cell");
-                }
-                else if(location instanceof RailwayLocation) {
-                    if(((RailwayLocation) location).getIsMortgaged())
-                        cell.getStyleClass().add("mortgaged-cell");
-                }
-                else if(location instanceof UtilityLocation) {
-                    if(((UtilityLocation) location).getIsMortgaged())
-                        cell.getStyleClass().add("mortgaged-cell");
-                }
-            return cell;
-        });
-                
-        Label cashValue = new Label("Cash: " + model.getActiveTrade().getCashFrom());
-        cashValue.setMinSize(Label.USE_PREF_SIZE, Label.USE_PREF_SIZE);
-        cashValue.wrapTextProperty().setValue(Boolean.TRUE);
-        
-        Label gojf = new Label("Get Out of Jail Free Cards: " + model.getActiveTrade().getGOJFListFrom().size());
-        gojf.setMinSize(Label.USE_PREF_SIZE, Label.USE_PREF_SIZE);
-        gojf.wrapTextProperty().setValue(Boolean.TRUE);
-        
-        offer.getChildren().addAll(text, list, cashValue, gojf);
-        
-        
-        VBox toGet = new VBox(10);
-        toGet.setAlignment(Pos.CENTER);
-        
-        Label toText = new Label("In Exchange For:");
-        
-        ListView<String> forList = new ListView();
-        forList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        forList.setMaxHeight(100);
-        forList.setMaxWidth(150);
-        
-        Label cashValueTo = new Label("Cash: " + model.getActiveTrade().getCashTo());
-        cashValueTo.setMinSize(Label.USE_PREF_SIZE, Label.USE_PREF_SIZE);
-        cashValueTo.wrapTextProperty().setValue(Boolean.TRUE);
-        
-        ObservableList listFor = FXCollections.observableArrayList();
-            
-        for(Location location : model.getActiveTrade().getForList()) {
-            listFor.add(location.getName());
-        }
-        forList.setItems(listFor);
-                    
-        forList.setCellFactory(e -> {
-            ListCell<String> cell = new ListCell<>();
-            cell.textProperty().bind(cell.itemProperty());
-            Location location = model.getActiveTrade().getOfferList().get(locations.indexOf(cell.textProperty().getValue()));
-            if(location instanceof PropertyLocation) {
-                if(((PropertyLocation) location).getMortgagedStatus())
-                    cell.getStyleClass().add("mortgaged-cell");
-                }
-            else if(location instanceof RailwayLocation) {
-                if(((RailwayLocation) location).getIsMortgaged())
-                    cell.getStyleClass().add("mortgaged-cell");
-                }
-            else if(location instanceof UtilityLocation) {
-                if(((UtilityLocation) location).getIsMortgaged())
-                    cell.getStyleClass().add("mortgaged-cell");
-                }
-            return cell;
-        });
-        
-        Label gojfTo = new Label("Get Out of Jail Free Cards: " + model.getActiveTrade().getGOJFListTo().size());
-        
-        toGet.getChildren().addAll(toText, forList, cashValueTo, gojfTo);
-        
-        sides.getChildren().addAll(offer, toGet);
+        offer.getChildren().add(0, registerNodeByName(NodeReference.TRADE_RECEIVED_FROM_LABEL.name(), NodeReference.TRADE_RECEIVED_FROM_LABEL.getNode()));
+
+        VBox receive = builder.generateBaseTradeSideContent(true, true);
+        receive.setAlignment(Pos.CENTER);
+        receive.getChildren().add(0, registerNodeByName(NodeReference.TRADE_RECEIVED_TO_LABEL.name(), NodeReference.TRADE_RECEIVED_TO_LABEL.getNode());
+
+        sides.getChildren().addAll(offer, receive);
         sides.setMinSize(HBox.USE_PREF_SIZE, HBox.USE_PREF_SIZE);
-        
+
         trade.getDialogPane().setContent(sides);
         trade.getDialogPane().getScene().getWindow().sizeToScene();
-        trade.getDialogPane().setMinSize(DialogPane.USE_PREF_SIZE, DialogPane.USE_PREF_SIZE);
-        
-        if(trade.getDialogPane().getButtonTypes().isEmpty()) {
-            trade.getDialogPane().getButtonTypes().add(ButtonType.OK);
-            trade.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
-            
-            trade.getDialogPane().lookupButton(ButtonType.OK).addEventFilter(ActionEvent.ACTION, event -> {
-                model.resolveActiveTrade();
-            });
-            trade.getDialogPane().lookupButton(ButtonType.CLOSE).addEventFilter(ActionEvent.ACTION, event -> {
-                model.cancelActiveTrade();
-            });
-            
-            trade.getDialogPane().getScene().getWindow().sizeToScene();
-            double x = board.get(0).getParent().getScene().getX() + board.get(0).getParent().getScene().getWidth() / 2 - trade.getWidth() / 2;
-            double y = board.get(0).getParent().getScene().getY() + board.get(0).getParent().getScene().getHeight() / 2 - trade.getHeight() / 2;
-        
-            trade.setX(x);
-            trade.setY(y);
-            
-            trade.getDialogPane().getScene().getWindow().sizeToScene();
-            
-        }
-        
-        trade.showAndWait();
+
+        return trade;
+
     }
     
     /**
@@ -1170,22 +432,13 @@ public class DialogContent {
             cell.textProperty().bind(cell.itemProperty());
             
             Location location = model.getUser().getOwnedLocations().get(locations.indexOf(cell.textProperty().getValue()) + 1);
-            if(location instanceof PropertyLocation) {
-                if(((PropertyLocation) location).getMortgagedStatus())
+            if(location instanceof BaseOwnableLocation) {
+                if (((BaseOwnableLocation) location).getMortgaged())
                     cell.getStyleClass().add("mortgaged-cell");
-                }
-                else if(location instanceof RailwayLocation) {
-                    if(((RailwayLocation) location).getIsMortgaged())
-                        cell.getStyleClass().add("mortgaged-cell");
-                }
-                else if(location instanceof UtilityLocation) {
-                    if(((UtilityLocation) location).getIsMortgaged())
-                        cell.getStyleClass().add("mortgaged-cell");
-                }
-                        
+            }
             cell.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
                 list.requestFocus();
-                if (! cell.isEmpty()) {
+                if (!cell.isEmpty()) {
                     int index = cell.getIndex();
                     if (location instanceof PropertyLocation && (((PropertyLocation) location).getIsHotel() || ((PropertyLocation) location).getNumberOfHouses() > 0)) {
                         undevelop.disableProperty().setValue(false);
@@ -1193,7 +446,6 @@ public class DialogContent {
                     else {
                         undevelop.disableProperty().setValue(true);
                     }
-                    event.consume();
                 }
             });
             return cell;
@@ -1242,25 +494,16 @@ public class DialogContent {
      * @param colours The colour to utilise.
      * @param sprites The sprite to utilise.
      */
-    public static void endGameDialog(StageManager manager, GameModel model, Dialog dialog, HashMap<Player, Color> colours, HashMap<Player, ImageView> sprites) {
-        VBox box = new VBox(20);
-        
-        Label name = new Label(model.getPlayerList().get(0).getName() + "has won the Match!");
-        name.setStyle("-fx-text-fill: #" + String.valueOf(colours.get(model.getPlayerList().get(0))).substring(2) + ";");
-        
-        ImageView image = new ImageView(sprites.get(model.getPlayerList().get(0)).getImage());
-        
-        Label cash = new Label("£" + model.getPlayerList().get(0).getCash());
-        
-        box.getChildren().addAll(name, image, cash);
-        
-        dialog.getDialogPane().setContent(box);
-        
-        dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
-        dialog.getDialogPane().lookupButton(ButtonType.OK).addEventFilter(ActionEvent.ACTION, event -> {
-            manager.changeScene(View.MAIN_MENU);
-        });
-        
-        dialog.showAndWait();
+    public static void endGameDialog(Dialog dialog, ImageView image, String playerName, String playerCash, String colour, Runnable onAction) {
+        Label name = new Label(playerName);
+        name.setStyle(colour);
+        Label cash = new Label(playerCash);
+        List<Node> elements = Arrays.asList(name, image, cash);
+
+        Map<ButtonType, Runnable> map = new LinkedHashMap<>();
+        map.put(ButtonType.OK, onAction);
+        DialogContentBuilder builder = new DialogContentBuilder(dialog)
+            .generateEndGameContent(elements, map);
+        builder.activate();
     }
 }

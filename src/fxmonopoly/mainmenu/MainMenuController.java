@@ -6,6 +6,7 @@
 package fxmonopoly.mainmenu;
 
 import fxmonopoly.utils.Dialogs;
+import fxmonopoly.utils.Dialogs2;
 import fxmonopoly.utils.StageManager;
 import fxmonopoly.utils.View;
 import fxmonopoly.utils.interfacing.Manageable;
@@ -40,7 +41,7 @@ public class MainMenuController implements Initializable, Manageable {
     public void initialize(URL url, ResourceBundle rb) {
         singlePlayerButton.setOnAction(e -> manager.changeScene(View.GAME_INIT));
         
-        aboutButton.setOnAction(e -> manager.getDialog(Dialogs.ABOUT));
+        aboutButton.setOnAction(e -> manager.getDialog(Dialogs2.ABOUT));
         
         exitButton.setOnAction(e -> manager.exitProgram());
     }    

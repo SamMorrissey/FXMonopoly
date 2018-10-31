@@ -21,13 +21,11 @@ import javafx.beans.property.SimpleObjectProperty;
  * to a player 
  * @author Sam P. Morrissey
  */
-public class PropertyLocation extends Location{
-    
-    private final int price;
+public class PropertyLocation extends BaseOwnableLocation {
+
     private final int mortgageValue;
     private final int housePrice;
-    
-    private final int baseRent;
+
     private final int oneHouseRent;
     private final int twoHouseRent;
     private final int threeHouseRent;
@@ -38,10 +36,8 @@ public class PropertyLocation extends Location{
     private int numberOfHouses;
     private boolean upgradeableToHotel;
     private boolean isHotel;
-    
+
     private boolean isDevelopable;
-    private boolean isOwned;
-    private boolean isMortgaged;
     private boolean inColourMonopoly;
     
     private final SimpleObjectProperty<Player> owner;
@@ -83,14 +79,6 @@ public class PropertyLocation extends Location{
     }
     
     /**
-     * Retrieves the price to purchase this property.
-     * @return The price of this property.
-     */
-    public int getPrice() {
-        return price;
-    }
-    
-    /**
      * Retrieves the mortgage value of this property. Always half the price.
      * @return The mortgage value of this property.
      */
@@ -111,14 +99,6 @@ public class PropertyLocation extends Location{
                 isDevelopable = false;
             }
         }
-    }
-    
-    /**
-     * Retrieves the mortgaged status.
-     * @return The mortgaged status.
-     */
-    public boolean getMortgagedStatus() {
-        return isMortgaged;
     }
     
     /**
@@ -280,22 +260,6 @@ public class PropertyLocation extends Location{
     }
     
     /**
-     * Retrieves the owner of this property.
-     * @return The property owner.
-     */
-    public Player getOwner() {
-        return owner.getValue();
-    }
-    
-    /**
-     * Retrieves the owner (JavaBeans) property of this property.
-     * @return The owner property.
-     */
-    public SimpleObjectProperty<Player> getOwnerProperty() {
-        return owner;
-    }
-    
-    /**
      * Retrieves the colour monopoly status of this property.
      * @return The colour monopoly status of this property.
      */
@@ -335,14 +299,6 @@ public class PropertyLocation extends Location{
      */
     public int getHousePrice() {
         return housePrice;
-    }
-    
-    /**
-     * Retrieves the is owned status of this property.
-     * @return True if owned, false otherwise.
-     */
-    public boolean getIsOwned() {
-        return isOwned;
     }
     
     /**

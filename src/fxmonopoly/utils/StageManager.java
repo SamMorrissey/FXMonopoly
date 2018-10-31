@@ -42,10 +42,6 @@ public class StageManager {
     private double xOffset;
     private double yOffset;
     
-    // For resuming a game in progress, only set upon the start of a game, returned
-    // to null upon a game being completed.
-    private Scene gameScene;
-    
     /**
      * Creates the StageManager utilised throughout the application.
      * @param stage The stage on which the StageManager acts.
@@ -55,28 +51,18 @@ public class StageManager {
         initialDisplay();
     }
     
-    /*
-    public Stage getStage() {
-        return stage;
-    }
-    */
-    
     /**
      * Retrieves the specified dialog attached to the input enum value.
      * @param dialog The specified dialog
      */
-    public void getDialog(Dialogs dialog) {
-        dialog.display(stage);
-    }
+    public void getDialog(Dialogs2 dialog) { dialog.display(stage); }
     
     /**
      * Retrieves the specified game dialog attached to the input enum value.
      * @param dialog The dialog to pass.
      * @return The dialog specified.
      */
-    public Dialog getGameDialog(GameDialogs dialog) {
-        return dialog.getDialog(stage);
-    }
+    public Dialog getGameDialog(GameDialogs2 dialog) { return dialog.getDialog(stage); }
     
     /**
      * Retrieves a LateData instance if one is available, otherwise returns null.
@@ -84,7 +70,7 @@ public class StageManager {
      */
     public LateData getLateData() {
         if(loader != null && loader.getController() instanceof GameController) {
-            LateData data = (LateData) loader.getController();
+            LateData data = loader.getController();
             return data;
         }
         
@@ -112,25 +98,14 @@ public class StageManager {
      * and initialises all necessary variables. Also does some initial stage styling,
      * such as setting the initStyle, Icon and Title. 
      * <p>
-     * It then calls enablePositionChange to activate click and drag window movement.
+     * It then calls enablePositionChange to activateDialog click and drag window movement.
      * Finally sets this StageManager instance as the StageManager for the initialised
      * scene.
      */
     private void initialDisplay() {
         //Create and "initialise" used elements to null, for later assignment to actual values
-        Parent root;
-        loader = null;
-        Scene scene = null;
-        
-        try {
-            loader = new FXMLLoader();
-            loader.setLocation(getClass().getClassLoader().getResource("fxmonopoly/mainmenu/MainMenuLayout.fxml"));
-            root = loader.load();
-            scene = new Scene(root);
-        }
-        catch (IOException e) {
-            errorDialog("There was an I/O problem.", e);
-        }
+        Parent root = loadHierarchy("fxmonopoly/mainmenu/MainMenuLayout.fxml");
+        Scene scene = new Scene(root);
         
         // Sets the initial stage parameters
         stage.initStyle(StageStyle.TRANSPARENT);
@@ -189,25 +164,6 @@ public class StageManager {
      * this application's custom controllers.
      */
     private void passStageManager() {
-        /*
-        if(loader.getController() instanceof MainMenuController) {
-            MainMenuController control = loader.getController();
-            control.setStageManager(this);
-        }
-        else if(loader.getController() instanceof GameInitSettingsController) {
-            GameInitSettingsController control = loader.getController();
-            control.setStageManager(this);
-        }
-        else if(loader.getController() instanceof GameController) {
-            GameController control = loader.getController();
-            control.setStageManager(this);
-        }
-        else if(loader.getController() instanceof TradeController) {
-            TradeController control = loader.getController();
-            control.setStageManager(this);
-        }
-        */ 
-        
         if(loader.getController() instanceof Manageable) {
             
             Manageable manage = loader.getController();
@@ -230,21 +186,11 @@ public class StageManager {
      * @param exception The exception causing the dialog
      */
     private void errorDialog(String message, Exception exception) {
-        Alert aboutAlert = new Alert(Alert.AlertType.NONE);
-        aboutAlert.initStyle(StageStyle.TRANSPARENT);
-        
-        aboutAlert.getDialogPane().getStylesheets().add(getClass().getClassLoader().getResource("fxmonopoly/resources/DialogsStyle.css").toExternalForm());
-        aboutAlert.getDialogPane().getStyleClass().add("dialog-pane");
-        
-        aboutAlert.initModality(Modality.APPLICATION_MODAL);
-        aboutAlert.initOwner(stage);
-        
-        aboutAlert.setContentText(message + "\n"
-                                 +exception.getCause()
-                                 );
-        aboutAlert.getButtonTypes().add(ButtonType.OK);
-        aboutAlert.showAndWait();
-        stage.close();
+        DialogProcessBuilder builder = new DialogProcessBuilder();
+        builder
+            .setContentText(message + "\n" + exception.getCause())
+            .applyButton(ButtonType.OK)
+            .activateDialogWithOnFinish(alert -> stage.close());
     }
     
     /**

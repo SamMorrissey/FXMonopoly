@@ -16,34 +16,18 @@ package fxmonopoly.utils;
  */
 public enum View {
     
-    MAIN_MENU {
-        @Override
-        String getFXMLPath() { 
-            return "fxmonopoly/mainmenu/MainMenuLayout.fxml";
-        }
-    },
-    GAME_INIT {
-        @Override
-        String getFXMLPath() {
-            return "fxmonopoly/gameinitsettings/GameInitSettingsLayout.fxml";
-        }
-    },
-    GAME {
-        @Override
-        String getFXMLPath() {
-            return "fxmonopoly/game/GameLayout.fxml";
-        }
-    },
-    TRADE {
-        @Override
-        String getFXMLPath() {
-            return "fxmonopoly/trade/TradeLayout.fxml";
-        }
-    };
+    MAIN_MENU ("fxmonopoly/mainmenu/MainMenuLayout.fxml"),
+    GAME_INIT ("fxmonopoly/gameinitsettings/GameInitSettingsLayout.fxml"),
+    GAME ("fxmonopoly/game/GameLayout.fxml"),
+    TRADE ("fxmonopoly/trade/TradeLayout.fxml");
     
     /**
      * A string format relative URL path to the applicable fxml file.
      * @return The applicable fxml filepath.
      */
-    abstract String getFXMLPath();
+    String getFXMLPath() { return fxmlPath; }
+
+    View(String fxmlPath) { this.fxmlPath = fxmlPath; }
+
+    private String fxmlPath;
 }

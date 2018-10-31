@@ -87,11 +87,11 @@ public class RailwayLocationTest {
      */
     @Test
     public void testMortgagedStatus() {
-        assertFalse(location.getIsMortgaged());
+        assertFalse(location.getMortgaged());
         
-        location.setIsMortgaged(true);
+        location.setMortgaged(true);
         
-        assertTrue(location.getIsMortgaged());
+        assertTrue(location.getMortgaged());
     }
     
 }

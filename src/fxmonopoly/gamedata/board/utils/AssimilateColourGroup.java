@@ -69,7 +69,7 @@ public final class AssimilateColourGroup {
         boolean noneMortgaged = true;
         
         for(PropertyLocation property : group) {
-            if(property.getMortgagedStatus()) {
+            if(property.getMortgaged()) {
                 noneMortgaged = false;
             }
         }

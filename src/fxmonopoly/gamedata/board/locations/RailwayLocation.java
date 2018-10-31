@@ -15,14 +15,7 @@ import javafx.beans.property.SimpleObjectProperty;
  * other location classes, to be parsed via the instanceof operator.
  * @author Sam P. Morrissey
  */
-public class RailwayLocation extends Location {
-    
-    private final int baseRent;
-    private final int price;
-    
-    private boolean isOwned;
-    private boolean isMortgaged;
-    private final SimpleObjectProperty<Player> owner;
+public class RailwayLocation extends BaseOwnableLocation {
     
     /**
      * Creates a new Railway location object with the specified name, and 
@@ -34,16 +27,6 @@ public class RailwayLocation extends Location {
         
         price = 200;
         baseRent = 25;
-        
-        owner = new SimpleObjectProperty(this, "owner", null);
-    }
-    
-    /**
-     * Retrieves the price of this location.
-     * @return The price of the location.
-     */
-    public int getPrice() {
-        return price;
     }
     
     public int getBaseRent() {
@@ -82,74 +65,6 @@ public class RailwayLocation extends Location {
         
         
         return multiplier;
-    }
-    
-    /**
-     * Retrieves the boolean ownership status of this location.
-     * @return True if owned, false otherwise.
-     */
-    public boolean getIsOwned() {
-        return isOwned;
-    }
-    
-    /**
-     * Sets the ownership status based on the input parameter.
-     * @param status The ownership status of this location.
-     */
-    private void setIsOwned(boolean status) {
-        isOwned = status;
-    }
-    
-    /**
-     * Retrieves the owner of this location.
-     * @return The location owner.
-     */
-    public Player getOwner() {
-        return owner.getValue();
-    }
-    
-    /**
-     * Retrieves the owner (JavaBeans) property of this railway.
-     * @return The owner property.
-     */
-    public SimpleObjectProperty getOwnerProperty() {
-        return owner;
-    }
-    
-    /**
-     * Sets the owner of the location based on the input parameter.
-     * @param player The player to own this location.
-     */
-    public void setOwner(Player player) {
-        owner.setValue(player);
-        if(owner.getValue() != null)
-            setIsOwned(true);
-        else
-            setIsOwned(false);
-    }
-    
-    /**
-     * Removes the current ownership (both the owner and the isOwned boolean).
-     */
-    public void removeOwner() {
-        owner.setValue(null);
-        setIsOwned(false);
-    }
-    
-    /**
-     * Sets the mortgaged status to the specified input.
-     * @param status The mortgaged status.
-     */
-    public void setIsMortgaged(boolean status) {
-        isMortgaged = status;
-    }
-    
-    /**
-     * Retrieves the mortgaged status of this location.
-     * @return True if mortgaged, false otherwise.
-     */
-    public boolean getIsMortgaged() {
-        return isMortgaged;
     }
     
     /**

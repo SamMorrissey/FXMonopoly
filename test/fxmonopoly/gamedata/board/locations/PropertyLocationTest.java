@@ -66,7 +66,7 @@ public class PropertyLocationTest {
     public void testSetMortgaged() {
         property.setDevelopableStatus(true);
         property.setMortgaged(true);
-        assertTrue(property.getMortgagedStatus());
+        assertTrue(property.getMortgaged());
         assertFalse(property.getDevelopableStatus());
     }
 

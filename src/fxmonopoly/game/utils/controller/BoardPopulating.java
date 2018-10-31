@@ -5,12 +5,13 @@
  */
 package fxmonopoly.game.utils.controller;
 
+import fxmonopoly.game.GameController;
 import fxmonopoly.game.GameModel;
+import fxmonopoly.gamedata.board.locations.BaseOwnableLocation;
 import fxmonopoly.gamedata.board.locations.PropertyLocation;
 import fxmonopoly.gamedata.board.locations.RailwayLocation;
 import fxmonopoly.gamedata.board.locations.UtilityLocation;
 import fxmonopoly.gamedata.players.Player;
-import fxmonopoly.utils.GameDialogs;
 import fxmonopoly.utils.StageManager;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -69,17 +70,52 @@ public class BoardPopulating {
                     utilityListener(button, map);
             }
             
-            Dialog position = manager.getGameDialog(GameDialogs.BLANK);
+            Dialog position = manager.getGameDialog(GameDialogs2.BLANK);
+            int indexOf = board.indexOf(button);
             
             button.setOnAction(e -> {
                 if(button.isOwnable() && !button.isOwned()) {
-                    DialogContent.unboughtOwnableLocationDialog(position, model, board, board.indexOf(button));
+                    DialogContent.genericPositionDialog(
+                        position,
+                        GameController.getBoardLocationImage(board, indexOf),
+                        model.retrieveLocation(indexOf).getName() + "\n" + "You must purchase this property to reveal more information",
+                        170
+                    );
                 }
                 else if(button.isOwned()) {
-                    DialogContent.ownedOwnableLocationDialog(position, model, board, board.indexOf(button));
+                    if (button.userIsOwner(model.getUser())) {
+                        if (button.getLocation() instanceof PropertyLocation) {
+                            DialogContent.genericOwnedPropertySetUp(
+                                position,
+                                GameController.getBoardLocationImage(board, indexOf),
+                                ((BaseOwnableLocation) board.get(indexOf).getLocation()).getUserOwnedString(),
+                                () -> mortgageProcess(board, indexOf, model)
+                            );
+                        } else {
+                             DialogContent.ownedOwnableLocationDialog(
+                                 position,
+                                 GameController.getBoardLocationImage(board, indexOf),
+                                 ((BaseOwnableLocation) board.get(indexOf).getLocation()).getUserOwnedString(),
+                                 () -> model.userDevelopProperty((PropertyLocation) board.get(indexOf).getLocation()),
+                                 () -> model.userRegressProperty((PropertyLocation) board.get(indexOf).getLocation()),
+                                 () -> mortgageProcess(board, indexOf, model)
+                             );
+                        }
+                    } else {
+                        DialogContent.genericUnownedPropertyDialog(
+                            position,
+                            GameController.getBoardLocationImage(board, board.indexOf(button)),
+                            model.retrieveLocation(board.indexOf(button)).getName() + "\n" + "Owner: " + ((BaseOwnableLocation) board.get(board.indexOf(button)).getLocation()).getOwner().getName()
+                        );
+                    }
                 }
                 else {
-                    DialogContent.genericPositionDialog(position, model, board, board.indexOf(button));
+                    DialogContent.genericPositionDialog(
+                        position,
+                        GameController.getBoardLocationImage(board, board.indexOf(button)),
+                        model.retrieveLocation(board.indexOf(button)).getName(),
+                        150
+                    );
                 }
             });
             
@@ -105,6 +141,14 @@ public class BoardPopulating {
         for(RowConstraints constraint : grid.getRowConstraints()) {
             constraint.setFillHeight(true);
         }
+    }
+
+    private static void mortgageProcess(ArrayList<BoardButton> board, int indexOf, GameModel model) {
+        if(((PropertyLocation) board.get(indexOf).getLocation()).getMortgaged())
+            model.deMortgageLocation(board.get(indexOf).getLocation());
+        else
+            model.mortgageLocation(board.get(indexOf).getLocation());
+
     }
     
     /**

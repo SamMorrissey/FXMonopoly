@@ -146,7 +146,7 @@ public class DecisionSystem {
     public void developmentDecision() {
         
         for(PropertyLocation location : model.getActivePlayer().getOwnedProperty()) {
-            if(location.getMortgagedStatus() && model.getActivePlayer().getOwnedProperty().containsAll(model.getColourGroup(location))) {
+            if(location.getMortgaged() && model.getActivePlayer().getOwnedProperty().containsAll(model.getColourGroup(location))) {
                 if(model.getActivePlayer().getCash() > minimumCashPosition()) {
                     model.deMortgageLocation(location);
                 }
@@ -182,7 +182,7 @@ public class DecisionSystem {
             int times = 0;
             
             for(ArrayList<PropertyLocation> array : developable) {
-                if(model.retrieveLocationPosition(array.get(0)) >= 17 && model.retrieveLocationPosition(array.get(difference)) <= 19) {
+                if(model.retrieveLocationPosition(array.get(0)) >= 17 && model.retrieveLocationPosition(array.get(0)) <= 19) {
                     times = difference / array.get(0).getHousePrice();
                     int i;
                     for(i = 0; i < times; i++) {
@@ -190,7 +190,7 @@ public class DecisionSystem {
                     }
                     return;
                 }
-                else if(model.retrieveLocationPosition(array.get(0)) >= 21 && model.retrieveLocationPosition(array.get(difference)) <= 24) {
+                else if(model.retrieveLocationPosition(array.get(0)) >= 21 && model.retrieveLocationPosition(array.get(0)) <= 24) {
                     times = difference / array.get(0).getHousePrice();
                     int i;
                     for(i = 0; i < times; i++) {
@@ -198,22 +198,14 @@ public class DecisionSystem {
                     }
                     return;
                 }
-                else if(model.retrieveLocationPosition(array.get(0)) >= 37 && model.retrieveLocationPosition(array.get(difference)) <= 39) {
+                else if(model.retrieveLocationPosition(array.get(0)) >= 37 && model.retrieveLocationPosition(array.get(0)) <= 39) {
                     times = difference / array.get(0).getHousePrice();
                     int i;
                     for(i = 0; i < times; i++) {
                         model.activePlayerDevelopProperty(array.get(array.size() - 1));
                     }
                 }
-                else if(model.retrieveLocationPosition(array.get(0)) >= 11 && model.retrieveLocationPosition(array.get(difference)) <= 14) {
-                    times = difference / array.get(0).getHousePrice();
-                    int i;
-                    for(i = 0; i < times; i++) {
-                        model.activePlayerDevelopProperty(array.get(array.size() - 1));
-                    }
-                    return;
-                }
-                else if(model.retrieveLocationPosition(array.get(0)) >= 6 && model.retrieveLocationPosition(array.get(difference)) <= 9) {
+                else if(model.retrieveLocationPosition(array.get(0)) >= 11 && model.retrieveLocationPosition(array.get(0)) <= 14) {
                     times = difference / array.get(0).getHousePrice();
                     int i;
                     for(i = 0; i < times; i++) {
@@ -221,7 +213,7 @@ public class DecisionSystem {
                     }
                     return;
                 }
-                else if(model.retrieveLocationPosition(array.get(0)) >= 1 && model.retrieveLocationPosition(array.get(difference)) <= 3) {
+                else if(model.retrieveLocationPosition(array.get(0)) >= 6 && model.retrieveLocationPosition(array.get(0)) <= 9) {
                     times = difference / array.get(0).getHousePrice();
                     int i;
                     for(i = 0; i < times; i++) {
@@ -229,7 +221,7 @@ public class DecisionSystem {
                     }
                     return;
                 }
-                else if(model.retrieveLocationPosition(array.get(0)) >= 26 && model.retrieveLocationPosition(array.get(difference)) <= 29) {
+                else if(model.retrieveLocationPosition(array.get(0)) >= 1 && model.retrieveLocationPosition(array.get(0)) <= 3) {
                     times = difference / array.get(0).getHousePrice();
                     int i;
                     for(i = 0; i < times; i++) {
@@ -237,7 +229,15 @@ public class DecisionSystem {
                     }
                     return;
                 }
-                else if(model.retrieveLocationPosition(array.get(0)) >= 31 && model.retrieveLocationPosition(array.get(difference)) <= 34) {
+                else if(model.retrieveLocationPosition(array.get(0)) >= 26 && model.retrieveLocationPosition(array.get(0)) <= 29) {
+                    times = difference / array.get(0).getHousePrice();
+                    int i;
+                    for(i = 0; i < times; i++) {
+                        model.activePlayerDevelopProperty(array.get(array.size() - 1));
+                    }
+                    return;
+                }
+                else if(model.retrieveLocationPosition(array.get(0)) >= 31 && model.retrieveLocationPosition(array.get(0)) <= 34) {
                     times = difference / array.get(0).getHousePrice();
                     int i;
                     for(i = 0; i < times; i++) {
@@ -389,7 +389,7 @@ public class DecisionSystem {
             }
             
             if(numberOwned == model.getColourGroup(property).size() - 1 && property.getOwner() != player) {
-                if(property.getMortgagedStatus()) {
+                if(property.getMortgaged()) {
                     return (int) (property.getPrice() * 2.5) / 2;
                 }
                 else {
@@ -397,7 +397,7 @@ public class DecisionSystem {
                 }
             }
             else if(numberOwned == 0 && owners.size() == 1 && model.getColourGroup(property).size() > 2) {
-                if(property.getMortgagedStatus()) {
+                if(property.getMortgaged()) {
                     return (property.getPrice() * 3) / 2;
                 }
                 else {
@@ -405,7 +405,7 @@ public class DecisionSystem {
                 }
             }
             else {
-                if(property.getMortgagedStatus()) {
+                if(property.getMortgaged()) {
                     return (int) (property.getPrice() * 1.5) / 2;
                 }
                 else {
@@ -417,13 +417,13 @@ public class DecisionSystem {
             RailwayLocation railway = (RailwayLocation) object;
             
             if(player.getOwnedRailways().isEmpty()) {
-                if(railway.getIsMortgaged()) 
+                if(railway.getMortgaged())
                     return railway.getPrice();
                 else 
                     return (int) (railway.getPrice() * 2);
             }
             else {
-                if(railway.getIsMortgaged())
+                if(railway.getMortgaged())
                     return (int) (railway.getPrice() * (player.getOwnedRailways().size())) / 2;
                 else
                     return (int) (railway.getPrice() * (player.getOwnedRailways().size()));
@@ -433,13 +433,13 @@ public class DecisionSystem {
             UtilityLocation utility = (UtilityLocation) object;
             
             if(player.getOwnedUtilities().isEmpty()) {
-                if(utility.getIsMortgaged())
+                if(utility.getMortgaged())
                     return (int) (utility.getPrice() * 0.8) / 2;
                 else
                     return (int) (utility.getPrice() * 0.8);
             }
             else {
-                if(utility.getIsMortgaged())
+                if(utility.getMortgaged())
                     return (int) (utility.getPrice() * 1.2) / 2;
                 else
                     return (int) (utility.getPrice() * 1.2);
