@@ -56,107 +56,49 @@ public class DialogContent {
         return node;
     }
 
+    @SuppressWarnings("unchecked")
     public <T extends Node> T retrieveNodeByName(String name) { return (T) nodeMap.get(name); }
 
     private void pullBuilderNodesIntoMap() { builder.getNodeMap().forEach((key, value) -> nodeMap.put(key.name(), value)); }
 
-    /**
-     * Creates a Dice roll pane to do the initial order.
-     * @param diceRoll The alert to set the content of.
-     * @param model The model to utilise.
-     */
-    public Dialog diceRollPane(Dialog diceRoll, int[] dieRolls) {
-        DialogContentBuilder builder = new DialogContentBuilder(diceRoll)
-            .generateBaseDiceRollContent(dieRolls)
+    public Dialog diceRollPane(Dialog dialog) {
+        builder = new DialogContentBuilder(dialog)
+            .generateBaseDiceRollContent()
             .setDisabledStateOfButton(ButtonType.OK, true);
         return builder.eject();
     }
-    
-    /**
-     * Creates the Dice roll pane that moves the active player.
-     * @param diceRoll The alert to set the content of.
-     * @param newPositionAlert The dialog to pass on.
-     * @param controller The controller to utilise.
-     * @param model The model to utilise.
-     * @param board The board to determine dialog positioning from.
-     */
-    public Dialog diceRollAndMovePane(Dialog diceRoll, int[] dieRolls) {
-        DialogContentBuilder builder = new DialogContentBuilder(diceRoll)
-            .generateBaseDiceRollContent(dieRolls)
+
+    public Dialog diceRollAndMovePane(Dialog dialog) {
+        builder = new DialogContentBuilder(dialog)
+            .generateBaseDiceRollContent()
             .setDisabledStateOfButton(ButtonType.CLOSE, true);
-        return builder.eject();
+        return dialog;
     }
-    
-    /**
-     * Displays the Dialog for when an ownable location is reached but has no current
-     * owner.
-     * @param manager The manager to retrieve the dialog from.
-     * @param controller The controller to utilise for print outs.
-     * @param model The model to operate on.
-     * @param board The board position to grab the image from.
-     */
+
     public Dialog unownedOwnableLocation(Dialog dialog) {
-        DialogContentBuilder builder = new DialogContentBuilder(dialog)
+        builder = new DialogContentBuilder(dialog)
             .generateBaseBoardLocationContent()
             .setXAndYPosition(CENTRE_DIALOG_X, CENTRE_DIALOG_Y)
             .sizeToScene();
-        return builder.eject();
+        return dialog;
     }
-    
-    /**
-     * Displays the Dialog utilised when a Card location is landed on.
-     * @param dialog The Dialog to set the content of.
-     * @param model The model to operate on.
-     * @param board The board position to grab the image from.
-     */
-    public Dialog cardLocation(Dialog dialog, ImageView graphic, String text, Runnable okAction) {
-        map.put(ButtonType.OK, okAction);
-        DialogContentBuilder builder = new DialogContentBuilder(dialog)
+
+    public Dialog cardLocation(Dialog dialog) {
+        builder = new DialogContentBuilder(dialog)
             .generateBaseBoardLocationContent()
             .setXAndYPosition(CENTRE_DIALOG_X, CENTRE_DIALOG_Y)
             .sizeToScene();
-        return builder.eject();
+        return dialog;
     }
-    
-    /**
-     * Retrieves the initial bid Dialog window.
-     * @param bid The dialog to fill the content of.
-     * @param model The model to operate on.
-     * @param board The board to grab images from.
-     */
-    public static void bidDialog(Dialog bid, ImageView graphic, String text, Runnable resolveActiveBid, Consumer<Integer> okAddBid) {
-        Label enterBid = new Label(text);
-        TextField numeric = new TextField();
-        numeric.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("\\d*")) {
-                numeric.setText(newValue.replaceAll("[^\\d]", ""));
-            }
-        });
 
-        Map<ButtonType, Runnable> map = new LinkedHashMap<>();
-        map.put(new ButtonType("Bid", ButtonData.OK_DONE), (e) -> {
-            if(numeric.getText().isEmpty() || numeric.getText() == null)
-                resolveActiveBid.run();
-            else
-                okAddBid.accept(Integer.parseInt(numeric.getText()));
-        });
-        map.put(ButtonType.CANCEL, resolveActiveBid);
-
-        DialogContentBuilder builder = new DialogContentBuilder(bid)
-            .generateBaseBidContent(graphic, Arrays.asList(enterBid, numeric), map)
+    public Dialog bidDialog(Dialog dialog) {
+        builder = new DialogContentBuilder(dialog)
+            .generateBaseBidContent()
             .sizeToScene()
             .setXAndYPosition(CENTRE_DIALOG_X, CENTRE_DIALOG_Y);
-        builder.activate();
+        return builder.eject();
     }
 
-    /**
-     * Retrieves the Dialog for when a board button is clicked on, to provide
-     * information on generic areas i.e. non-ownable locations.
-     * @param position The Dialog to set up.
-     * @param model The model to operate on.
-     * @param board The list of BoardButtons to grab the graphic from.
-     * @param indexOf The index of the button to be utilised (i.e. board position).
-     */
     public static void genericPositionDialog(Dialog position, ImageView graphic, String text, int width) {
         Label label = new Label(text);
         label.setMinWidth(80);
@@ -165,21 +107,13 @@ public class DialogContent {
         Map<ButtonType, Runnable> map = new LinkedHashMap<>();
         map.put(ButtonType.OK, () -> {});
         DialogContentBuilder builder = new DialogContentBuilder(position)
-            .generateBaseBoardLocationContent(Arrays.asList(graphic,label), map)
+            .generateBaseBoardLocationContent()
             .setXAndYPosition(CENTRE_DIALOG_X, CENTRE_DIALOG_Y)
             .sizeToScene()
             .setPaneMaxWidth(width);
         builder.activate();
     }
-    
-    /**
-     * Retrieves the Dialog for when an unbought ownable board button is clicked on, 
-     * to provide information on the specified location.
-     * @param position The Dialog to set up.
-     * @param model The model to operate on.
-     * @param board The list of BoardButtons to grab the graphic from.
-     * @param indexOf The index of the button to be utilised (i.e. board position).
-     */
+
     public static void ownedOwnableLocationDialog(Dialog position, ImageView graphic, String text, Runnable developAction, Runnable undevelopAction, Runnable mortgageAction) {
 
         HBox box = new HBox(20);
@@ -207,7 +141,7 @@ public class DialogContent {
         Map<ButtonType, Runnable> map = new LinkedHashMap<>();
         map.put(ButtonType.OK, () -> {});
         DialogContentBuilder builder = new DialogContentBuilder(position)
-            .generateBaseBoardLocationContent(box, map)
+            .generateBaseBoardLocationContent()
             .setXAndYPosition(CENTRE_DIALOG_X, CENTRE_DIALOG_Y)
             .setPaneMaxWidth(170)
             .sizeToScene();
@@ -218,42 +152,6 @@ public class DialogContent {
         Label label = new Label(text);
         label.setMinSize(Label.USE_PREF_SIZE, Label.USE_PREF_SIZE);
         label.wrapTextProperty().setValue(Boolean.TRUE);
-    }
-
-    private static void applyButtonTypes(Map<Button, Runnable> buttonActionMap) {
-        buttonActionMap.entrySet().forEach( entry ->
-            entry.getKey().setOnAction(e -> entry.getValue().run())
-        );
-    }
-
-    private static List<Button> ownedPropertyButtons(Runnable developOnAction, Runnable undevelopOnAction, Runnable mortgageOnAction) {
-        return Arrays
-            .asList(developButton(developOnAction), undevelopButton(undevelopOnAction), mortgageButton(mortgageOnAction));
-    }
-
-    private Button developButton(Runnable onAction) {
-        return createAndRegisterCustomButton("+", onAction);
-    }
-
-    private Button undevelopButton(Runnable onAction) {
-        return createAndRegisterCustomButton("-", onAction);
-    }
-
-    private Button mortgageButton(Runnable onAction) {
-        return createAndRegisterCustomButton("(De)Mortgage", onAction);
-    }
-
-    private Button createAndRegisterCustomButton(String label, Runnable onAction, String name) {
-        Button button = createCustomButton(label, onAction);
-        nodeMap.put(name, button);
-        return button;
-    }
-
-    private static Button createCustomButton(String label, Runnable onAction) {
-        Button button = new Button(label);
-        button.setOnAction(e -> onAction.run());
-        button.setStyle("-fx-font-size: 20;");
-        return button;
     }
 
     public static void genericOwnedPropertySetUp(Dialog dialog, ImageView graphic, String text, Runnable mortgageAction) {
@@ -271,7 +169,7 @@ public class DialogContent {
         Map<ButtonType, Runnable> map = new LinkedHashMap<>();
         map.put(ButtonType.OK, () -> {});
         DialogContentBuilder builder = new DialogContentBuilder(dialog)
-            .generateBaseBoardLocationContent(box, map)
+            .generateBaseBoardLocationContent()
             .setXAndYPosition(CENTRE_DIALOG_X, CENTRE_DIALOG_Y)
             .sizeToScene();
         builder.activate();
@@ -292,22 +190,14 @@ public class DialogContent {
         Map<ButtonType, Runnable> map = new LinkedHashMap<>();
         map.put(ButtonType.OK, () -> {});
         DialogContentBuilder builder = new DialogContentBuilder(dialog)
-            .generateBaseBoardLocationContent(box, map)
+            .generateBaseBoardLocationContent()
             .setXAndYPosition(CENTRE_DIALOG_X, CENTRE_DIALOG_Y)
             .sizeToScene();
         builder.activate();
     }
-    
-    /**
-     * Retrieves the Dialog for when an unbought ownable board button is clicked on, 
-     * to provide information on the specified location.
-     * @param controller The controller for text print outs.
-     * @param trade The Dialog to set up.
-     * @param model The model to operate on.
-     * @param board The list of BoardButtons to grab the graphic from.
-     */
+
     public Dialog tradeOfferDialog(Dialog trade){
-        DialogContentBuilder builder = new DialogContentBuilder(trade);
+        builder = new DialogContentBuilder(trade);
         HBox sides = registerNodeByName(NodeReference.TRADE_PANE.name(), NodeReference.TRADE_PANE.getNode());
         sides.setAlignment(Pos.CENTER);
 
@@ -327,16 +217,9 @@ public class DialogContent {
 
         return trade;
     }
-    
-    /**
-     * Retrieves the Dialog for when an unbought ownable board button is clicked on, 
-     * to provide information on the specified location.
-     * @param trade The Dialog to set up.
-     * @param model The model to operate on.
-     * @param board The list of BoardButtons to grab the graphic from.
-     */
+
     public Dialog tradeReceivedDialog(Dialog trade) {
-        DialogContentBuilder builder = new DialogContentBuilder(trade);
+        builder = new DialogContentBuilder(trade);
         HBox sides = registerNodeByName(NodeReference.TRADE_PANE.name(), NodeReference.TRADE_PANE.getNode());
         sides.setAlignment(Pos.CENTER);
 
@@ -357,58 +240,15 @@ public class DialogContent {
         return trade;
 
     }
-    
-    /**
-     * Generates and displays the stats dialog.
-     * @param model The model to get the player object from.
-     * @param dialog The dialog to manipulate.
-     * @param colours The colours to utilise.
-     * @param sprites The sprites to utilise.
-     * @param board The board for generating the dialog position.
-     */
-    public static void statsDialog(GameModel model, Dialog dialog, HashMap<Player, Color> colours, HashMap<Player, ImageView> sprites, ArrayList<BoardButton> board) {
-        
-        HBox box = new HBox(40);
-        
-        for(Player player : model.getPlayerList()) {
-            VBox info = new VBox(10);
-            
-            Label label = new Label(player.getName());
-            label.setStyle("-fx-text-fill :" + "#" + String.valueOf(colours.get(player)).substring(2) + ";");
-            label.setMinSize(Label.USE_PREF_SIZE, Label.USE_PREF_SIZE);
 
-            ImageView image = new ImageView(sprites.get(player).getImage());
-            
-            Label cash = new Label("£" + player.getCash());
-            cash.setMinSize(Label.USE_PREF_SIZE, Label.USE_PREF_SIZE);
-            
-            info.getChildren().addAll(label, image, cash);
-            box.getChildren().add(info);
-        }
-        
-        box.setMinSize(HBox.USE_PREF_SIZE, HBox.USE_PREF_SIZE);
-        dialog.getDialogPane().setContent(box);
-        
-        if(dialog.getDialogPane().getButtonTypes().isEmpty()) {
-            dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
-            
-            dialog.getDialogPane().getScene().getWindow().sizeToScene();
-            double x = board.get(0).getParent().getScene().getX() + board.get(0).getParent().getScene().getWidth() / 2 - dialog.getWidth() / 2;
-            double y = board.get(0).getParent().getScene().getY() + board.get(0).getParent().getScene().getHeight() / 2 - dialog.getHeight() / 2;
-        
-            dialog.setX(x);
-            dialog.setY(y);
-        }
-        
-        dialog.showAndWait();
+    public Dialog statsDialog(Dialog dialog) {
+        builder = new DialogContentBuilder(dialog)
+            .generateStatContent(dialog)
+            .sizeToScene()
+            .setXAndYPosition(CENTRE_DIALOG_X, CENTRE_DIALOG_Y);
+        return dialog;
     }
-    
-    /**
-     * Provides the dialog for bankruptcy resolution.
-     * @param model The model to utilise.
-     * @param dialog The dialog to populate.
-     * @param board The board for positioning the dialog.
-     */
+
     public static void bankruptcyResolutionDialog(GameModel model, Dialog dialog, ArrayList<BoardButton> board) {
         VBox box = new VBox(20);
         
@@ -485,15 +325,7 @@ public class DialogContent {
         
         dialog.showAndWait();
     }
-    
-    /**
-     * Provides the end game dialog.
-     * @param manager The manager to utilise.
-     * @param model The model to utilise.
-     * @param dialog The dialog to fill the content of.
-     * @param colours The colour to utilise.
-     * @param sprites The sprite to utilise.
-     */
+
     public static void endGameDialog(Dialog dialog, ImageView image, String playerName, String playerCash, String colour, Runnable onAction) {
         Label name = new Label(playerName);
         name.setStyle(colour);

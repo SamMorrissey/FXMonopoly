@@ -142,7 +142,7 @@ public class GameController implements Initializable, Manageable, LateData {
         
         tradeButton.setOnAction(e -> tradeOfferDialog());
         
-        statsButton.setOnAction(e -> DialogContent.statsDialog(model, manager.getGameDialog(GameDialogs2.BLANK), colours, sprites, board));
+        statsButton.setOnAction(e -> statsDialog());
         
         jailEscapeButton.setOnAction(e -> {
             if(model.getUser().isInJail()) {
@@ -176,7 +176,7 @@ public class GameController implements Initializable, Manageable, LateData {
     private void dieRollAndMoveDialog() {
         int[] dieRolls = model.rollDie();
         DialogContent content = new DialogContent();
-        Dialog dialog = content.diceRollAndMovePane(manager.getGameDialog(GameDialogs2.BLANK), dieRolls);
+        Dialog dialog = content.diceRollAndMovePane(manager.getGameDialog(GameDialogs2.BLANK));
         Button roll = content.registerNodeByName(NodeReference.ROLL_BUTTON.name(), NodeReference.ROLL_BUTTON.getNode());
 
         roll.setOnAction(ActionEvent.ACTION, e -> {
@@ -198,20 +198,18 @@ public class GameController implements Initializable, Manageable, LateData {
     private void dieRollDialog() {
         int[] dieRolls = model.rollDie();
         DialogContent content = new DialogContent();
-        Dialog dialog = content.diceRollAndMovePane(manager.getGameDialog(GameDialogs2.BLANK), dieRolls);
+        Dialog dialog = content.diceRollPane(manager.getGameDialog(GameDialogs2.BLANK));
         Button roll = content.registerNodeByName(NodeReference.ROLL_BUTTON.name(), NodeReference.ROLL_BUTTON.getNode());
-        roll.setOnAction(ActionEvent.ACTION, e -> {
+        roll.setOnAction(e -> {
             HBox box = content.retrieveNodeByName(NodeReference.ROLL_HBOX.name());
-            ((ImageView) box.getChildren().get(0)).setImage(new Image("fxmonopoly/resources/images/die/" + i[0] + ".png"));
-            ((ImageView) box.getChildren().get(1)).setImage(new Image("fxmonopoly/resources/images/die/" + i[1] + ".png"));
-            model.reorderList(i[0] + i[1]);
+            ((ImageView) box.getChildren().get(0)).setImage(new Image("fxmonopoly/resources/images/die/" + dieRolls[0] + ".png"));
+            ((ImageView) box.getChildren().get(1)).setImage(new Image("fxmonopoly/resources/images/die/" + dieRolls[1] + ".png"));
+            model.reorderList(dieRolls[0] + dieRolls[1]);
 
             dialog.getDialogPane().lookupButton(ButtonType.OK).setDisable(false);
             roll.disableProperty().setValue(true);
         });
-        DialogContent.diceRollPane(
-            manager.getGameDialog(GameDialogs2.BLANK),
-            model.rollDie());
+        dialog.showAndWait();
     }
 
     private void exitDialog() {
@@ -403,26 +401,14 @@ public class GameController implements Initializable, Manageable, LateData {
                 if(player instanceof UserPlayer && player.getCash() > 0) {
                     ImageView graphic = new ImageView();
                     if(model.getActiveBid().containsLocation())
-                        graphic = getBoardLocationImage(board, model.retrieveLocationPosition(model.getActiveBid().getLocation()));
+                        graphic.setImage(getBoardLocationImage(board, model.retrieveLocationPosition(model.getActiveBid().getLocation())));
                     else if(model.getActiveBid().containsGOJFCard())
                         graphic.setImage(new Image("fxmonopoly/resources/images/LeaveJailIcon"));
 
-                    DialogContent.bidDialog(
-                        manager.getGameDialog(GameDialogs2.BLANK),
-                        graphic,
-                        "Enter Max Bid:",
-                        model::resolveActiveBid,
-                        bidValue -> model.getActiveBid().addBid(model.getUser(), bidValue)
-                    );
+                    bidDialog(graphic.getImage(), "Enter Max Bid:");
                     
                     if(model.getActiveBid() != null && !model.getActiveBid().getHighestBidder().isEmpty() && !(model.getActiveBid().getHighestBidder().get(0) instanceof UserPlayer)) {
-                        DialogContent.bidDialog(
-                            manager.getGameDialog(GameDialogs2.BLANK),
-                            graphic,
-                            "Max Bid Currently: " + (model.getActiveBid().getSecondHighestBid() + 1) + "\n" + "Enter Max Bid:",
-                            model::resolveActiveBid,
-                            bidValue -> model.getActiveBid().addBid(model.getUser(), bidValue)
-                        );
+                        bidDialog(graphic.getImage(), "Max Bid Currently: " + (model.getActiveBid().getSecondHighestBid() + 1) + "\n" + "Enter Max Bid:");
                     }
                     else {
                         model.resolveActiveBid();
@@ -431,7 +417,55 @@ public class GameController implements Initializable, Manageable, LateData {
             }
         }
     }
-    
+
+    private void bidDialog(Image image, String text) {
+        DialogContent content = new DialogContent();
+        Dialog dialog = content.bidDialog(manager.getGameDialog(GameDialogs2.BLANK));
+        ButtonType bid = new ButtonType("Bid", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().add(bid);
+
+        ImageView graphic = content.retrieveNodeByName(NodeReference.BOARD_LOCATION_IMAGE.name());
+        graphic.setImage(image);
+
+        Label label = content.retrieveNodeByName(NodeReference.BID_TEXT.name());
+        label.setText(text);
+
+        TextField field = content.retrieveNodeByName(NodeReference.BID_VALUE_FIELD.name());
+        dialog.getDialogPane().lookupButton(bid).addEventFilter(ActionEvent.ACTION, e -> {
+            if(field.getText().isEmpty() || field.getText() == null)
+                model.resolveActiveBid();
+            else
+                model.getActiveBid().addBid(model.getUser(), Integer.parseInt(field.getText()));
+        });
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
+        dialog.getDialogPane().lookupButton(ButtonType.CANCEL).addEventFilter(ActionEvent.ACTION, e -> model.resolveActiveBid());
+
+        dialog.showAndWait();
+    }
+
+    private void statsDialog() {
+        DialogContent content = new DialogContent();
+        Dialog dialog = content.statsDialog(manager.getGameDialog(GameDialogs2.BLANK));
+        HBox box = content.retrieveNodeByName(NodeReference.STATS_HBOX.name());
+        model.getPlayerList().forEach(player -> {
+            VBox info = new VBox(10);
+
+            Label label = new Label(player.getName());
+            label.setStyle("-fx-text-fill :" + "#" + String.valueOf(colours.get(player)).substring(2) + ";");
+            label.setMinSize(Label.USE_PREF_SIZE, Label.USE_PREF_SIZE);
+
+            ImageView image = new ImageView(sprites.get(player).getImage());
+
+            Label cash = new Label("£" + player.getCash());
+            cash.setMinSize(Label.USE_PREF_SIZE, Label.USE_PREF_SIZE);
+
+            info.getChildren().addAll(label, image, cash);
+            box.getChildren().add(info);
+        });
+        dialog.getDialogPane().getScene().getWindow().sizeToScene();
+        dialog.showAndWait();
+    }
+
     /**
      * Prints the specified string in the colour of the specified player.
      * @param string The string to display.
@@ -579,20 +613,15 @@ public class GameController implements Initializable, Manageable, LateData {
     public void getNewPositionDialog() {
         Location location = model.retrieveLocation(model.getActivePlayer().getPosition());
         Image image = getBoardLocationImage(board, model.getActivePlayer().getPosition());
-        ImageView graphic = 
+        ImageView graphic =
         graphic.setRotate(calculateRotation(model.getActivePlayer().getPosition()));
 
         if (location instanceof BaseOwnableLocation) {
             if ( !((BaseOwnableLocation) location).getIsOwned() ) {
-                unownedOwnableLocation();
+                unownedOwnableLocation(image);
             }
         } else if (location instanceof ChanceLocation || location instanceof CommunityChestLocation) {
-            DialogContent.cardLocation(
-                manager.getGameDialog(GameDialogs2.BLANK),
-                graphic,
-                model.getActiveCard().getDescription(),
-                model::processCardActions
-            );
+            cardLocationDialog(image);
         }
     }
 
@@ -602,7 +631,11 @@ public class GameController implements Initializable, Manageable, LateData {
         HBox box = content.retrieveNodeByName(NodeReference.BOARD_HBOX.name());
         ImageView graphic = content.retrieveNodeByName(NodeReference.BOARD_LOCATION_IMAGE.name());
         graphic.setImage(image);
+        graphic.setRotate(calculateRotation(model.getActivePlayer().getPosition()));
         box.setMinHeight(graphic.getFitWidth() + 20);
+
+        Label label = content.retrieveNodeByName(NodeReference.BOARD_LOCATION_TEXT.name());
+        label.setText(model.retrieveLocation(model.getActivePlayer().getPosition()).getName()+ " is available to purchase");
 
         ButtonType buy = new ButtonType("Buy", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().add(buy);
@@ -616,12 +649,24 @@ public class GameController implements Initializable, Manageable, LateData {
                 bidResolution();
             }
         });
+        dialog.showAndWait();
     }
 
-    private void cardLocationDialog() {
+    private void cardLocationDialog(Image image) {
         DialogContent content = new DialogContent();
         Dialog dialog = content.cardLocation(manager.getGameDialog(GameDialogs2.BLANK));
+        HBox box = content.retrieveNodeByName(NodeReference.BOARD_HBOX.name());
+        ImageView graphic = content.retrieveNodeByName(NodeReference.BOARD_LOCATION_IMAGE.name());
+        graphic.setImage(image);
+        graphic.setRotate(calculateRotation(model.getActivePlayer().getPosition()));
+        box.setMinHeight(graphic.getFitWidth() + 20);
 
+        Label label = content.retrieveNodeByName(NodeReference.BOARD_LOCATION_TEXT.name());
+        label.setText("model.getActiveCard().getDescription()");
+
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+        dialog.getDialogPane().lookupButton(ButtonType.OK).addEventFilter(ActionEvent.ACTION, e -> model.processCardActions());
+        dialog.showAndWait();
     }
 
     private void tradeOfferDialog() {

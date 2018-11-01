@@ -1,5 +1,6 @@
 package fxmonopoly.utils;
 
+import fxmonopoly.game.utils.controller.DialogContent;
 import fxmonopoly.utils.interfacing.NodeReference;
 import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
@@ -13,9 +14,7 @@ import java.util.*;
 
 public class DialogContentBuilder {
 
-    private Node content;
     private Dialog dialog;
-    private List<String> tradeLocationsList;
 
     private Map<NodeReference, Node> nodeMap = new LinkedHashMap<>();
 
@@ -25,15 +24,18 @@ public class DialogContentBuilder {
 
     public Dialog eject() { return dialog; }
 
+    @SuppressWarnings("unchecked")
     private <T extends Node> T createNodeAndRegister(NodeReference reference) {
         nodeMap.put(reference, reference.getNode());
         return (T) reference.getNode();
     }
 
+    @SuppressWarnings("unchecked")
     public <T extends Node> T getNodeByReference(NodeReference reference) {
         return (T) nodeMap.get(reference);
     }
 
+    @SuppressWarnings("unchecked")
     public <T extends Node> T getPlayerOrOpponentNode(NodeReference reference, boolean isPlayer) {
         if ((reference.name().contains("PLAYER")))
             return isPlayer ?
@@ -59,7 +61,7 @@ public class DialogContentBuilder {
         label.wrapTextProperty().setValue(Boolean.TRUE);
     }
 
-    public DialogContentBuilder generateBaseDiceRollContent(int[] dieRolls) {
+    public DialogContentBuilder generateBaseDiceRollContent() {
         HBox dice = createNodeAndRegister(NodeReference.ROLL_HBOX);
 
         ImageView die1 = createNodeAndRegister(NodeReference.DIE_1);
@@ -89,17 +91,26 @@ public class DialogContentBuilder {
         return this;
     }
 
-    public DialogContentBuilder generateBaseBidContent(ImageView view, List<Node> intoContent, Map<ButtonType, Runnable> buttonActionMap) {
+    public DialogContentBuilder generateBaseBidContent() {
         VBox box = createNodeAndRegister(NodeReference.BID_VBOX_PARENT);
         HBox graph = createNodeAndRegister(NodeReference.BID_HBOX);
         box.setAlignment(Pos.CENTER);
+
+        Label enterBid = createNodeAndRegister(NodeReference.BID_TEXT);
+        TextField numeric = new TextField();
+        numeric.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                numeric.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+        });
+        ImageView view = createNodeAndRegister(NodeReference.BOARD_LOCATION_IMAGE);
+
         graph.getChildren().addAll(view);
         graph.setMinHeight(view.getFitWidth() + 20);
         graph.setAlignment(Pos.CENTER);
         box.getChildren().addAll(graph);
-        box.getChildren().addAll(intoContent.toArray(new Node[0]));
+        box.getChildren().addAll(enterBid, numeric);
         dialog.getDialogPane().setContent(box);
-        applyButtonTypes(buttonActionMap);
 
         return this;
     }
@@ -150,7 +161,13 @@ public class DialogContentBuilder {
         return offer;
     }
 
-    private Node retrieveComponentByPlayer()
+    public DialogContentBuilder generateStatContent(Dialog dialog) {
+        HBox box = createNodeAndRegister(NodeReference.STATS_HBOX);
+        box.setMinSize(HBox.USE_PREF_SIZE, HBox.USE_PREF_SIZE);
+        dialog.getDialogPane().setContent(box);
+
+        return this;
+    }
 
     private void applyButtonTypes(Map<ButtonType, Runnable> buttonActionMap) {
         buttonActionMap.entrySet().forEach( entry -> {
@@ -192,8 +209,4 @@ public class DialogContentBuilder {
         return this;
     }
 
-    public DialogContentBuilder setContentMinHeight(int height) {
-        dialog.getDialogPane().getContent().minHeight(height);
-        return this;
-    }
 }
