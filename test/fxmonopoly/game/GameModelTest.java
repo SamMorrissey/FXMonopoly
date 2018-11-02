@@ -97,7 +97,7 @@ public class GameModelTest {
         
         model.nextPlayer();
         
-        assertNotEquals(userActive, model.userIsActive());
+        assertNotSame(userActive, model.userIsActive());
         
         model.nextPlayer();
         

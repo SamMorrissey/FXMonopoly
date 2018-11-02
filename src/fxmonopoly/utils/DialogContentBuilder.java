@@ -1,6 +1,5 @@
 package fxmonopoly.utils;
 
-import fxmonopoly.game.utils.controller.DialogContent;
 import fxmonopoly.utils.interfacing.NodeReference;
 import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
@@ -21,8 +20,6 @@ public class DialogContentBuilder {
     public DialogContentBuilder(Dialog dialog) { this.dialog = dialog; }
 
     public void activate() { dialog.showAndWait(); }
-
-    public Dialog eject() { return dialog; }
 
     @SuppressWarnings("unchecked")
     private <T extends Node> T createNodeAndRegister(NodeReference reference) {
@@ -59,6 +56,7 @@ public class DialogContentBuilder {
         Label label = new Label(text);
         label.setMinSize(Label.USE_PREF_SIZE, Label.USE_PREF_SIZE);
         label.wrapTextProperty().setValue(Boolean.TRUE);
+        return label;
     }
 
     public DialogContentBuilder generateBaseDiceRollContent() {
@@ -77,17 +75,79 @@ public class DialogContentBuilder {
         return this;
     }
 
-    public DialogContentBuilder generateBaseBoardLocationContent() {
+    public DialogContentBuilder generateBaseBoardLocationContent(boolean elementsInMainHbox) {
         HBox box = createNodeAndRegister(NodeReference.BOARD_HBOX);
-        ImageView graphic = createNodeAndRegister(NodeReference.BOARD_LOCATION_IMAGE);
-        Label label = createNodeAndRegister(NodeReference.BOARD_LOCATION_TEXT);
-        label.wrapTextProperty().setValue(Boolean.TRUE);
-        box.getChildren().addAll(graphic, label);
+        if (elementsInMainHbox) {
+            Label label = createNodeAndRegister(NodeReference.BOARD_LOCATION_TEXT);
+            label.wrapTextProperty().setValue(Boolean.TRUE);
+            ImageView graphic = createNodeAndRegister(NodeReference.BOARD_LOCATION_IMAGE);
+            box.getChildren().addAll(graphic, label);
+        }
         box.setAlignment(Pos.CENTER);
         box.setMinSize(HBox.USE_PREF_SIZE, HBox.USE_PREF_SIZE);
 
         dialog.getDialogPane().setContent(box);
 
+        return this;
+    }
+
+    public DialogContentBuilder genericBoardPositionDialog() {
+        generateBaseBoardLocationContent(true);
+        Label label = getNodeByReference(NodeReference.BOARD_LOCATION_TEXT);
+        label.setMinWidth(80);
+        label.wrapTextProperty().setValue(Boolean.TRUE);
+        return this;
+    }
+
+    public DialogContentBuilder ownedOwnableLocationDialog() {
+        generateBaseBoardLocationContent(false);
+        HBox box = getNodeByReference(NodeReference.BOARD_HBOX);
+        HBox graph = createNodeAndRegister(NodeReference.PROPERTY_LOCATION_HBOX);
+
+        List<Button> buttons = Arrays.asList(
+            createNodeAndRegister(NodeReference.DEVELOP_OWNED_PROPERTY),
+            createNodeAndRegister(NodeReference.UNDEVELOP_OWNED_PROPERTY),
+            createNodeAndRegister(NodeReference.MORTGAGE_OWNED_PROPERTY)
+        );
+        Label text = createNodeAndRegister(NodeReference.BOARD_LOCATION_TEXT);
+        buttons.get(2).setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
+        int height = 0;
+        for (Button button : buttons) height += button.getHeight();
+
+        ImageView graphic = createNodeAndRegister(NodeReference.BOARD_LOCATION_IMAGE);
+        graph.getChildren().add(graphic);
+        graph.setMinHeight(graphic.getFitWidth() + 20);
+        graph.setAlignment(Pos.CENTER);
+
+        VBox box2 = new VBox(20);
+        box2.setAlignment(Pos.CENTER);
+        box2.getChildren().add(graph);
+        box2.getChildren().addAll(buttons);
+        box.setMinHeight(graphic.getFitWidth() + height + 20);
+
+        box.getChildren().addAll(box2, text);
+        return this;
+    }
+
+    public DialogContentBuilder genericOwnedPropertyDialog() {
+        generateBaseBoardLocationContent(true);
+        Button mortgage = createNodeAndRegister(NodeReference.MORTGAGE_OWNED_PROPERTY);
+        mortgage.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
+        HBox box = getNodeByReference(NodeReference.BOARD_HBOX);
+        box.getChildren().add(mortgage);
+        return  this;
+    }
+
+    public DialogContentBuilder genericUnownedProperty() {
+        generateBaseBoardLocationContent(false);
+        HBox box = getNodeByReference(NodeReference.BOARD_HBOX);
+        HBox graph = createNodeAndRegister(NodeReference.PROPERTY_LOCATION_HBOX);
+        Label text = createNodeAndRegister(NodeReference.BOARD_LOCATION_TEXT);
+
+        ImageView graphic = createNodeAndRegister(NodeReference.BOARD_LOCATION_IMAGE);
+        graph.getChildren().add(graphic);
+        graph.setMinHeight(graphic.getFitWidth() + 20);
+        box.getChildren().addAll(graph, text);
         return this;
     }
 
@@ -97,7 +157,7 @@ public class DialogContentBuilder {
         box.setAlignment(Pos.CENTER);
 
         Label enterBid = createNodeAndRegister(NodeReference.BID_TEXT);
-        TextField numeric = new TextField();
+        TextField numeric = createNodeAndRegister(NodeReference.BID_VALUE_FIELD);
         numeric.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*")) {
                 numeric.setText(newValue.replaceAll("[^\\d]", ""));
@@ -110,6 +170,27 @@ public class DialogContentBuilder {
         graph.setAlignment(Pos.CENTER);
         box.getChildren().addAll(graph);
         box.getChildren().addAll(enterBid, numeric);
+        dialog.getDialogPane().setContent(box);
+
+        return this;
+    }
+
+    public DialogContentBuilder bankruptcyResolutionDialog() {
+        VBox box = createNodeAndRegister(NodeReference.BANKRUPTCY_VBOX);
+
+        ListView<String> list = createNodeAndRegister(NodeReference.TRADE_LIST_PLAYER);
+        list.setMaxHeight(100);
+        list.setMaxWidth(150);
+
+        Button undevelop = createNodeAndRegister(NodeReference.UNDEVELOP_OWNED_PROPERTY);
+        undevelop.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
+
+        Button sellGOJFCards = createNodeAndRegister(NodeReference.GOJF_PLAYER_ADD);
+        sellGOJFCards.setText("Sell Get Out of Jail Free Card");
+        sellGOJFCards.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
+
+        box.getChildren().addAll(list, undevelop, sellGOJFCards);
+        box.setMinSize(HBox.USE_PREF_SIZE, HBox.USE_PREF_SIZE);
         dialog.getDialogPane().setContent(box);
 
         return this;
@@ -161,7 +242,7 @@ public class DialogContentBuilder {
         return offer;
     }
 
-    public DialogContentBuilder generateStatContent(Dialog dialog) {
+    public DialogContentBuilder generateStatContent() {
         HBox box = createNodeAndRegister(NodeReference.STATS_HBOX);
         box.setMinSize(HBox.USE_PREF_SIZE, HBox.USE_PREF_SIZE);
         dialog.getDialogPane().setContent(box);
@@ -189,8 +270,6 @@ public class DialogContentBuilder {
             lookupButton(button).setDisable(disable);
         return this;
     }
-
-    public DialogContentBuilder setContentText(String text) { dialog.setContentText(text); return this; }
 
     public DialogContentBuilder setXAndYPosition(double x, double y) {
         dialog.setX(x);

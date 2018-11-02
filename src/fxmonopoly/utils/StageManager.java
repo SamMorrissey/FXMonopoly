@@ -12,11 +12,9 @@ import java.io.IOException;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.image.Image;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -62,7 +60,7 @@ public class StageManager {
      * @param dialog The dialog to pass.
      * @return The dialog specified.
      */
-    public Dialog getGameDialog(GameDialogs2 dialog) { return dialog.getDialog(stage); }
+    public Dialog getGameDialog(GameDialogs dialog) { return dialog.getDialog(stage); }
     
     /**
      * Retrieves a LateData instance if one is available, otherwise returns null.

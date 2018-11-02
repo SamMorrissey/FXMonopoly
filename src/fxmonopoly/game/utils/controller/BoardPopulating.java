@@ -12,10 +12,20 @@ import fxmonopoly.gamedata.board.locations.PropertyLocation;
 import fxmonopoly.gamedata.board.locations.RailwayLocation;
 import fxmonopoly.gamedata.board.locations.UtilityLocation;
 import fxmonopoly.gamedata.players.Player;
+import fxmonopoly.utils.GameDialogs;
 import fxmonopoly.utils.StageManager;
+
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import fxmonopoly.utils.interfacing.NodeReference;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
@@ -70,36 +80,51 @@ public class BoardPopulating {
                     utilityListener(button, map);
             }
             
-            Dialog position = manager.getGameDialog(GameDialogs2.BLANK);
+            Dialog position = manager.getGameDialog(GameDialogs.BLANK);
             int indexOf = board.indexOf(button);
             
             button.setOnAction(e -> {
                 if(button.isOwnable() && !button.isOwned()) {
-                    DialogContent.genericPositionDialog(
-                        position,
-                        GameController.getBoardLocationImage(board, indexOf),
-                        model.retrieveLocation(indexOf).getName() + "\n" + "You must purchase this property to reveal more information",
-                        170
-                    );
+                    DialogContent content = new DialogContent();
+                    Dialog dialog = content.genericPositionDialog(position, 170);
+                    dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+                    Image image = GameController.getBoardLocationImage(board, indexOf);
+                    ((ImageView) content.retrieveNodeByName(NodeReference.BOARD_LOCATION_IMAGE.name())).setImage(image);
+                    Label label = content.retrieveNodeByName(NodeReference.BOARD_LOCATION_TEXT.name());
+                    label.setText(model.retrieveLocation(indexOf).getName() + "\n" + "You must purchase this property to reveal more information");
+                    dialog.showAndWait();
                 }
                 else if(button.isOwned()) {
                     if (button.userIsOwner(model.getUser())) {
                         if (button.getLocation() instanceof PropertyLocation) {
+                            DialogContent content = new DialogContent();
+                            Dialog dialog = content.ownedOwnableLocationDialog(position, 170);
+                            dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+                            Image image = GameController.getBoardLocationImage(board, indexOf);
+                            ((ImageView) content.retrieveNodeByName(NodeReference.BOARD_LOCATION_IMAGE.name())).setImage(image);
+                            Label label = content.retrieveNodeByName(NodeReference.BOARD_LOCATION_TEXT.name());
+                            label.setText(((BaseOwnableLocation) board.get(indexOf).getLocation()).getUserOwnedString());
+                            ((Button) content.retrieveNodeByName(NodeReference.DEVELOP_OWNED_PROPERTY.name())).addEventFilter( e ->
+                                model.userDevelopProperty((PropertyLocation) board.get(indexOf).getLocation())
+                            );
+                            ((Button) content.retrieveNodeByName(NodeReference.UNDEVELOP_OWNED_PROPERTY.name())).addEventFilter( e ->
+                                model.userRegressProperty((PropertyLocation) board.get(indexOf).getLocation())
+                            );
+                            Button mortgage = content.retrieveNodeByName(NodeReference.MORTGAGE_OWNED_PROPERTY.name());
+                            mortgage.addEventFilter( e -> {
+                                mortgageProcess(board, indexOf, model);
+                                if (mortgage.getText().equals("Mortgage")) mortgage.setText("Demortgage");
+                                else mortgage.setText("Mortgage");
+                            });
+                            dialog.showAndWait();
+
+                        } else {
                             DialogContent.genericOwnedPropertySetUp(
                                 position,
                                 GameController.getBoardLocationImage(board, indexOf),
                                 ((BaseOwnableLocation) board.get(indexOf).getLocation()).getUserOwnedString(),
                                 () -> mortgageProcess(board, indexOf, model)
                             );
-                        } else {
-                             DialogContent.ownedOwnableLocationDialog(
-                                 position,
-                                 GameController.getBoardLocationImage(board, indexOf),
-                                 ((BaseOwnableLocation) board.get(indexOf).getLocation()).getUserOwnedString(),
-                                 () -> model.userDevelopProperty((PropertyLocation) board.get(indexOf).getLocation()),
-                                 () -> model.userRegressProperty((PropertyLocation) board.get(indexOf).getLocation()),
-                                 () -> mortgageProcess(board, indexOf, model)
-                             );
                         }
                     } else {
                         DialogContent.genericUnownedPropertyDialog(
@@ -157,6 +182,7 @@ public class BoardPopulating {
      * @param button The BoardButton on which to attach the listener.
      * @param map The map of colours to assimilate style correctly.
      */
+    @SuppressWarnings("unchecked")
     private static void propertyListeners(BoardButton button, HashMap<Player, Color> map) {
         ((PropertyLocation) button.getLocation()).getHousesProperty().addListener((observable, oldValue, newValue) -> {
             button.styleProperty().setValue(adjustedStyle(button, map));
@@ -175,6 +201,7 @@ public class BoardPopulating {
      * @param button The BoardButton on which to attach the listener.
      * @param map The map of colours to assimilate style correctly.
      */
+    @SuppressWarnings("unchecked")
     private static void railwayListener(BoardButton button, HashMap<Player, Color> map) {
         ((RailwayLocation) button.getLocation()).getOwnerProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue != null) 
@@ -197,54 +224,19 @@ public class BoardPopulating {
                 button.styleProperty().setValue(initialStyle());
         });
     }
-    
-    /**
-     * Fills the provided GridPane with the BoardButtons in the specified ArrayList.
-     * Places the buttons in their respective grid position.
-     * @param board The ArrayList of BoardButtons to populate with.
-     * @param grid The GridPane to populate.
-     */
+
     private static void populateGridPane(ArrayList<BoardButton> board, GridPane grid) {
-        grid.add(board.get(0), 10, 10);
-        grid.add(board.get(1), 9, 10);
-        grid.add(board.get(2), 8, 10);
-        grid.add(board.get(3), 7, 10);
-        grid.add(board.get(4), 6, 10);
-        grid.add(board.get(5), 5, 10);
-        grid.add(board.get(6), 4, 10);
-        grid.add(board.get(7), 3, 10);
-        grid.add(board.get(8), 2, 10);
-        grid.add(board.get(9), 1, 10);
-        grid.add(board.get(10), 0, 10);
-        grid.add(board.get(11), 0, 9);
-        grid.add(board.get(12), 0, 8);
-        grid.add(board.get(13), 0, 7);
-        grid.add(board.get(14), 0, 6);
-        grid.add(board.get(15), 0, 5);
-        grid.add(board.get(16), 0, 4);
-        grid.add(board.get(17), 0, 3);
-        grid.add(board.get(18), 0, 2);
-        grid.add(board.get(19), 0, 1);
-        grid.add(board.get(20), 0, 0);
-        grid.add(board.get(21), 1, 0);
-        grid.add(board.get(22), 2, 0);
-        grid.add(board.get(23), 3, 0);
-        grid.add(board.get(24), 4, 0);
-        grid.add(board.get(25), 5, 0);
-        grid.add(board.get(26), 6, 0);
-        grid.add(board.get(27), 7, 0);
-        grid.add(board.get(28), 8, 0);
-        grid.add(board.get(29), 9, 0);
-        grid.add(board.get(30), 10, 0);
-        grid.add(board.get(31), 10, 1);
-        grid.add(board.get(32), 10, 2);
-        grid.add(board.get(33), 10, 3);
-        grid.add(board.get(34), 10, 4);
-        grid.add(board.get(35), 10, 5);
-        grid.add(board.get(36), 10, 6);
-        grid.add(board.get(37), 10, 7);
-        grid.add(board.get(38), 10, 8);
-        grid.add(board.get(39), 10, 9);
+        for (int i = 0; i < board.size(); i++) {
+            if (i < 10) {
+                grid.add(board.get(i), 10 - i, 10);
+            } else if (i < 20) {
+                grid.add(board.get(i), 0, 20 - i);
+            } else if (i < 30) {
+                grid.add(board.get(i), i - 20, 0);
+            } else if (i < 40) {
+                grid.add(board.get(i), 10, i - 30);
+            }
+        }
     }
     
     /**
@@ -263,7 +255,6 @@ public class BoardPopulating {
      * @return The CSS style string.
      */
     private static String adjustedStyle(BoardButton button, HashMap<Player, Color> map) {
-        
         if(button.getLocation() instanceof PropertyLocation) {
             return propertyStyle((PropertyLocation) button.getLocation(), map);
         }

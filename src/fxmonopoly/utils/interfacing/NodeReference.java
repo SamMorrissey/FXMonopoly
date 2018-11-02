@@ -13,6 +13,7 @@ public enum NodeReference {
     DIE_2(new ImageView(new Image("fxmonopoly/resources/images/die/Blank.png"))),
     ROLL_BUTTON(new Button("Roll")),
     ROLL_HBOX(new HBox(20)),
+    BANKRUPTCY_VBOX(new VBox(20)),
     BOARD_HBOX(new HBox(20)),
     BOARD_LOCATION_IMAGE(new ImageView()),
     BOARD_LOCATION_TEXT(new Label()),
@@ -20,7 +21,12 @@ public enum NodeReference {
     BID_TEXT(new Label()),
     BID_VALUE_FIELD(new TextField()),
     BID_VBOX_PARENT(new VBox(10)),
+    BUTTON_HBOX(new HBox(10)),
     OPPONENTS_LIST(new ComboBox()),
+    DEVELOP_OWNED_PROPERTY(new Button("+")),
+    UNDEVELOP_OWNED_PROPERTY(new Button("-")),
+    MORTGAGE_OWNED_PROPERTY(new Button("Mortgage")),
+    PROPERTY_LOCATION_HBOX(new HBox(10)),
     STATS_HBOX(new HBox(40)),
     TRADE_LIST_PLAYER(new ListView()),
     TRADE_LIST_OPPONENT(new ListView()),
@@ -48,6 +54,7 @@ public enum NodeReference {
 
     private Node node;
 
+    @SuppressWarnings("unchecked")
     public <T extends Node> T getNode() { return (T) node; }
 
 }
