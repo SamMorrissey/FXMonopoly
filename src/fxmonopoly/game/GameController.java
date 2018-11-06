@@ -244,6 +244,13 @@ public class GameController implements Initializable, Manageable, LateData {
                 }
             }
         }
+
+        DialogContent.CENTRE_DIALOG_X = dialog ->
+            dialog.setX(board.get(0).getParent().getScene().getX() + board.get(0).getParent().getScene().getWidth() / 2 - dialog.getWidth() / 2)
+        ;
+        DialogContent.CENTRE_DIALOG_Y = dialog ->
+            dialog.setY(board.get(0).getParent().getScene().getY() + board.get(0).getParent().getScene().getHeight() / 2 - dialog.getHeight() / 2)
+        ;
         
         PauseTransition pause = new PauseTransition(Duration.millis(2000));
         pause.setOnFinished(e -> Platform.runLater(this::dieRollDialog));
@@ -355,8 +362,18 @@ public class GameController implements Initializable, Manageable, LateData {
             if(model.getActivePlayer().getCash() < 0) {
                 if(model.isActivePlayerBankrupt())
                     model.removeActivePlayerFromGame();
-                else 
-                    DialogContent.bidDialog(manager.getGameDialog(GameDialogs.BLANK), model, board);
+                else  {
+                    DialogContent content = new DialogContent();
+                    Dialog dialog = content.bidDialog(manager.getGameDialog(GameDialogs.BLANK));
+                    Image graphic = null;
+                    if(model.getActiveBid().containsLocation()) {
+                        graphic = getBoardLocationImage(board, model.retrieveLocationPosition(model.getActiveBid().getLocation()));
+                    }
+                    else if(model.getActiveBid().containsGOJFCard()) {
+                        graphic = new Image("fxmonopoly/resources/images/LeaveJailIcon");
+                    }
+                    bidDialog(graphic, "Enter max bid: ");
+                }
             }
         }
         else {
@@ -636,18 +653,9 @@ public class GameController implements Initializable, Manageable, LateData {
         }
     }
 
-    /**
-     * Provides the methods for retrieving the necessary dialog.
-     * @param manager The manager to utilise.
-     * @param controller The controller to pass.
-     * @param model The model to pass.
-     * @param board The BoardButton list to pass.
-     */
     public void getNewPositionDialog() {
         Location location = model.retrieveLocation(model.getActivePlayer().getPosition());
         Image image = getBoardLocationImage(board, model.getActivePlayer().getPosition());
-        ImageView graphic =
-        graphic.setRotate(calculateRotation(model.getActivePlayer().getPosition()));
 
         if (location instanceof BaseOwnableLocation) {
             if ( !((BaseOwnableLocation) location).getIsOwned() ) {

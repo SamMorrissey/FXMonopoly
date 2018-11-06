@@ -5,36 +5,18 @@
  */
 package fxmonopoly.game.utils.controller;
 
-import fxmonopoly.game.GameModel;
-import fxmonopoly.gamedata.board.locations.*;
-import fxmonopoly.gamedata.players.Player;
 import fxmonopoly.utils.DialogContentBuilder;
-
 import java.util.*;
 import java.util.function.Consumer;
-
 import fxmonopoly.utils.interfacing.NodeReference;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
-import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 
 /**
  * Provides the content necessary for all dynamic dialogs.
@@ -45,8 +27,8 @@ import javafx.scene.paint.Color;
  */
 public class DialogContent {
 
-    public static int CENTRE_DIALOG_X;
-    public static int CENTRE_DIALOG_Y;
+    public static Consumer<Dialog> CENTRE_DIALOG_X;
+    public static Consumer<Dialog> CENTRE_DIALOG_Y;
 
     private Map<String, Node> nodeMap = new LinkedHashMap<>();
     private DialogContentBuilder builder;
@@ -78,58 +60,58 @@ public class DialogContent {
     public Dialog unownedOwnableLocation(Dialog dialog) {
         builder = new DialogContentBuilder(dialog)
             .generateBaseBoardLocationContent(true)
-            .setXAndYPosition(CENTRE_DIALOG_X, CENTRE_DIALOG_Y)
             .sizeToScene();
+        centreXAndY(dialog);
         return dialog;
     }
 
     public Dialog cardLocation(Dialog dialog) {
         builder = new DialogContentBuilder(dialog)
             .generateBaseBoardLocationContent(true)
-            .setXAndYPosition(CENTRE_DIALOG_X, CENTRE_DIALOG_Y)
             .sizeToScene();
+        centreXAndY(dialog);
         return dialog;
     }
 
     public Dialog bidDialog(Dialog dialog) {
         builder = new DialogContentBuilder(dialog)
             .generateBaseBidContent()
-            .sizeToScene()
-            .setXAndYPosition(CENTRE_DIALOG_X, CENTRE_DIALOG_Y);
+            .sizeToScene();
+        centreXAndY(dialog);
         return dialog;
     }
 
     public Dialog genericPositionDialog(Dialog dialog, int width) {
         builder = new DialogContentBuilder(dialog)
             .genericBoardPositionDialog()
-            .setXAndYPosition(CENTRE_DIALOG_X, CENTRE_DIALOG_Y)
             .sizeToScene()
             .setPaneMaxWidth(width);
+        centreXAndY(dialog);
         return dialog;
     }
 
     public Dialog ownedOwnableLocationDialog(Dialog dialog, int width) {
         builder = new DialogContentBuilder(dialog)
             .ownedOwnableLocationDialog()
-            .setXAndYPosition(CENTRE_DIALOG_X, CENTRE_DIALOG_Y)
             .setPaneMaxWidth(width)
             .sizeToScene();
+        centreXAndY(dialog);
         return dialog;
     }
 
     public Dialog genericOwnedPropertySetUp(Dialog dialog) {
         builder = new DialogContentBuilder(dialog)
             .genericOwnedPropertyDialog()
-            .setXAndYPosition(CENTRE_DIALOG_X, CENTRE_DIALOG_Y)
             .sizeToScene();
+        centreXAndY(dialog);
         return dialog;
     }
 
     public Dialog genericUnownedPropertyDialog(Dialog dialog) {
         builder = new DialogContentBuilder(dialog)
             .genericUnownedProperty()
-            .setXAndYPosition(CENTRE_DIALOG_X, CENTRE_DIALOG_Y)
             .sizeToScene();
+        centreXAndY(dialog);
         return dialog;
     }
 
@@ -181,16 +163,16 @@ public class DialogContent {
     public Dialog statsDialog(Dialog dialog) {
         builder = new DialogContentBuilder(dialog)
             .generateStatContent()
-            .sizeToScene()
-            .setXAndYPosition(CENTRE_DIALOG_X, CENTRE_DIALOG_Y);
+            .sizeToScene();
+        centreXAndY(dialog);
         return dialog;
     }
 
     public Dialog bankruptcyResolutionDialog(Dialog dialog) {
         builder = new DialogContentBuilder(dialog)
             .bankruptcyResolutionDialog()
-            .sizeToScene()
-            .setXAndYPosition(CENTRE_DIALOG_X, CENTRE_DIALOG_Y);
+            .sizeToScene();
+        centreXAndY(dialog);
         return dialog;
     }
 
@@ -205,5 +187,10 @@ public class DialogContent {
         DialogContentBuilder builder = new DialogContentBuilder(dialog)
             .generateEndGameContent(elements, map);
         builder.activate();
+    }
+
+    private void centreXAndY(Dialog dialog) {
+        CENTRE_DIALOG_X.accept(dialog);
+        CENTRE_DIALOG_Y.accept(dialog);
     }
 }

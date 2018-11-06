@@ -271,12 +271,6 @@ public class DialogContentBuilder {
         return this;
     }
 
-    public DialogContentBuilder setXAndYPosition(double x, double y) {
-        dialog.setX(x);
-        dialog.setY(y);
-        return this;
-    }
-
     public DialogContentBuilder sizeToScene() {
         dialog.getDialogPane().getScene().getWindow().sizeToScene();
         dialog.getDialogPane().layout();

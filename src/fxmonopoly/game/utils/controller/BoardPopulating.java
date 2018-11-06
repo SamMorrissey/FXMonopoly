@@ -15,11 +15,11 @@ import fxmonopoly.gamedata.players.Player;
 import fxmonopoly.utils.GameDialogs;
 import fxmonopoly.utils.StageManager;
 
-import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import fxmonopoly.utils.interfacing.NodeReference;
+import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
@@ -104,14 +104,14 @@ public class BoardPopulating {
                             ((ImageView) content.retrieveNodeByName(NodeReference.BOARD_LOCATION_IMAGE.name())).setImage(image);
                             Label label = content.retrieveNodeByName(NodeReference.BOARD_LOCATION_TEXT.name());
                             label.setText(((BaseOwnableLocation) board.get(indexOf).getLocation()).getUserOwnedString());
-                            ((Button) content.retrieveNodeByName(NodeReference.DEVELOP_OWNED_PROPERTY.name())).addEventFilter( e ->
+                            content.retrieveNodeByName(NodeReference.DEVELOP_OWNED_PROPERTY.name()).addEventFilter(ActionEvent.ACTION, event ->
                                 model.userDevelopProperty((PropertyLocation) board.get(indexOf).getLocation())
                             );
-                            ((Button) content.retrieveNodeByName(NodeReference.UNDEVELOP_OWNED_PROPERTY.name())).addEventFilter( e ->
+                            content.retrieveNodeByName(NodeReference.UNDEVELOP_OWNED_PROPERTY.name()).addEventFilter(ActionEvent.ACTION, event ->
                                 model.userRegressProperty((PropertyLocation) board.get(indexOf).getLocation())
                             );
                             Button mortgage = content.retrieveNodeByName(NodeReference.MORTGAGE_OWNED_PROPERTY.name());
-                            mortgage.addEventFilter( e -> {
+                            mortgage.addEventFilter(ActionEvent.ACTION, event -> {
                                 mortgageProcess(board, indexOf, model);
                                 if (mortgage.getText().equals("Mortgage")) mortgage.setText("Demortgage");
                                 else mortgage.setText("Mortgage");
@@ -135,12 +135,14 @@ public class BoardPopulating {
                     }
                 }
                 else {
-                    DialogContent.genericPositionDialog(
-                        position,
-                        GameController.getBoardLocationImage(board, board.indexOf(button)),
-                        model.retrieveLocation(board.indexOf(button)).getName(),
-                        150
-                    );
+                    DialogContent content = new DialogContent();
+                    Dialog dialog = content.genericPositionDialog(position, 150);
+                    dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+                    Image image = GameController.getBoardLocationImage(board, indexOf);
+                    ((ImageView) content.retrieveNodeByName(NodeReference.BOARD_LOCATION_IMAGE.name())).setImage(image);
+                    Label label = content.retrieveNodeByName(NodeReference.BOARD_LOCATION_TEXT.name());
+                    label.setText(model.retrieveLocation(indexOf).getName());
+                    dialog.showAndWait();
                 }
             });
             

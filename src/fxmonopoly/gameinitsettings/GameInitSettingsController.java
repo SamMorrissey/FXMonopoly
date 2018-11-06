@@ -6,7 +6,6 @@
 package fxmonopoly.gameinitsettings;
 
 import fxmonopoly.utils.Dialogs;
-import fxmonopoly.utils.Dialogs2;
 import fxmonopoly.utils.StageManager;
 import fxmonopoly.utils.View;
 import fxmonopoly.utils.interfacing.Manageable;
@@ -67,13 +66,13 @@ public class GameInitSettingsController implements Initializable, Manageable {
             if(nameField.getText().isEmpty() || colourSelection.getSelectionModel().getSelectedItem() == null ||
                     pieceSelection.getSelectionModel().getSelectedItem() == null) {
                 
-                manager.getDialog(Dialogs2.GAME_INIT_BAD_SEL);
+                manager.getDialog(Dialogs.GAME_INIT_BAD_SEL);
             }
             else if(nameField.getText().startsWith("cpu") || nameField.getText().startsWith("CPU")) {
-                manager.getDialog(Dialogs2.GAME_INIT_CPU_STRING);
+                manager.getDialog(Dialogs.GAME_INIT_CPU_STRING);
             }
             else if(nameField.getText().contains("Rick") || nameField.getText().contains("rick") || nameField.getText().contains("Astley") || nameField.getText().contains("astley")) {
-                manager.getDialog(Dialogs2.RROLLED);
+                manager.getDialog(Dialogs.RROLLED);
                 
                 manager.changeScene(View.GAME);
                 ArrayList<ObservableList<String>> array = new ArrayList<>();
